@@ -379,9 +379,12 @@ public class Main {
 				// Make hill climber on the current solution to improve the
 				// genitor solution
 				for (int k = 0; k < numberOfHC; k++) {
-					genitorsSolutions.get(j)
-							.setSolution(hillClimberFirstImprovment(genitorsSolutions.get(j).getSolution().length, 1000,
-									genitorsSolutions.get(j).getSolution()));
+					int[] currentSolution = hillClimberFirstImprovment(genitorsSolutions.get(j).getSolution().length,
+							1000, genitorsSolutions.get(j).getSolution());
+
+					if (eval(currentSolution) < genitorsSolutions.get(j).getResult()) {
+						genitorsSolutions.get(j).setSolution(currentSolution);
+					}
 				}
 			}
 
@@ -409,10 +412,12 @@ public class Main {
 	 * Method used to do mutation into elements
 	 * 
 	 * @param number
+	 *            with ceil number
 	 */
 	private static void pertubationIterated(int[] solution, int number, Random r) {
 
-		for (int i = 0; i < number; i++) {
+		int nbMutations = r.nextInt(number) + 1;
+		for (int i = 0; i < nbMutations; i++) {
 			int oldValue = 0;
 			int firstBoxElement = r.nextInt(solution.length);
 			int secondBoxElement = r.nextInt(solution.length);
@@ -511,15 +516,18 @@ public class Main {
 		 ************************** ITERATED LOCAL SEARCH **************************
 		 **************************************************************************/
 
-		Solution iteradtedLocalSearchSolution = iteratedLocalSearch(numberOfPhoto, 10000, 1000, 5);
-		System.out.println("Result ILS : " + iteradtedLocalSearchSolution.getResult());
-		writeSolution("/Users/Jerome/Desktop/prj1-ro/fichier.sol", iteradtedLocalSearchSolution);
+		// Solution iteradtedLocalSearchSolution =
+		// iteratedLocalSearch(numberOfPhoto, 10000, 1000, 5);
+		// System.out.println("Result ILS : " +
+		// iteradtedLocalSearchSolution.getResult());
+		// writeSolution("/Users/Jerome/Desktop/prj1-ro/fichier.sol",
+		// iteradtedLocalSearchSolution);
 
 		/***************************************************************************
 		 ************************* EVOLUTIONARY ALGORIMTH **************************
 		 **************************************************************************/
 
-		Solution geneticEvolutionSolution = geneticEvolutionaryAlgorithm(100, 100, numberOfPhoto, 1000, 1000, 100, 2);
+		Solution geneticEvolutionSolution = geneticEvolutionaryAlgorithm(100, 100, numberOfPhoto, 1000, 1000, 1000, 2);
 		System.out.println("Result EA : " + geneticEvolutionSolution.getResult());
 		writeSolution("/Users/Jerome/Desktop/prj1-ro/fichier.sol", geneticEvolutionSolution);
 	}
