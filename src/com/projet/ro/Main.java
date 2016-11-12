@@ -9,7 +9,10 @@ package com.projet.ro;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Random;
 
 import org.json.simple.JSONArray;
@@ -30,6 +33,8 @@ public class Main {
 
 	// Inverse of the distance between positions in the album
 	public static double[][] albumInvDist;
+
+	private static DecimalFormat df = new java.text.DecimalFormat("0.##");
 
 	/**
 	 *
@@ -285,7 +290,6 @@ public class Main {
 
 			i++;
 		} while (next && i < iteration);
-		System.out.println("Dist : " + bestResult + " | NbEvaluations : " + count);
 		return solution;
 	}
 
@@ -297,36 +301,59 @@ public class Main {
 	 * @param perturbation
 	 * @return the best solution
 	 */
-	public static int[] iteratedLocalSearch(int numberElements, int iteration, int perturbation) {
-		int[] solution = generateRandomSolution(numberElements);
+	public static Solution iteratedLocalSearch(int numberElements, int iteration, int iterationHillClimber,
+			int perturbation) {
+
+		Random random = new Random();
+		Solution solution = new Solution();
+		solution.setSolution(generateRandomSolution(numberElements));
+
+		hillClimberFirstImprovment(numberElements, iterationHillClimber, solution.getSolution());
+
+		int i = 0;
+		do {
+			pertubationIterated(solution.getSolution(), perturbation, random);
+
+			int[] currentSolution = hillClimberFirstImprovment(numberElements, iterationHillClimber,
+					solution.getSolution());
+
+			if (eval(currentSolution) < solution.getResult()) {
+				solution.setSolution(currentSolution);
+			}
+			i++;
+			System.out.println("Iterated local search : " + df.format(i * 100.0 / iteration) + "%");
+		} while (i < iteration);
 		return solution;
 	}
 
 	/**
+	 * Method which used the genetic evolutionary algorithm
+	 * 
 	 * @param mu
-	 *            : represents mu
 	 * @param lambda
 	 * @param numberElements
 	 * @param iteration
-	 * @return
+	 * @param hillClimberIteration
+	 * @param numberOfPermutations
+	 * @return best solution object found
 	 */
-	public static ArrayList<Solution> geneticEvolutionAlgorithm(int mu, int lambda, int numberElements, int iteration) {
+	public static Solution geneticEvolutionaryAlgorithm(int mu, int lambda, int numberElements, int iteration,
+			int hillClimberIteration, int numberOfHC, int numberOfPermutations) {
 
 		// Generate all parents solutions to start the algorithm
 		ArrayList<Solution> parentsSolutions = new ArrayList<>();
-		ArrayList<Solution> genitorsSolutions = new ArrayList<>();
 		Random random = new Random();
 
 		for (int i = 0; i < mu; i++) {
 			Solution sol = new Solution();
 			sol.setSolution(generateRandomSolution(numberElements));
-			sol.setResult(eval(sol.getSolution()));
 			parentsSolutions.add(sol);
 		}
 
 		// Loop which defined the stop search (Iteration number)
 		for (int i = 0; i < iteration; i++) {
 
+			ArrayList<Solution> genitorsSolutions = new ArrayList<>();
 			// Parents selection which generated "genitors" after fights
 			for (int j = 0; j < lambda; j++) {
 
@@ -345,26 +372,85 @@ public class Main {
 			// Do variations on Genitors like mutation & HC
 			// Mutation needs make probability
 			for (int j = 0; j < genitorsSolutions.size(); j++) {
+
+				// Do permutation
+				pertubationIterated(genitorsSolutions.get(j).getSolution(), numberOfPermutations, random);
+
 				// Make hill climber on the current solution to improve the
 				// genitor solution
-				genitorsSolutions.get(i).setSolution(hillClimberFirstImprovment(
-						genitorsSolutions.get(i).getSolution().length, 1000, genitorsSolutions.get(i).getSolution()));
+				for (int k = 0; k < numberOfHC; k++) {
+					genitorsSolutions.get(j)
+							.setSolution(hillClimberFirstImprovment(genitorsSolutions.get(j).getSolution().length, 1000,
+									genitorsSolutions.get(j).getSolution()));
+				}
 			}
 
 			// Get the best between old parents & Genitors to make Survivors
+
+			// First of all we need to add all children
+			for (int j = 0; j < lambda; j++) {
+				parentsSolutions.add(genitorsSolutions.get(j));
+			}
+
+			// Method used to order list of solution by result
+			orderListOfSolution(parentsSolutions);
+
+			// Remove all elements without good result for the next step
+			for (int j = mu; j < parentsSolutions.size(); j++) {
+				parentsSolutions.remove(j);
+			}
+			System.out.println("Genetic evolutionary algorithm : " + df.format(i * 100.0 / iteration) + "%");
 		}
 		// Get the best solution after all iteration and return it
-		return null;
+		return parentsSolutions.get(0);
+	}
+
+	/**
+	 * Method used to do mutation into elements
+	 * 
+	 * @param number
+	 */
+	private static void pertubationIterated(int[] solution, int number, Random r) {
+
+		for (int i = 0; i < number; i++) {
+			int oldValue = 0;
+			int firstBoxElement = r.nextInt(solution.length);
+			int secondBoxElement = r.nextInt(solution.length);
+			oldValue = solution[firstBoxElement];
+			solution[firstBoxElement] = solution[secondBoxElement];
+			solution[secondBoxElement] = oldValue;
+		}
+	}
+
+	/**
+	 * Utility method used to order list by result of solutions
+	 * 
+	 * @param list
+	 */
+	public static void orderListOfSolution(ArrayList<Solution> list) {
+		Collections.sort(list, new Comparator<Solution>() {
+			@Override
+			public int compare(Solution o1, Solution o2) {
+				Double libelle1 = o1.getResult();
+				Double libelle2 = o2.getResult();
+				if (libelle2.compareTo(libelle1) > 0)
+					return -1;
+				else if (libelle2.compareTo(libelle1) == 0)
+					return 0;
+				else
+					return 1;
+			}
+		});
 	}
 
 	/**
 	 * Show the solution found
 	 * 
-	 * @param solution
+	 * @param sol
 	 */
-	public static void showSolution(int[] solution) {
-		for (int i = 0; i < solution.length; i++) {
-			System.out.print("[" + solution[i] + "] ");
+	public static void showSolution(Solution sol) {
+		for (int i = 0; i < sol.getSolution().length; i++) {
+			System.out.print("[" + sol.getSolution()[i] + "] ");
 		}
 	}
 
@@ -374,11 +460,11 @@ public class Main {
 	 * @param filename
 	 * @param solution
 	 */
-	public static void writeSolution(String filename, int[] solution) {
+	public static void writeSolution(String filename, Solution sol) {
 		FileClass file = new FileClass(filename);
 		String line = "";
-		for (int i = 0; i < solution.length; i++) {
-			line += solution[i] + " ";
+		for (int i = 0; i < sol.getSolution().length; i++) {
+			line += sol.getSolution()[i] + " ";
 		}
 		file.writeLine(line, false);
 	}
@@ -397,31 +483,44 @@ public class Main {
 		computeDistances(photoFileName, albumFileName);
 
 		// one basic solution : order of the index
-
 		int numberOfPhoto = 55;
-		// int[] solution = new int[numberOfPhoto];
-		//
-		// for (int i = 0; i < numberOfPhoto; i++)
-		// solution[i] = i;
-		//
-		// // compute the fitness
-		// System.out.println(eval(solution));
-		double result = 0.0;
-		double bestResult = 1000;
-		int[] bestSolution = null;
-		int[] currentSolution = null;
-		for (int i = 0; i < 100000; i++) {
 
-			currentSolution = hillClimberFirstImprovment(numberOfPhoto, 10000, null);
-			result = eval(currentSolution);
-			if (result < bestResult) {
-				bestResult = result;
-				bestSolution = currentSolution;
-			}
-			System.out.println((i + 1) + ") CURRENT BEST " + bestResult);
-		}
+		/***************************************************************************
+		 *************************** HILL CLIMBER RESULT ***************************
+		 **************************************************************************/
+		// System.out.println("Beginning of hill climber solution :");
+		// double result = 0.0;
+		// double bestResult = 1000;
+		// int[] bestSolution = null;
+		// int[] currentSolution = null;
+		// for (int i = 0; i < 100000; i++) {
+		//
+		// currentSolution = hillClimberFirstImprovment(numberOfPhoto, 10000,
+		// null);
+		// result = eval(currentSolution);
+		// if (result < bestResult) {
+		// bestResult = result;
+		// bestSolution = currentSolution;
+		// }
+		// System.out.println("HC : " + df.format(i * 100.0 / 100000.0) + "%");
+		// }
+		// writeSolution("/Users/Jerome/Desktop/prj1-ro/fichier.sol",
+		// bestSolution);
 
-		writeSolution("/Users/Jerome/Desktop/prj1-ro/fichier.sol", bestSolution);
+		/***************************************************************************
+		 ************************** ITERATED LOCAL SEARCH **************************
+		 **************************************************************************/
+
+		Solution iteradtedLocalSearchSolution = iteratedLocalSearch(numberOfPhoto, 10000, 1000, 5);
+		System.out.println("Result ILS : " + iteradtedLocalSearchSolution.getResult());
+		writeSolution("/Users/Jerome/Desktop/prj1-ro/fichier.sol", iteradtedLocalSearchSolution);
+
+		/***************************************************************************
+		 ************************* EVOLUTIONARY ALGORIMTH **************************
+		 **************************************************************************/
+
+		Solution geneticEvolutionSolution = geneticEvolutionaryAlgorithm(100, 100, numberOfPhoto, 1000, 1000, 100, 2);
+		System.out.println("Result EA : " + geneticEvolutionSolution.getResult());
+		writeSolution("/Users/Jerome/Desktop/prj1-ro/fichier.sol", geneticEvolutionSolution);
 	}
-
 }

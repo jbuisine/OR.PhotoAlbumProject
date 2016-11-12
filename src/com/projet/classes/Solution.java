@@ -22,10 +22,10 @@ public class Solution {
 		// TODO Auto-generated constructor stub
 	}
 
-	public Solution(int[] solution, double result) {
+	public Solution(int[] solution) {
 		super();
 		this.solution = solution;
-		this.result = result;
+		this.result = Main.eval(this.solution);
 	}
 
 	public int[] getSolution() {
@@ -39,10 +39,6 @@ public class Solution {
 
 	public double getResult() {
 		return result;
-	}
-
-	public void setResult(double result) {
-		this.result = result;
 	}
 
 	@Override

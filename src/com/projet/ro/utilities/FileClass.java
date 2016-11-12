@@ -83,7 +83,6 @@ public class FileClass {
 	public void writeLine(String pVal, boolean b) {
 		try {
 			BufferedWriter fichierWriter = new BufferedWriter(new FileWriter(fichier, b));
-			fichierWriter.newLine();
 			fichierWriter.write(pVal);
 			fichierWriter.close();
 
