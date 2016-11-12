@@ -2,6 +2,8 @@ package com.projet.classes;
 
 import java.util.Arrays;
 
+import com.projet.ro.Main;
+
 /**
  * @author Jerome
  *
@@ -15,8 +17,6 @@ public class Solution {
 	private int[] solution;
 
 	private double result;
-
-	private boolean available;
 
 	public Solution() {
 		// TODO Auto-generated constructor stub
@@ -34,6 +34,7 @@ public class Solution {
 
 	public void setSolution(int[] solution) {
 		this.solution = solution;
+		this.result = Main.eval(this.solution);
 	}
 
 	public double getResult() {
@@ -42,14 +43,6 @@ public class Solution {
 
 	public void setResult(double result) {
 		this.result = result;
-	}
-
-	public boolean isAvailable() {
-		return available;
-	}
-
-	public void setAvailable(boolean available) {
-		this.available = available;
 	}
 
 	@Override

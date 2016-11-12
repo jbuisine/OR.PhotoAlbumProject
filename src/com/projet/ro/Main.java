@@ -197,7 +197,7 @@ public class Main {
 	 * (harmonie/cohérence de la page) par le choix de distance, pas
 	 * d'intéraction entre les photos sur des différentes pages
 	 */
-	static double eval(int[] solution) {
+	public static double eval(int[] solution) {
 		double sum = 0;
 
 		for (int i = 0; i < albumInvDist.length; i++) {
@@ -257,8 +257,8 @@ public class Main {
 			int temporyValue = 0;
 
 			for (int j = 0; j < numberElements; j++) {
-				firstRandomValue = random.nextInt(numberElements);
-				secondRandomValue = random.nextInt(numberElements);
+				firstRandomValue = random.nextInt(solution.length);
+				secondRandomValue = random.nextInt(solution.length);
 
 				temporyValue = solution[firstRandomValue];
 				solution[firstRandomValue] = solution[secondRandomValue];
@@ -310,7 +310,7 @@ public class Main {
 	 * @param iteration
 	 * @return
 	 */
-	public static ArrayList<Solution> evolutionAlgorithm(int mu, int lambda, int numberElements, int iteration) {
+	public static ArrayList<Solution> geneticEvolutionAlgorithm(int mu, int lambda, int numberElements, int iteration) {
 
 		// Generate all parents solutions to start the algorithm
 		ArrayList<Solution> parentsSolutions = new ArrayList<>();
@@ -329,38 +329,31 @@ public class Main {
 
 			// Parents selection which generated "genitors" after fights
 			for (int j = 0; j < lambda; j++) {
+
 				int firstSelectedIndex = random.nextInt(parentsSolutions.size());
 				int secondSelectedIndex = random.nextInt(parentsSolutions.size());
 
-				boolean changed = false;
-
-				// Get first concurrent
-				do {
-					if (parentsSolutions.get(firstSelectedIndex).isAvailable()) {
-						parentsSolutions.get(firstSelectedIndex).setAvailable(false);
-						changed = true;
-					}
-					firstSelectedIndex = random.nextInt(parentsSolutions.size());
-				} while (!changed);
-
-				changed = false;
-
-				// Get second concurrent
-				do {
-					if (parentsSolutions.get(secondSelectedIndex).isAvailable()) {
-						parentsSolutions.get(secondSelectedIndex).setAvailable(false);
-						changed = true;
-						break;
-					}
-					secondSelectedIndex = random.nextInt(parentsSolutions.size());
-				} while (!changed);
+				// Do fight between 2 solutions and get the winner
+				if (parentsSolutions.get(firstSelectedIndex).getResult() >= parentsSolutions.get(secondSelectedIndex)
+						.getResult()) {
+					genitorsSolutions.add(parentsSolutions.get(firstSelectedIndex));
+				} else {
+					genitorsSolutions.add(parentsSolutions.get(secondSelectedIndex));
+				}
 			}
 
 			// Do variations on Genitors like mutation & HC
 			// Mutation needs make probability
+			for (int j = 0; j < genitorsSolutions.size(); j++) {
+				// Make hill climber on the current solution to improve the
+				// genitor solution
+				genitorsSolutions.get(i).setSolution(hillClimberFirstImprovment(
+						genitorsSolutions.get(i).getSolution().length, 1000, genitorsSolutions.get(i).getSolution()));
+			}
 
 			// Get the best between old parents & Genitors to make Survivors
 		}
+		// Get the best solution after all iteration and return it
 		return null;
 	}
 
