@@ -216,7 +216,7 @@ public class Main {
 
 	/**
 	 * Generate random solution with permutations of int value
-	 * 
+	 *
 	 * @param number
 	 * @return
 	 */
@@ -238,7 +238,7 @@ public class Main {
 
 	/**
 	 * Hill climber first improvement heuristic
-	 * 
+	 *
 	 * @param numberElements
 	 * @return the best result found
 	 */
@@ -253,7 +253,6 @@ public class Main {
 
 		boolean next = true;
 		int i = 0;
-		int count = 1;
 
 		do {
 			double result = 0.0;
@@ -261,7 +260,8 @@ public class Main {
 			int secondRandomValue = 0;
 			int temporyValue = 0;
 
-			for (int j = 0; j < numberElements; j++) {
+			int j = 0;
+			for (j = 0; j < numberElements; j++) {
 				firstRandomValue = random.nextInt(solution.length);
 				secondRandomValue = random.nextInt(solution.length);
 
@@ -272,19 +272,15 @@ public class Main {
 				result = eval(solution);
 
 				if (result < bestResult) {
-					count += j;
 					break;
 				}
 
 				solution[secondRandomValue] = solution[firstRandomValue];
 				solution[firstRandomValue] = temporyValue;
-
 			}
 
 			if (result < bestResult) {
 				bestResult = result;
-				// solution[firstRandomValue] = solution[secondRandomValue];
-				// solution[secondRandomValue] = temporyValue;
 			} else
 				next = false;
 
@@ -295,40 +291,40 @@ public class Main {
 
 	/**
 	 * Method which used the iteratedLocalSearch solution to find a solution
-	 * 
+	 *
 	 * @param numberElements
 	 * @param iteration
 	 * @param perturbation
 	 * @return the best solution
 	 */
-	public static Solution iteratedLocalSearch(int numberElements, int iteration, int iterationHillClimber,
+	public static int[] iteratedLocalSearch(int numberElements, int iteration, int iterationHillClimber,
 			int perturbation) {
 
 		Random random = new Random();
-		Solution solution = new Solution();
-		solution.setSolution(generateRandomSolution(numberElements));
+		int[] solution = generateRandomSolution(numberElements);
 
-		hillClimberFirstImprovment(numberElements, iterationHillClimber, solution.getSolution());
-
+		hillClimberFirstImprovment(numberElements, iterationHillClimber, solution);
+		double bestResult = eval(solution);
 		int i = 0;
 		do {
-			pertubationIterated(solution.getSolution(), perturbation, random);
+			pertubationIterated(solution, perturbation, random);
 
-			int[] currentSolution = hillClimberFirstImprovment(numberElements, iterationHillClimber,
-					solution.getSolution());
+			int[] currentSolution = hillClimberFirstImprovment(numberElements, iterationHillClimber, solution.clone());
 
-			if (eval(currentSolution) < solution.getResult()) {
-				solution.setSolution(currentSolution);
+			double currentResult = eval(currentSolution);
+			if (currentResult < bestResult) {
+				solution = currentSolution;
 			}
 			i++;
-			System.out.println("Iterated local search : " + df.format(i * 100.0 / iteration) + "%");
+			// System.out.println("Iterated local search : " + df.format(i *
+			// 100.0 / iteration) + "%");
 		} while (i < iteration);
 		return solution;
 	}
 
 	/**
 	 * Method which used the genetic evolutionary algorithm
-	 * 
+	 *
 	 * @param mu
 	 * @param lambda
 	 * @param numberElements
@@ -337,23 +333,22 @@ public class Main {
 	 * @param numberOfPermutations
 	 * @return best solution object found
 	 */
-	public static Solution geneticEvolutionaryAlgorithm(int mu, int lambda, int numberElements, int iteration,
+	public static int[] geneticEvolutionaryAlgorithm(int mu, int lambda, int numberElements, int iteration,
 			int hillClimberIteration, int numberOfHC, int numberOfPermutations) {
 
 		// Generate all parents solutions to start the algorithm
-		ArrayList<Solution> parentsSolutions = new ArrayList<>();
+		ArrayList<int[]> parentsSolutions = new ArrayList<>();
 		Random random = new Random();
 
 		for (int i = 0; i < mu; i++) {
-			Solution sol = new Solution();
-			sol.setSolution(generateRandomSolution(numberElements));
+			int[] sol = generateRandomSolution(numberElements);
 			parentsSolutions.add(sol);
 		}
 
 		// Loop which defined the stop search (Iteration number)
 		for (int i = 0; i < iteration; i++) {
 
-			ArrayList<Solution> genitorsSolutions = new ArrayList<>();
+			ArrayList<int[]> genitorsSolutions = new ArrayList<>();
 			// Parents selection which generated "genitors" after fights
 			for (int j = 0; j < lambda; j++) {
 
@@ -361,8 +356,7 @@ public class Main {
 				int secondSelectedIndex = random.nextInt(parentsSolutions.size());
 
 				// Do fight between 2 solutions and get the winner
-				if (parentsSolutions.get(firstSelectedIndex).getResult() >= parentsSolutions.get(secondSelectedIndex)
-						.getResult()) {
+				if (eval(parentsSolutions.get(firstSelectedIndex)) >= eval(parentsSolutions.get(secondSelectedIndex))) {
 					genitorsSolutions.add(parentsSolutions.get(firstSelectedIndex));
 				} else {
 					genitorsSolutions.add(parentsSolutions.get(secondSelectedIndex));
@@ -374,16 +368,16 @@ public class Main {
 			for (int j = 0; j < genitorsSolutions.size(); j++) {
 
 				// Do permutation
-				pertubationIterated(genitorsSolutions.get(j).getSolution(), numberOfPermutations, random);
+				pertubationIterated(genitorsSolutions.get(j), numberOfPermutations, random);
 
 				// Make hill climber on the current solution to improve the
 				// genitor solution
 				for (int k = 0; k < numberOfHC; k++) {
-					int[] currentSolution = hillClimberFirstImprovment(genitorsSolutions.get(j).getSolution().length,
-							1000, genitorsSolutions.get(j).getSolution());
+					int[] currentSolution = hillClimberFirstImprovment(genitorsSolutions.get(j).length, 1000,
+							genitorsSolutions.get(j).clone());
 
-					if (eval(currentSolution) < genitorsSolutions.get(j).getResult()) {
-						genitorsSolutions.get(j).setSolution(currentSolution);
+					if (eval(currentSolution) < eval(genitorsSolutions.get(j))) {
+						genitorsSolutions.set(j, currentSolution);
 					}
 				}
 			}
@@ -410,7 +404,7 @@ public class Main {
 
 	/**
 	 * Method used to do mutation into elements
-	 * 
+	 *
 	 * @param number
 	 *            with ceil number
 	 */
@@ -429,15 +423,15 @@ public class Main {
 
 	/**
 	 * Utility method used to order list by result of solutions
-	 * 
-	 * @param list
+	 *
+	 * @param parentsSolutions
 	 */
-	public static void orderListOfSolution(ArrayList<Solution> list) {
-		Collections.sort(list, new Comparator<Solution>() {
+	public static void orderListOfSolution(ArrayList<int[]> parentsSolutions) {
+		Collections.sort(parentsSolutions, new Comparator<int[]>() {
 			@Override
-			public int compare(Solution o1, Solution o2) {
-				Double libelle1 = o1.getResult();
-				Double libelle2 = o2.getResult();
+			public int compare(int[] o1, int[] o2) {
+				Double libelle1 = eval(o1);
+				Double libelle2 = eval(o2);
 				if (libelle2.compareTo(libelle1) > 0)
 					return -1;
 				else if (libelle2.compareTo(libelle1) == 0)
@@ -450,7 +444,7 @@ public class Main {
 
 	/**
 	 * Show the solution found
-	 * 
+	 *
 	 * @param sol
 	 */
 	public static void showSolution(Solution sol) {
@@ -461,17 +455,20 @@ public class Main {
 
 	/**
 	 * Method which wrote into the file & generate the order
-	 * 
+	 *
 	 * @param filename
 	 * @param solution
 	 */
-	public static void writeSolution(String filename, Solution sol) {
+	public static void writeSolution(String filename, int[] bestSolution, double bestResult, String typeResult) {
 		FileClass file = new FileClass(filename);
-		String line = "";
-		for (int i = 0; i < sol.getSolution().length; i++) {
-			line += sol.getSolution()[i] + " ";
+		String line = "\n\n";
+		for (int i = 0; i < bestSolution.length; i++) {
+			line += bestSolution[i] + " ";
 		}
 		file.writeLine(line, false);
+		if (typeResult != null) {
+			file.writeLine("\n" + typeResult + " : " + bestResult, true);
+		}
 	}
 
 	/**
@@ -479,9 +476,9 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		// Path to the photo information file in json format
-		String photoFileName = "/Users/Jerome/Desktop/prj1-ro/data/info-photo.json";
+		String photoFileName = "/home/pi/www/projets/MasterI2L/ProjetROAlbumPhoto/data/info-photo.json";
 		// Path to the album information file in json format
-		String albumFileName = "/Users/Jerome/Desktop/prj1-ro/data/info-album.json";
+		String albumFileName = "/home/pi/www/projets/MasterI2L/ProjetROAlbumPhoto/data/info-album.json";
 
 		// uncomment to test it
 		// readPhotoExample(photoFileName);
@@ -490,45 +487,53 @@ public class Main {
 		// one basic solution : order of the index
 		int numberOfPhoto = 55;
 
+		String rootSolutionFile = "/home/pi/www/projets/MasterI2L/ProjetROAlbumPhoto/fichier.sol";
+		switch (args[0]) {
+
 		/***************************************************************************
 		 *************************** HILL CLIMBER RESULT ***************************
 		 **************************************************************************/
-		// System.out.println("Beginning of hill climber solution :");
-		// double result = 0.0;
-		// double bestResult = 1000;
-		// int[] bestSolution = null;
-		// int[] currentSolution = null;
-		// for (int i = 0; i < 100000; i++) {
-		//
-		// currentSolution = hillClimberFirstImprovment(numberOfPhoto, 10000,
-		// null);
-		// result = eval(currentSolution);
-		// if (result < bestResult) {
-		// bestResult = result;
-		// bestSolution = currentSolution;
-		// }
-		// System.out.println("HC : " + df.format(i * 100.0 / 100000.0) + "%");
-		// }
-		// writeSolution("/Users/Jerome/Desktop/prj1-ro/fichier.sol",
-		// bestSolution);
+		case "HC":
+			System.out.println("Beginning of hill climber solution :");
+			double bestResult = 1000;
+			int[] bestSolution = null;
+			int[] currentSolution = null;
+			for (int i = 0; i < 10000; i++) {
+				currentSolution = hillClimberFirstImprovment(numberOfPhoto, 10000, null);
+				double currentResult = eval(currentSolution);
+				if (currentResult < bestResult) {
+					bestResult = currentResult;
+					bestSolution = currentSolution;
+				}
+				System.out.println("HC : " + df.format(i * 100.0 / 10000.0) + "%");
+			}
+			writeSolution(rootSolutionFile, bestSolution, bestResult, "HC");
+
+			break;
 
 		/***************************************************************************
 		 ************************** ITERATED LOCAL SEARCH **************************
 		 **************************************************************************/
-
-		// Solution iteradtedLocalSearchSolution =
-		// iteratedLocalSearch(numberOfPhoto, 10000, 1000, 5);
-		// System.out.println("Result ILS : " +
-		// iteradtedLocalSearchSolution.getResult());
-		// writeSolution("/Users/Jerome/Desktop/prj1-ro/fichier.sol",
-		// iteradtedLocalSearchSolution);
+		case "ILC":
+			int[] iteradtedLocalSearchSolution = iteratedLocalSearch(numberOfPhoto, 10000, 1000, 10);
+			double result = eval(iteradtedLocalSearchSolution);
+			System.out.println("Result ILS : " + result);
+			writeSolution(rootSolutionFile, iteradtedLocalSearchSolution, result, "ILS");
+			break;
 
 		/***************************************************************************
 		 ************************* EVOLUTIONARY ALGORIMTH **************************
 		 **************************************************************************/
+		case "EA":
 
-		Solution geneticEvolutionSolution = geneticEvolutionaryAlgorithm(100, 100, numberOfPhoto, 1000, 1000, 1000, 2);
-		System.out.println("Result EA : " + geneticEvolutionSolution.getResult());
-		writeSolution("/Users/Jerome/Desktop/prj1-ro/fichier.sol", geneticEvolutionSolution);
+			int[] geneticEvolutionSolution = geneticEvolutionaryAlgorithm(50, 25, numberOfPhoto, 1000, 1000, 100, 10);
+			double resultEvolutionSolution = eval(geneticEvolutionSolution);
+			System.out.println("Result EA : " + resultEvolutionSolution);
+			writeSolution(rootSolutionFile, geneticEvolutionSolution, resultEvolutionSolution, "EA");
+			break;
+		default:
+			break;
+		}
+
 	}
 }

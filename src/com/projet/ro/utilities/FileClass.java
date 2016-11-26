@@ -84,6 +84,7 @@ public class FileClass {
 		try {
 			BufferedWriter fichierWriter = new BufferedWriter(new FileWriter(fichier, b));
 			fichierWriter.write(pVal);
+			fichierWriter.newLine();
 			fichierWriter.close();
 
 		} catch (IOException e) {

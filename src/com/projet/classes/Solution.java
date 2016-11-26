@@ -8,15 +8,13 @@ import com.projet.ro.Main;
  * @author Jerome
  *
  */
-/**
- * @author Jerome
- *
- */
 public class Solution {
 
 	private int[] solution;
 
 	private double result;
+
+	private int nbEval;
 
 	public Solution() {
 		// TODO Auto-generated constructor stub
@@ -24,7 +22,17 @@ public class Solution {
 
 	public Solution(int[] solution) {
 		super();
-		this.solution = solution;
+		this.nbEval = 0;
+		this.setSolution(solution);
+	}
+
+	public Solution(int[] solution, int nbEval) {
+		super();
+		this.nbEval = nbEval;
+		this.setSolution(solution);
+	}
+
+	public void calc() {
 		this.result = Main.eval(this.solution);
 	}
 
@@ -34,11 +42,23 @@ public class Solution {
 
 	public void setSolution(int[] solution) {
 		this.solution = solution;
-		this.result = Main.eval(this.solution);
+		calc();
 	}
 
 	public double getResult() {
 		return result;
+	}
+
+	public void setNbEval(int nbEval) {
+		this.nbEval = nbEval;
+	}
+
+	public int getNbEval() {
+		return nbEval;
+	}
+
+	public Solution clone() {
+		return new Solution(this.solution, this.nbEval);
 	}
 
 	@Override
