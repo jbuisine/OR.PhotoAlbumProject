@@ -26,6 +26,7 @@ public class FileClass {
 	public FileClass(String nom) {
 		fichier = new File(nom);
 		this.open();
+		
 		try {
 			fichierReader = new BufferedReader(new FileReader(fichier));
 		} catch (FileNotFoundException e) {
