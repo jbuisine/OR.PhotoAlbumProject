@@ -1,0 +1,5 @@
+.cache-main
+.classpath
+bin/
+.settings/
+.DS_Store
