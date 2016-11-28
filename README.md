@@ -7,9 +7,9 @@ The aim of this project is a to create a photo album dynamically with the most p
 ### Description
 
 -------------------
-Description : Projet de création d'album photo automatique par optimisation
-Auteur      : [S. Verel] (http://www-lisic.univ-littoral.fr/~verel/)
-Date        : 8/11/2015
+* Description : Projet de création d'album photo automatique par optimisation
+* Auteur      : [S. Verel] (http://www-lisic.univ-littoral.fr/~verel/)
+* Date        : 8/11/2015
 
 
 -------------------
