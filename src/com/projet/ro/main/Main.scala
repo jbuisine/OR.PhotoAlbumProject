@@ -11,7 +11,7 @@ object Main{
 
   
   def main(args: Array[String]): Unit = {
-    val file = new FileClass("example.txt")
+    val file = new FileClass("fichier.sol")
     //photoDist = Array.ofDim[Double](2,3)
     file.writeLine(getValue, false)
     println("Hello World")
