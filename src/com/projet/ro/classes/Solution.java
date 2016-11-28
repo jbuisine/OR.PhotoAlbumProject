@@ -2,7 +2,7 @@ package com.projet.ro.classes;
 
 import java.util.Arrays;
 
-import com.projet.ro.main.MainJava;
+import com.projet.ro.utilities.OldMainJava;
 
 /**
  * @author Jerome
@@ -33,7 +33,7 @@ public class Solution {
 	}
 
 	public void calc() {
-		this.result = MainJava.eval(this.solution);
+		this.result = OldMainJava.eval(this.solution);
 	}
 
 	public int[] getSolution() {

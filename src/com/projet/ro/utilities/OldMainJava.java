@@ -1,10 +1,10 @@
-
+package com.projet.ro.utilities;
 /**
  *
  * Minimal examples for the project in JAVA
  *
  */
-package com.projet.ro;
+
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -21,13 +21,12 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.projet.ro.classes.Solution;
-import com.projet.ro.utilities.FileClass;
 
 /**
  * @author verel
  * @date 2015/11/07
  */
-public class MainJava {
+public class OldMainJava {
 	// Distance between photos
 	public static double[][] photoDist;
 

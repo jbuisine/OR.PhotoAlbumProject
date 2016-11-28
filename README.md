@@ -2,7 +2,9 @@
 
 ### Synopsis
 
-The aim of this project is a to create a photo album dynamically with the most possible coherences. For this we will use algorithms of local and evolutionary searches seen in formation.
+Le but du projet est de permettre la création automatique d'un album photo. Pour cela, plusieurs critères ont été évalué dans le but d'être optimisé. Il faut donc au travers d'algorithmes de recherches locales notamment ceux vus en cours pour permettre un rendu de l'optimum souhaité.
+
+Le projet sera développé en Java & de Scala dans le but de profiter du paradigme fonctionnel composé par ce second langage.
 
 ### Description
 
@@ -33,6 +35,31 @@ où fichier.sol est le fichier contenant une solution de disposition
 
 python buildAlbum.py
 utilise par défaut le fichier data/chronologic-order.sol
+
+
+### Installation
+
+Il s'agit d'un projet Eclipse, pour cela il vous suffit de cloner le Repository au sein d'Eclipse.
+
+Il faudra ensuite configurer le projet après son import via le Repository : 
+
+```
+Properties > Java Build Path > Libraries > Add library > JRE System Library
+```
+
+Mettre en place la library Scala :
+
+```
+Properties > Java Build Path > Libraries > Add library > Scala Library Container
+```
+
+Ajout du jar permettant la lecture de fichier JSON :
+
+```
+Properties > Java Build Path > Libraries > Add external jar > ./lib/json-simple-1.1.1.jar
+```
+
+Pour lancer l'application, il suffira d'exécuter le fichier **Main.scala** en tant que Scala Application.
 
 ### Contributors
 
