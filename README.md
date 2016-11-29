@@ -39,9 +39,10 @@ utilise par défaut le fichier data/chronologic-order.sol
 
 ### Installation
 
-Il s'agit d'un projet Eclipse, pour cela il vous suffit de cloner le Repository au sein d'Eclipse.
+Il s'agit d'un projet Eclipse, pour cela il vous suffit de cloner le Repository au sein d'Eclipse et d'importer le projet.
 
-Il faudra ensuite configurer le projet après son import via le Repository : 
+Il faudra ensuite installer le plugin **Scala** IDE disponible dans le marketplace et configurer le projet : 
+
 
 ```
 Properties > Java Build Path > Libraries > Add library > JRE System Library

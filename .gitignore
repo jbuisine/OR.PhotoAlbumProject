@@ -4,3 +4,4 @@ bin/*
 .settings/
 .class
 .DS_Store
+/bin/

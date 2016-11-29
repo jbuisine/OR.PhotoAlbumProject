@@ -4,17 +4,33 @@ import com.projet.ro.utilities._
 
 object Main{
   
-  def photoDist = Array[Array[Double]]()
-  def albumInvDist =  Array[Array[Double]]()
-  
   val df = new java.text.DecimalFormat("0.##");
+  val pathPhoto = "data/info-photo.json";
+  val pathAlbum = "data/info-album.json";
+  val solFile = "fichier.sol";
+  val nbPhotos = 55;
 
   
   def main(args: Array[String]): Unit = {
-    val file = new FileClass("fichier.sol")
-    //photoDist = Array.ofDim[Double](2,3)
-    file.writeLine(getValue, false)
-    println("Hello World")
+    
+    
+    ComputeAlbum.init(pathPhoto, pathAlbum);
+    
+    var arr = ComputeAlbum.generateRandomSolution(nbPhotos);
+    println(arr.size);
+    
+    arr.foreach { x => println(x) }
+    println(ComputeAlbum.eval(arr));
+  }
+  
+  
+  def hillClimberFirstImrovment(arr: Array[Int]): Array[Int] = {
+    var array = arr;
+    if(array == null){
+      array = ComputeAlbum.generateRandomSolution(nbPhotos);
+    }
+   
+    return arr;
   }
   
   def getValue(): String = {
