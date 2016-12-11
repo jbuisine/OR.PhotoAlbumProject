@@ -2,9 +2,9 @@
 
 ### Synopsis
 
-Le but du projet est de permettre la création automatique d'un album photo. Pour cela, plusieurs critères ont été évalué dans le but d'être optimisé. Il faut donc au travers d'algorithmes de recherches locales notamment ceux vus en cours pour permettre un rendu de l'optimum souhaité.
+Le but du projet est de permettre la création automatique d'un album photo. Pour cela, plusieurs critères ont été évalué dans le but d'être optimisé. Il faut donc au travers d'algorithmes de recherches locales notamment ceux vus en cours, obtenir une solution dans le but d'obtenir un rendu de proche d'une solution optimale.
 
-Le projet sera développé en Java & de Scala dans le but de profiter du paradigme fonctionnel composé par ce second langage.
+Le projet sera développé en Java pour la lecture de fichiers & en Scala par la suite, dans le but de profiter du paradigme fonctionnel composé par ce second langage.
 
 ### Description
 
