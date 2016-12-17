@@ -5,7 +5,6 @@ package com.projet.ro.utilities;
  *
  */
 
-
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -30,9 +29,10 @@ public class ComputeAlbum {
 
 	private static DecimalFormat df = new java.text.DecimalFormat("0.##");
 
-	public static void init(String pathPhoto, String pathAlbum){
+	public static void init(String pathPhoto, String pathAlbum) {
 		computeDistances(pathPhoto, pathAlbum);
 	}
+
 	/**
 	 *
 	 * Example of json file parsing
@@ -201,7 +201,7 @@ public class ComputeAlbum {
 	 */
 	public static double eval(int[] solution) {
 		double sum = 0;
-		
+
 		for (int i = 0; i < albumInvDist.length; i++) {
 			for (int j = i + 1; j < albumInvDist.length; j++) {
 				sum += photoDist[solution[i]][solution[j]] * albumInvDist[i][j];
@@ -210,7 +210,7 @@ public class ComputeAlbum {
 
 		return sum;
 	}
-	
+
 	/**
 	 * Generate random solution with permutations of int value
 	 *
@@ -232,7 +232,26 @@ public class ComputeAlbum {
 		}
 		return randomArray;
 	}
-	
+
+	/**
+	 * Method used to do mutation into elements
+	 *
+	 * @param number
+	 *            with ceil number
+	 */
+	public static void pertubationIterated(int[] solution, int number, scala.util.Random r) {
+
+		int nbMutations = r.nextInt(number) + 1;
+		for (int i = 0; i < nbMutations; i++) {
+			int oldValue = 0;
+			int firstBoxElement = r.nextInt(solution.length);
+			int secondBoxElement = r.nextInt(solution.length);
+			oldValue = solution[firstBoxElement];
+			solution[firstBoxElement] = solution[secondBoxElement];
+			solution[secondBoxElement] = oldValue;
+		}
+	}
+
 	/**
 	 * Method which wrote into the file & generate the order
 	 *
