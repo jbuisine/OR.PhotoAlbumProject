@@ -24,7 +24,8 @@ object Main {
     var ILS = IteratedLocalSearch(nbPhotos, 10000, 1000, 10)
     println("ILS -> ", ComputeAlbum.eval(ILS))
     
-    GeneticEvolutionnaryAlgorithm(100, 50, nbPhotos, 3000, 1000, 100, 20);
+    var EA = GeneticEvolutionnaryAlgorithm(100, 20, nbPhotos, 3000, 1000, 100, 20);
+    println("EA -> ", ComputeAlbum.eval(EA))
   }
 
   /**
@@ -140,17 +141,18 @@ object Main {
     // Generate all parents solutions to start the algorithm
     var parentsSolutions = MutableList[Array[Int]]()
     
-    for (i <- 1 to mu) {
+    for (i <- 0 to mu - 1) {
       parentsSolutions += ComputeAlbum.generateRandomSolution(numberElements)
     }
+    println(parentsSolutions.length)
       
     // Loop which defined the stop search (Iteration number)
-    for(i <- 0 to iteration){
+    for(i <- 0 to iteration - 1){
       var genitorsSolutions = MutableList[Array[Int]]()
       
-      for(j <- 0 to lambda){
-        var firstSelectedIndex = rand.nextInt(parentsSolutions.length);
-				var secondSelectedIndex = rand.nextInt(parentsSolutions.length);
+      for(j <- 0 to lambda - 1){
+        var firstSelectedIndex = rand.nextInt(parentsSolutions.length-1);
+				var secondSelectedIndex = rand.nextInt(parentsSolutions.length-1);
 				
 				if(ComputeAlbum.eval(parentsSolutions(firstSelectedIndex)) >= ComputeAlbum.eval(parentsSolutions(secondSelectedIndex))){
 				  genitorsSolutions += parentsSolutions(firstSelectedIndex)
@@ -162,14 +164,14 @@ object Main {
       
       // Do variations on Genitors like mutation & HC
 			// Mutation needs make probability
-			for (j <- 0 to genitorsSolutions.length) {
+			for (j <- 0 to genitorsSolutions.length - 1) {
 
 				// Do permutation
 				ComputeAlbum.pertubationIterated(genitorsSolutions(j), numberOfPermutations, rand);
 
 				// Make hill climber on the current solution to improve the
 				// genitor solution
-				for (k <- 0 to numberOfHc) {
+				for (k <- 0 to numberOfHc - 1) {
 					var currentSolution = HillClimberFirstImprovment(genitorsSolutions(j).length, 1000,
 							genitorsSolutions(j).clone())
 
@@ -182,7 +184,7 @@ object Main {
 			// Get the best between old parents & Genitors to make Survivors
 
 			// First of all we need to add all children
-			for(j <- 0 to lambda) {
+			for(j <- 0 to lambda - 1) {
 				parentsSolutions += genitorsSolutions(j);
 			}
 
@@ -190,9 +192,8 @@ object Main {
 			parentsSolutions = parentsSolutions.sortWith((x, y) => ComputeAlbum.eval(x) < ComputeAlbum.eval(y))
 
 			// Remove all elements without good result for the next step
-			for (j <- 0 to parentsSolutions.length) {
-				parentsSolutions = parentsSolutions.filterNot { elem  => elem == parentsSolutions(j) };
-			}
+			parentsSolutions = parentsSolutions.take(mu)
+			
 			System.out.println("Genetic evolutionary algorithm : " + df.format(i * 100.0 / iteration) + "%");
  
     }
