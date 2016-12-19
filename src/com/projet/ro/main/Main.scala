@@ -18,24 +18,24 @@ object Main {
     //Initialize problem modelisation
     ComputeAlbum.init(pathPhoto, pathAlbum)
 
-    var HC = HillClimberFirstImprovment(nbPhotos, 10000, null)
+    var HC = HillClimberFirstImprovement(nbPhotos, 10000, null)
     println("HC -> ", ComputeAlbum.eval(HC))
-    
+
     var ILS = IteratedLocalSearch(nbPhotos, 10000, 1000, 10)
     println("ILS -> ", ComputeAlbum.eval(ILS))
-    
+
     var EA = GeneticEvolutionnaryAlgorithm(100, 20, nbPhotos, 3000, 1000, 100, 20);
     println("EA -> ", ComputeAlbum.eval(EA))
   }
 
   /**
-   * HillClimber First improvment method used to get best local solution
+   * HillClimber First improvement method used to get best local solution
    * @param numberElements
    * @param iteratioe
    * @param arr
    * @return best solution
    */
-  def HillClimberFirstImprovment(numberElements: Int, iteration: Int, arr: Array[Int]): Array[Int] = {
+  def HillClimberFirstImprovement(numberElements: Int, iteration: Int, arr: Array[Int]): Array[Int] = {
     var solution = arr
 
     if (solution == null) {
@@ -88,7 +88,7 @@ object Main {
 
     return solution
   }
-  
+
   /**
 	 * Method which used the iteratedLocalSearch solution to find a solution
 	 *
@@ -100,29 +100,29 @@ object Main {
   def IteratedLocalSearch(numberElements: Int, iteration: Int, iterationHillClimber: Int, perturbation: Int): Array[Int] = {
     var random = Random
     var solution = ComputeAlbum.generateRandomSolution(numberElements)
-    
-    HillClimberFirstImprovment(numberElements, iterationHillClimber, solution)
-    
+
+    HillClimberFirstImprovement(numberElements, iterationHillClimber, solution)
+
     var bestResult = ComputeAlbum.eval(solution)
     var i = 0
-    
+
     do{
       ComputeAlbum.pertubationIterated(solution, perturbation, random)
-      
-      var currentSolution = HillClimberFirstImprovment(numberElements, iterationHillClimber, solution)
-      
+
+      var currentSolution = HillClimberFirstImprovement(numberElements, iterationHillClimber, solution)
+
       var currentResult = ComputeAlbum.eval(currentSolution)
-      
+
       if(currentResult < bestResult)
         solution = currentSolution
-       
+
       i+=1
-      
+
     } while(i < iteration)
-    
+
     return solution
   }
-  
+
   /**
 	 * Method which used the genetic evolutionary algorithm
 	 *
@@ -135,25 +135,25 @@ object Main {
 	 * @return best solution object found
 	 */
   def GeneticEvolutionnaryAlgorithm(mu: Int, lambda: Int, numberElements: Int, iteration: Int, hillClimberIteration: Int, numberOfHc: Int, numberOfPermutations: Int): Array[Int] = {
-  
+
     var rand = Random
-    
+
     // Generate all parents solutions to start the algorithm
     var parentsSolutions = MutableList[Array[Int]]()
-    
+
     for (i <- 0 to mu - 1) {
       parentsSolutions += ComputeAlbum.generateRandomSolution(numberElements)
     }
     println(parentsSolutions.length)
-      
+
     // Loop which defined the stop search (Iteration number)
     for(i <- 0 to iteration - 1){
       var genitorsSolutions = MutableList[Array[Int]]()
-      
+
       for(j <- 0 to lambda - 1){
         var firstSelectedIndex = rand.nextInt(parentsSolutions.length-1);
 				var secondSelectedIndex = rand.nextInt(parentsSolutions.length-1);
-				
+
 				if(ComputeAlbum.eval(parentsSolutions(firstSelectedIndex)) >= ComputeAlbum.eval(parentsSolutions(secondSelectedIndex))){
 				  genitorsSolutions += parentsSolutions(firstSelectedIndex)
 				}
@@ -161,7 +161,7 @@ object Main {
 				  genitorsSolutions += parentsSolutions(secondSelectedIndex)
 				}
       }
-      
+
       // Do variations on Genitors like mutation & HC
 			// Mutation needs make probability
 			for (j <- 0 to genitorsSolutions.length - 1) {
@@ -172,7 +172,7 @@ object Main {
 				// Make hill climber on the current solution to improve the
 				// genitor solution
 				for (k <- 0 to numberOfHc - 1) {
-					var currentSolution = HillClimberFirstImprovment(genitorsSolutions(j).length, 1000,
+					var currentSolution = HillClimberFirstImprovement(genitorsSolutions(j).length, 1000,
 							genitorsSolutions(j).clone())
 
 					if (ComputeAlbum.eval(currentSolution) < ComputeAlbum.eval(genitorsSolutions(j))) {
@@ -180,7 +180,7 @@ object Main {
 					}
 				}
 			}
-			
+
 			// Get the best between old parents & Genitors to make Survivors
 
 			// First of all we need to add all children
@@ -193,9 +193,9 @@ object Main {
 
 			// Remove all elements without good result for the next step
 			parentsSolutions = parentsSolutions.take(mu)
-			
+
 			System.out.println("Genetic evolutionary algorithm : " + df.format(i * 100.0 / iteration) + "%");
- 
+
     }
     //parentsSolutions.foreach { x => println(ComputeAlbum.eval(x)) }
     return parentsSolutions(0);
