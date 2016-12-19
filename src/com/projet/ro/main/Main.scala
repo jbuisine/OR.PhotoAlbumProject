@@ -13,19 +13,39 @@ object Main {
   val solFile = "fichier.sol"
   val nbPhotos = 55
 
+  /**
+   * Main method which throws all algorithms
+ 	 * @param args
+	 */
   def main(args: Array[String]): Unit = {
 
+    val solutionFile = "fichier.sol"
+    
     //Initialize problem modelisation
-    ComputeAlbum.init(pathPhoto, pathAlbum)
+    Modelisation.init(pathPhoto, pathAlbum)
 
-    var HC = HillClimberFirstImprovement(nbPhotos, 10000, null)
-    println("HC -> ", ComputeAlbum.eval(HC))
+    /*
+     * First objective function
+     */
+    //var HC = HillClimberFirstImprovement(nbPhotos, 10000, null, Modelisation.firstEval)
+    //println("HC -> ", Modelisation.firstEval(HC))
 
-    var ILS = IteratedLocalSearch(nbPhotos, 10000, 1000, 10)
-    println("ILS -> ", ComputeAlbum.eval(ILS))
+    //var ILS = IteratedLocalSearch(nbPhotos, 10000, 1000, 10, Modelisation.firstEval)
+    //println("ILS -> ", Modelisation.firstEval(ILS))
 
-    var EA = GeneticEvolutionnaryAlgorithm(100, 20, nbPhotos, 3000, 1000, 100, 20);
-    println("EA -> ", ComputeAlbum.eval(EA))
+    /*
+     * Second objective function
+     */
+    var HC2 = HillClimberFirstImprovement(nbPhotos, 10000, null, Modelisation.secondEval)
+    println("HC -> ", Modelisation.secondEval(HC2))
+
+    var ILS2 = IteratedLocalSearch(nbPhotos, 10000, 1000, 10, Modelisation.secondEval)
+    println("ILS -> ", Modelisation.secondEval(ILS2))
+    
+    var EA2 = GeneticEvolutionnaryAlgorithm(100, 20, nbPhotos, 3000, 1000, 100, 20, Modelisation.secondEval);
+    println("EA -> ", Modelisation.secondEval(EA2))
+    
+    Modelisation.writeSolution(solutionFile, EA2)
   }
 
   /**
@@ -35,14 +55,14 @@ object Main {
    * @param arr
    * @return best solution
    */
-  def HillClimberFirstImprovement(numberElements: Int, iteration: Int, arr: Array[Int]): Array[Int] = {
+  def HillClimberFirstImprovement (numberElements: Int, iteration: Int, arr: Array[Int], eval: (Array[Int]) => Double): Array[Int] = {
     var solution = arr
 
     if (solution == null) {
-      solution = ComputeAlbum.generateRandomSolution(nbPhotos)
+      solution = Modelisation.generateRandomSolution(nbPhotos)
     }
 
-    var bestResult = ComputeAlbum.eval(solution)
+    var bestResult = eval(solution)
 
     val random = Random;
     val inner = new Breaks;
@@ -67,7 +87,7 @@ object Main {
           solution(firstRandomValue) = solution(secondRandomValue)
           solution(secondRandomValue) = temporyValue
 
-          result = ComputeAlbum.eval(solution)
+          result = eval(solution)
 
           if (result < bestResult)
             inner.break
@@ -97,21 +117,21 @@ object Main {
 	 * @param perturbation
 	 * @return the best solution
 	 */
-  def IteratedLocalSearch(numberElements: Int, iteration: Int, iterationHillClimber: Int, perturbation: Int): Array[Int] = {
+  def IteratedLocalSearch(numberElements: Int, iteration: Int, iterationHillClimber: Int, perturbation: Int, eval: (Array[Int]) => Double): Array[Int] = {
     var random = Random
-    var solution = ComputeAlbum.generateRandomSolution(numberElements)
+    var solution = Modelisation.generateRandomSolution(numberElements)
 
-    HillClimberFirstImprovement(numberElements, iterationHillClimber, solution)
+    HillClimberFirstImprovement(numberElements, iterationHillClimber, solution, eval)
 
-    var bestResult = ComputeAlbum.eval(solution)
+    var bestResult = eval(solution)
     var i = 0
 
     do{
-      ComputeAlbum.pertubationIterated(solution, perturbation, random)
+      Modelisation.pertubationIterated(solution, perturbation, random)
 
-      var currentSolution = HillClimberFirstImprovement(numberElements, iterationHillClimber, solution)
+      var currentSolution = HillClimberFirstImprovement(numberElements, iterationHillClimber, solution, eval)
 
-      var currentResult = ComputeAlbum.eval(currentSolution)
+      var currentResult = eval(currentSolution)
 
       if(currentResult < bestResult)
         solution = currentSolution
@@ -134,7 +154,7 @@ object Main {
 	 * @param numberOfPermutations
 	 * @return best solution object found
 	 */
-  def GeneticEvolutionnaryAlgorithm(mu: Int, lambda: Int, numberElements: Int, iteration: Int, hillClimberIteration: Int, numberOfHc: Int, numberOfPermutations: Int): Array[Int] = {
+  def GeneticEvolutionnaryAlgorithm(mu: Int, lambda: Int, numberElements: Int, iteration: Int, hillClimberIteration: Int, numberOfHc: Int, numberOfPermutations: Int, eval: (Array[Int]) => Double): Array[Int] = {
 
     var rand = Random
 
@@ -142,7 +162,7 @@ object Main {
     var parentsSolutions = MutableList[Array[Int]]()
 
     for (i <- 0 to mu - 1) {
-      parentsSolutions += ComputeAlbum.generateRandomSolution(numberElements)
+      parentsSolutions += Modelisation.generateRandomSolution(numberElements)
     }
     println(parentsSolutions.length)
 
@@ -154,7 +174,7 @@ object Main {
         var firstSelectedIndex = rand.nextInt(parentsSolutions.length-1);
 				var secondSelectedIndex = rand.nextInt(parentsSolutions.length-1);
 
-				if(ComputeAlbum.eval(parentsSolutions(firstSelectedIndex)) >= ComputeAlbum.eval(parentsSolutions(secondSelectedIndex))){
+				if(eval(parentsSolutions(firstSelectedIndex)) >= eval(parentsSolutions(secondSelectedIndex))){
 				  genitorsSolutions += parentsSolutions(firstSelectedIndex)
 				}
 				else {
@@ -167,15 +187,15 @@ object Main {
 			for (j <- 0 to genitorsSolutions.length - 1) {
 
 				// Do permutation
-				ComputeAlbum.pertubationIterated(genitorsSolutions(j), numberOfPermutations, rand);
+				Modelisation.pertubationIterated(genitorsSolutions(j), numberOfPermutations, rand);
 
 				// Make hill climber on the current solution to improve the
 				// genitor solution
 				for (k <- 0 to numberOfHc - 1) {
 					var currentSolution = HillClimberFirstImprovement(genitorsSolutions(j).length, 1000,
-							genitorsSolutions(j).clone())
+							genitorsSolutions(j).clone(), eval)
 
-					if (ComputeAlbum.eval(currentSolution) < ComputeAlbum.eval(genitorsSolutions(j))) {
+					if (eval(currentSolution) < eval(genitorsSolutions(j))) {
 						genitorsSolutions(j) = currentSolution
 					}
 				}
@@ -189,15 +209,15 @@ object Main {
 			}
 
 			// Used to order list of solution by result
-			parentsSolutions = parentsSolutions.sortWith((x, y) => ComputeAlbum.eval(x) < ComputeAlbum.eval(y))
+			parentsSolutions = parentsSolutions.sortWith((x, y) => eval(x) < eval(y))
 
 			// Remove all elements without good result for the next step
 			parentsSolutions = parentsSolutions.take(mu)
 
-			System.out.println("Genetic evolutionary algorithm : " + df.format(i * 100.0 / iteration) + "%");
+			println("Genetic evolutionary algorithm : " + df.format(i * 100.0 / iteration) + "%");
 
     }
-    //parentsSolutions.foreach { x => println(ComputeAlbum.eval(x)) }
+    
     return parentsSolutions(0);
   }
 
