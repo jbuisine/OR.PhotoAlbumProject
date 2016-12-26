@@ -22,30 +22,21 @@ object Main {
     val solutionFile = "fichier.sol"
     
     //Initialize problem modelisation
-    Modelisation.init(pathPhoto, pathAlbum)
+    Modelisation.init(pathPhoto, pathAlbum, "phashdist")
 
-    /*
-     * First objective function
-     */
-    //var HC = HillClimberFirstImprovement(nbPhotos, 10000, null, Modelisation.firstEval)
-    //println("HC -> ", Modelisation.firstEval(HC))
-
-    //var ILS = IteratedLocalSearch(nbPhotos, 10000, 1000, 10, Modelisation.firstEval)
-    //println("ILS -> ", Modelisation.firstEval(ILS))
-
-    /*
-     * Second objective function
-     */
-    var HC2 = HillClimberFirstImprovement(nbPhotos, 10000, null, Modelisation.secondEval)
-    println("HC -> ", Modelisation.secondEval(HC2))
-
-    var ILS2 = IteratedLocalSearch(nbPhotos, 10000, 1000, 10, Modelisation.secondEval)
-    println("ILS -> ", Modelisation.secondEval(ILS2))
+    //Objective function choice    
+    var f: (Array[Int]) => Double = Modelisation.tagsEval;
     
-    var EA2 = GeneticEvolutionnaryAlgorithm(100, 20, nbPhotos, 3000, 1000, 100, 20, Modelisation.secondEval);
-    println("EA -> ", Modelisation.secondEval(EA2))
+    var HC = HillClimberFirstImprovement(nbPhotos, 1000, null, f)
+    println("HC -> ", f(HC))
+
+    var ILS = IteratedLocalSearch(nbPhotos, 1000, 100, 10, f)
+    println("ILS -> ", f(ILS))
+   
+    var EA = GeneticEvolutionnaryAlgorithm(100, 20, nbPhotos, 300, 100, 100, 20, f);
+    println("EA -> ", f(EA))
     
-    Modelisation.writeSolution(solutionFile, EA2)
+    Modelisation.writeSolution(solutionFile, EA)
   }
 
   /**
@@ -164,7 +155,7 @@ object Main {
     for (i <- 0 to mu - 1) {
       parentsSolutions += Modelisation.generateRandomSolution(numberElements)
     }
-    println(parentsSolutions.length)
+    //println(parentsSolutions.length)
 
     // Loop which defined the stop search (Iteration number)
     for(i <- 0 to iteration - 1){
