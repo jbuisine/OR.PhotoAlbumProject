@@ -22,18 +22,19 @@ object Main {
     val solutionFile = "fichier.sol"
     
     //Initialize problem modelisation
-    Modelisation.init(pathPhoto, pathAlbum, "phashdist")
+    Modelisation.init(pathPhoto, pathAlbum, "ahashdist")
 
     //Objective function choice    
-    var f: (Array[Int]) => Double = Modelisation.tagsEval;
-    
-    var HC = HillClimberFirstImprovement(nbPhotos, 1000, null, f)
-    println("HC -> ", f(HC))
+    var f: (Array[Int]) => Double = Modelisation.hashEval;
 
-    var ILS = IteratedLocalSearch(nbPhotos, 1000, 100, 10, f)
+    var HC = HillClimberFirstImprovement(nbPhotos, 10000, null, f)
+    println("HC -> ", f(HC))
+    
+
+    var ILS = IteratedLocalSearch(nbPhotos, 1000, 10000, 5, f)
     println("ILS -> ", f(ILS))
    
-    var EA = GeneticEvolutionnaryAlgorithm(100, 20, nbPhotos, 300, 100, 100, 20, f);
+    var EA = GeneticEvolutionnaryAlgorithm(50, 20, nbPhotos, 100, 10000, 100, 5, f);
     println("EA -> ", f(EA))
     
     Modelisation.writeSolution(solutionFile, EA)
@@ -46,8 +47,14 @@ object Main {
    * @param arr
    * @return best solution
    */
-  def HillClimberFirstImprovement (numberElements: Int, iteration: Int, arr: Array[Int], eval: (Array[Int]) => Double): Array[Int] = {
+
+  def HillClimberFirstImprovement (numberElements: Int, nbEval: Int, arr: Array[Int], eval: (Array[Int]) => Double): Array[Int] = {
     var solution = arr
+    var index = 0;
+    var i = 0
+    
+    val random = Random
+    val inner = new Breaks
 
     if (solution == null) {
       solution = Modelisation.generateRandomSolution(nbPhotos)
@@ -55,48 +62,37 @@ object Main {
 
     var bestResult = eval(solution)
 
-    val random = Random;
-    val inner = new Breaks;
+    while (i < nbEval){
+      var result = 0.0;
 
-    var next = true
-    var i = 0
-
-    do {
-      var result = 0.0
-      var firstRandomValue = 0
-      var secondRandomValue = 0
-      var temporyValue = 0
-
-      var j = 0
 
       inner.breakable {
         for (j <- 0 to numberElements) {
-          firstRandomValue = random.nextInt(solution.length)
-          secondRandomValue = random.nextInt(solution.length)
+        
+          val firstRandomValue = random.nextInt(solution.length)
+          val secondRandomValue = random.nextInt(solution.length)
 
-          temporyValue = solution(firstRandomValue)
+          val temporyValue = solution(firstRandomValue)
           solution(firstRandomValue) = solution(secondRandomValue)
           solution(secondRandomValue) = temporyValue
 
           result = eval(solution)
+          i+=1
 
-          if (result < bestResult)
+          if (result < bestResult){
+            
             inner.break
+          }
 
           solution(secondRandomValue) = solution(firstRandomValue)
           solution(firstRandomValue) = temporyValue
         }
       }
-
-      if (result < bestResult)
+      
+      if (result < bestResult){
         bestResult = result
-      else
-        next = false
-
-      i += 1
-
-    } while (next && i < iteration)
-
+      }
+    } 
     return solution
   }
 
@@ -110,28 +106,30 @@ object Main {
 	 */
   def IteratedLocalSearch(numberElements: Int, iteration: Int, iterationHillClimber: Int, perturbation: Int, eval: (Array[Int]) => Double): Array[Int] = {
     var random = Random
-    var solution = Modelisation.generateRandomSolution(numberElements)
-
-    HillClimberFirstImprovement(numberElements, iterationHillClimber, solution, eval)
+    var solution = HillClimberFirstImprovement(numberElements, iterationHillClimber, Modelisation.generateRandomSolution(numberElements), eval)
 
     var bestResult = eval(solution)
+    var bestSolution = solution.clone();
     var i = 0
 
     do{
       Modelisation.pertubationIterated(solution, perturbation, random)
+      
+      val currentSolution = HillClimberFirstImprovement(numberElements, iterationHillClimber, solution.clone(), eval)
 
-      var currentSolution = HillClimberFirstImprovement(numberElements, iterationHillClimber, solution, eval)
+      val currentResult = eval(currentSolution)
 
-      var currentResult = eval(currentSolution)
-
-      if(currentResult < bestResult)
-        solution = currentSolution
-
+      if(currentResult < bestResult){
+        bestResult = currentResult
+        bestSolution = currentSolution.clone()
+        solution = bestSolution.clone();
+      }
+      
       i+=1
-
+      println("ILS -> "+ i*100.0/iteration + "%")
     } while(i < iteration)
 
-    return solution
+    return bestSolution
   }
 
   /**

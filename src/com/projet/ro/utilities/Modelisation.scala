@@ -19,7 +19,8 @@ object Modelisation {
   private var photoDist: Array[Array[Double]] = _
   
   // Tags of all photos
-  private var photoTags: Array[Map[String,Double]] = _
+  private var photoTagsName: Array[Array[String]] = _
+  private var photoTagsValue: Array[Array[Double]] = _
 
   private var albumInvDist: Array[Array[Double]] = _
 
@@ -139,13 +140,15 @@ object Modelisation {
       val obj = parser.parse(reader)
       val array = obj.asInstanceOf[JSONArray]
       val nbTags: Int = array.get(0).asInstanceOf[JSONObject].get("tags").asInstanceOf[JSONObject].get("classes").asInstanceOf[JSONArray].size
-      photoTags = Array.ofDim[Map[String,Double]](array.size)
+      photoTagsValue = Array.ofDim[Double](array.size(), nbTags)
+      photoTagsName = Array.ofDim[String](array.size(), nbTags)
       for (i <- 0 until array.size) {
-        photoTags(i) = collection.immutable.Map[String, Double]()
         val tags = array.get(i).asInstanceOf[JSONObject].get("tags").asInstanceOf[JSONObject].get("classes").asInstanceOf[JSONArray]
         val probs = array.get(i).asInstanceOf[JSONObject].get("tags").asInstanceOf[JSONObject].get("probs").asInstanceOf[JSONArray]
         for (j <- 0 until nbTags) {
-          photoTags(i) += (tags.get(j).toString() -> probs.get(j).toString().toDouble)
+          
+          photoTagsName(i)(j) = tags.get(j).toString();
+          photoTagsValue(i)(j) = probs.get(j).toString().toDouble;
         }
       }
     } catch {
@@ -197,19 +200,20 @@ object Modelisation {
    */
   def tagsEval(solution: Array[Int]): Double = {
     var sum : Double = 0
-    for (i <- 0 until photoTags.length -1) {
+    for (i <- 0 until photoTagsName.length -1) {
       var count: Int = 0
       var currentSum: Double = 0
       
       //Get sum of all sames tags
-      photoTags(solution(i)).foreach( x => photoTags(solution(i+1)).foreach(y => {
-        if(x._1 == y._1){
-          count += 1;
-          currentSum += Math.abs(x._2 - y._2)
+      for(j <- 0 until photoTagsName(i).length -1){
+        for(k <- 0 until photoTagsValue(i).length -1){
+          if(photoTagsName(solution(i))(j) == photoTagsName(solution(i+1))(k)){
+            count += 1;
+            currentSum += math.abs(photoTagsValue(solution(i))(j) - photoTagsValue(solution(i+1))(k))
+          }
         }
-      }));
-      
-      //Priviligie les éléments avec plus de tags commun en divisant par count avant d'ajouter la somme
+      }
+      //Priviligie les éléments avec plus de tags commun entre eux par count avant d'ajouter la somme
       if(count != 0)
         sum += currentSum/count; 
     }
@@ -235,7 +239,7 @@ object Modelisation {
   }
 
   def pertubationIterated(solution: Array[Int], number: Int, r: scala.util.Random) {
-    val nbMutations = r.nextInt(number) + 1
+    val nbMutations = number
     for (i <- 0 until nbMutations) {
       var oldValue = 0
       val firstBoxElement = r.nextInt(solution.length)
