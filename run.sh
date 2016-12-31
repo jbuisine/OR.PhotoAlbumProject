@@ -5,7 +5,10 @@ if [ ! -d "compile" ]; then
   mkdir compile
 fi
 
-echo "Compiling scala code..."
-scalac -d compile -cp bin:lib/json-simple-1.1.1.jar -sourcepath src src/*.scala
+if [ "0" != "$1" ]; then
+  echo "Compiling scala code..."
+  scalac -d compile -cp bin:lib/json-simple-1.1.1.jar -sourcepath src src/*.scala
+fi
+
 echo "Start executing code..."
 scala -cp compile:lib/json-simple-1.1.1.jar Main

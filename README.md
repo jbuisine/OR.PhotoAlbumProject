@@ -16,7 +16,7 @@ Le projet sera développé en Scala dans le but de profiter du paradigme fonctio
 
 -------------------
 Liste des fichiers :
-
+- prj1-ro.pdf                 : fichier comprennant la description plus détaillée du projet
 - buildAlbum.py               : code python permettant de créer les pages web avec l'album à partir d'un fichier de solution
 - html                        : dossier pour recevoir les pages web avec l'album
 - html/img/*.jpg              : les 55 photos au format jpg de l'album photo
@@ -82,12 +82,18 @@ Puis de l'éxécuter via la commande scala :
 scala -cp compile:lib/json-simple-1.1.1.jar Main
 ```
 
-Il est aussi possible d'exécuter le code vi le script __run.sh__ de la façon suivante :
+### Script BASH
+
+Il est aussi possible d'exécuter le code via le script __run.sh__ de la façon suivante :
 
 ```
 sh run.sh
 ```
+En ajoutant le paramètre 0 on exécute uniquement le code :
 
+```
+sh run.sh 0
+```
 ### Contributors
 
 * [jbuisine] (https://github.com/jbuisine)

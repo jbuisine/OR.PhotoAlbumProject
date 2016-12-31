@@ -18,14 +18,29 @@ object Modelisation {
   // Tags of all photos
   private var photoTagsName: Array[Array[String]] = _
   private var photoTagsValue: Array[Array[Double]] = _
+  
+  // Grey AVG values
+  private var photoGreyAVG: Array[Int] = _
 
   private var albumInvDist: Array[Array[Double]] = _
 
   private var df: DecimalFormat = new java.text.DecimalFormat("0.##")
 
-  def init(pathPhoto: String, pathAlbum: String, attribute: String) {
+  def initHash(pathPhoto: String, pathAlbum: String, attribute: String) {
     computeDistances(pathPhoto, pathAlbum, attribute)
     computePhotoTags(pathPhoto)
+  }
+  
+  def initTags(pathPhoto: String) {
+    computePhotoTags(pathPhoto)
+  }
+  
+  def initColors(pathPhoto: String){
+    
+  }
+  
+  def initGreyAvg(pathPhoto: String){
+    computePhotoGreyAVG(pathPhoto)
   }
 
   /**
@@ -68,6 +83,10 @@ object Modelisation {
     computeAlbumDistances(albumFileName)
   }
 
+  /**
+   * Function which loads distances
+ 	 * @param fileName
+ 	 */
   private def computeAlbumDistances(fileName: String) {
     try {
       val reader = new FileReader(fileName)
@@ -129,7 +148,36 @@ object Modelisation {
       case ex: IOException => ex.printStackTrace()
     }
   }
+  
+  /**
+   * Method which loads Grey AVG values
+ 	 * @param fileName
+ 	 */
+  private def computePhotoGreyAVG(fileName: String) {
+    try {
+      val reader = new FileReader(fileName)
+      val parser = new JSONParser()
+      val obj = parser.parse(reader)
+      val array = obj.asInstanceOf[JSONArray]
+      photoGreyAVG = Array.ofDim[Int](array.size)
+      for (i <- 0 until array.size) {
+        val image = array.get(i).asInstanceOf[JSONObject]
+        photoGreyAVG(i) = image.get("greyavg").toString().toInt 
+      }
+    } catch {
+      case pe: ParseException => {
+        println("position: " + pe.getPosition)
+        println(pe)
+      }
+      case ex: FileNotFoundException => ex.printStackTrace()
+      case ex: IOException => ex.printStackTrace()
+    }
+  }
 
+  /**
+   * Method which loads tags values
+ 	 * @param fileName
+ 	 */
   private def computePhotoTags(fileName: String) {
     try {
       val reader = new FileReader(fileName)
@@ -144,8 +192,8 @@ object Modelisation {
         val probs = array.get(i).asInstanceOf[JSONObject].get("tags").asInstanceOf[JSONObject].get("probs").asInstanceOf[JSONArray]
         for (j <- 0 until nbTags) {
           
-          photoTagsName(i)(j) = tags.get(j).toString();
-          photoTagsValue(i)(j) = probs.get(j).toString().toDouble;
+          photoTagsName(i)(j) = tags.get(j).toString()
+          photoTagsValue(i)(j) = probs.get(j).toString().toDouble
         }
       }
     } catch {
@@ -172,7 +220,7 @@ object Modelisation {
    * Cette fonction se basera sur les différents tags fournis dans le fichier JSON soit :
    * - ahashdist : average hash
    * - phashdist : perspective hash
-   * - dhashdist : différence hash
+   * - dhashdist : difference hash
    * 
    * Ce paramètre sera fournit lors de l'initialisation de la classe.
    * 
@@ -188,12 +236,15 @@ object Modelisation {
   }
   
   /**
-   * Fourth objective function
+   * New objective function
    * 
-   * Fonction qui va calculer les différence entre les différents tags commun 
+   * For each photos into a solution : 
+   * Compute absolute difference between commons tag between photo n & n+1
+   * 
+   * After that returns the score of the solution
    * 
    * @param solution
-   * @return
+   * @return score
    */
   def tagsEval(solution: Array[Int]): Double = {
     var sum : Double = 0
@@ -215,6 +266,40 @@ object Modelisation {
         sum += currentSum/count; 
     }
     sum
+  }
+  
+  /**
+   * For each photos of solution :
+   * Evaluates the difference between color 1 & 2 between photo n and n+1
+   * 
+   * Finally function gave the solution score
+   * 
+   * @param solution
+   * @return score
+   */
+  def colorsEval(solution: Array[Int]) :Double = {
+    
+    //val d1=math.sqrt((r2-r1)*(r2-r1)+(g2-g1)*(g2-g1)+(b2-b1)*(b2-b1))
+    //val d2=math.sqrt((r2-r1)*(r2-r1)+(g2-g1)*(g2-g1)+(b2-b1)*(b2-b1))
+    return 0.0;
+  }
+  
+  /**
+ 	 * For each photos of solution :
+   * Evaluates the difference between grey AVG between photo n and n+1
+   * 
+   * Finally function gave the solution score   
+   *
+   * @param solution
+   * @return score
+   */
+  def greyAVGEval(solution: Array[Int]) :Double = {
+    
+    var sum = 0
+    for (i <- 0 until photoGreyAVG.length -1) {
+      sum += math.abs(photoGreyAVG(solution(i)) - photoGreyAVG(solution(i+1))) 
+    }
+    return sum
   }
 
   /**
