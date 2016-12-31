@@ -2,9 +2,9 @@
 
 ### Synopsis
 
-Le but du projet est de permettre la création automatique d'un album photo. Pour cela, plusieurs critères ont été évalué dans le but d'être optimisé. Il faut donc au travers d'algorithmes de recherches locales notamment ceux vus en cours, obtenir une solution dans le but d'obtenir un rendu de proche d'une solution optimale.
+Le but du projet est de permettre la création automatique d'un album photo. Pour cela, plusieurs critères ont été évalué dans le but d'être optimisé. Il faut donc au travers d'algorithmes de recherche locale notamment ceux vus en cours, obtenir une solution proche d'un rendu d'une solution optimale.
 
-Le projet sera développé en Java pour la lecture de fichiers & en Scala par la suite, dans le but de profiter du paradigme fonctionnel composé par ce second langage.
+Le projet sera développé en Scala dans le but de profiter du paradigme fonctionnel composé par ce langage.
 
 ### Description
 
@@ -24,7 +24,7 @@ Liste des fichiers :
 - data/info-photo.json        : information sur les 55 photos au format json
 - data/info-album.json        : information sur les 9 pages de l'album
 - data/chronologic-order.sol  : fichier contenant une solution de disposition des photos de l'album (par ordre chronologique)
-- src : dossier du code scala donnant un exemple de lecture des données et de fonction d'évaluation
+- src : dossier du code scala donnant un exemple de lecture des données et de fonction d'évaluation. Il comprendra également l'ensemble des nouvelles fonctions d'évaluation développées.
 
 
 -------------------
