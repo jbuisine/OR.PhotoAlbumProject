@@ -5,3 +5,4 @@ bin/*
 .class
 .DS_Store
 /bin/
+compile

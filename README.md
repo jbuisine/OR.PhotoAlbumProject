@@ -41,7 +41,7 @@ utilise par défaut le fichier data/chronologic-order.sol
 
 Il s'agit d'un projet Eclipse, pour cela il vous suffit de cloner le Repository au sein d'Eclipse et d'importer le projet.
 
-Il faudra ensuite installer le plugin **Scala** IDE disponible dans le marketplace et configurer le projet : 
+Il faudra ensuite installer le plugin **Scala** IDE disponible dans le marketplace et configurer le projet :
 
 
 ```
@@ -61,6 +61,32 @@ Properties > Java Build Path > Libraries > Add external jar > ./lib/json-simple-
 ```
 
 Pour lancer l'application, il suffira d'exécuter le fichier **Main.scala** en tant que Scala Application.
+
+### Command Line
+
+Création du dossier 'compile' qui comprendra le code compilé et évitera les conflits de compilation avec Eclipse :
+
+```
+mkdir compile
+```
+
+Pour lancer l'application en ligne de commande il suffit dans un premier temps de compiler le code :
+
+```
+scalac -d compile -cp bin:lib/json-simple-1.1.1.jar -sourcepath src src/*.scala
+```
+
+Puis de l'éxécuter via la commande scala :
+
+```
+scala -cp compile:lib/json-simple-1.1.1.jar Main
+```
+
+Il est aussi possible d'exécuter le code vi le script __run.sh__ de la façon suivante :
+
+```
+sh run.sh
+```
 
 ### Contributors
 

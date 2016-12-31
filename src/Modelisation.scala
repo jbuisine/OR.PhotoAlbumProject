@@ -1,4 +1,3 @@
-package com.projet.ro.utilities
 
 import java.io.FileNotFoundException
 import java.io.FileReader
@@ -9,9 +8,7 @@ import org.json.simple.JSONArray
 import org.json.simple.JSONObject
 import org.json.simple.parser.JSONParser
 import org.json.simple.parser.ParseException
-//remove if not needed
 import scala.collection.JavaConversions._
-import com.projet.ro.classes.FileClass
 
 object Modelisation {
 

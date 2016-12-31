@@ -1,6 +1,4 @@
-package com.projet.ro.main
 
-import com.projet.ro.utilities._
 import scala.util.control.Breaks
 import scala.util.Random
 import scala.collection.mutable.MutableList
@@ -25,7 +23,7 @@ object Main {
     Modelisation.init(pathPhoto, pathAlbum, "ahashdist")
 
     //Objective function choice    
-    var f: (Array[Int]) => Double = Modelisation.hashEval;
+    var f: (Array[Int]) => Double = Modelisation.tagsEval;
 
     var HC = HillClimberFirstImprovement(nbPhotos, 10000, null, f)
     println("HC -> ", f(HC))
@@ -97,7 +95,7 @@ object Main {
   }
 
   /**
-	 * Method which used the iteratedLocalSearch solution to find a solution
+	 * Method which used the iterated local search algorithm to find a better solution
 	 *
 	 * @param numberElements
 	 * @param iteration
@@ -133,7 +131,7 @@ object Main {
   }
 
   /**
-	 * Method which used the genetic evolutionary algorithm
+	 * Method which implements the genetic evolutionary algorithm
 	 *
 	 * @param mu
 	 * @param lambda
