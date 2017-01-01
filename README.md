@@ -89,11 +89,24 @@ Il est aussi possible d'exécuter le code via le script __run.sh__ de la façon 
 ```
 sh run.sh
 ```
-En ajoutant le paramètre 0 on exécute uniquement le code :
+En ajoutant le paramètre 'build' on compile et exécute le code :
 
 ```
-sh run.sh 0
+sh run.sh build
 ```
+
+En ajoutant le paramètre 'show' on exécute le code et génère l'album :
+
+```
+sh run.sh show
+```
+
+En ajoutant les paramètres 'build' & 'show' on compile, exécute le code et génère l'album :
+
+```
+sh run.sh build show
+```
+
 ### Contributors
 
 * [jbuisine] (https://github.com/jbuisine)

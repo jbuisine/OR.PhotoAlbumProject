@@ -35,6 +35,7 @@ object Main {
 
     val hashTypes = Array("ahashdist", "phashdist", "dhashdist")
 
+    // Choices variables
     var functionChoice = "";
     var hashChoice = "";
     var algorithmChoice = "";
@@ -122,13 +123,13 @@ object Main {
 
     algorithmChoice.toInt match {
       case 1 =>
-        var solution = HillClimberFirstImprovement(nbPhotos, 10000, null, f)
+        solution = HillClimberFirstImprovement(nbPhotos, 10000, null, f)
         println("HC -> " + f(solution))
       case 2 =>
-        var solution = IteratedLocalSearch(nbPhotos, 1000, 10000, 5, f)
+        solution = IteratedLocalSearch(nbPhotos, 1000, 10000, 5, f)
         println("ILS -> " + f(solution))
       case 3 =>
-        var solution = GeneticEvolutionnaryAlgorithm(50, 20, nbPhotos, 100, 10000, 100, 5, f);
+        solution = GeneticEvolutionnaryAlgorithm(50, 20, nbPhotos, 100, 10000, 100, 5, f);
         println("EA -> " + f(solution))
     }
     Modelisation.writeSolution(solutionFile, solution)
@@ -141,7 +142,6 @@ object Main {
    * @param arr
    * @return best solution
    */
-
   def HillClimberFirstImprovement(numberElements: Int, nbEval: Int, arr: Array[Int], eval: (Array[Int]) => Double): Array[Int] = {
     var solution = arr
     var index = 0;
