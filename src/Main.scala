@@ -36,7 +36,7 @@ object Main {
     var bestSolution = Array[Int](nbPhotos)
     var bestResult = Double.PositiveInfinity
 
-    val numberFunction = 4;
+    val numberFunction = 5;
     val numberAlgo = 3;
 
     //Objective function
@@ -53,8 +53,9 @@ object Main {
       "Which type of objective function do you want to use ?" +
         "\n1. Hash function objective (You need later to select between aHash, pHash & dHash attributes)" +
         "\n2. Tags function objective" +
-        "\n3. Colors function objective" +
-        "\n4. Grey AVG function objective " +
+        "\n3. Commons Tags function objective" +
+        "\n4. Colors function objective" +
+        "\n5. Grey AVG function objective " +
         "\n\n";
     functionChoice = getScannerValue(functionQuestion, "function", 0, numberFunction)
 
@@ -74,12 +75,15 @@ object Main {
         Modelisation.initHash(pathPhoto, pathAlbum, hashTypes(hashChoice.toInt - 1))
         f = Modelisation.hashEval
       case 2 =>
-        Modelisation.initTags(pathPhoto)
+        Modelisation.initTags(pathPhoto, pathAlbum)
         f = Modelisation.tagsEval
       case 3 =>
+        Modelisation.initTags(pathPhoto, pathAlbum)
+        f = Modelisation.tagsCommons
+      case 4 =>
         Modelisation.initColors(pathPhoto)
         f = Modelisation.colorsEval
-      case 4 =>
+      case 5 =>
         Modelisation.initGreyAvg(pathPhoto)
         f = Modelisation.greyAVGEval
     }
@@ -99,7 +103,7 @@ object Main {
 
         val repetitionQuestion = "\nBefore starting your configured HC algorithm, please indicate how many times you want to execute it. (Between 0 and 1000000)" + 
                                  "\n1. If you choose to saved solution, by default best solution found of these repetitions will be saved." +
-                                 "\n2. Futhermore, if you decide to save number of evaluation and score of solution found, each results are saved"
+                                 "\n2. Futhermore, if you decide to save number of evaluation and score of solution found, each results are saved."
                                  
         val numberRepetition = getScannerValue(repetitionQuestion, " number of repetitions", 0, 1000000)
         
@@ -107,11 +111,12 @@ object Main {
         if(numberRepetition > 0){
           
           for(i <- 0 until numberRepetition){
+            nbEvaluation = 0
             println("\n--------------------------------------------------------------------------------------------")
             println("("+(i+1)+") HC algorithm starts search one of the best solution... It will take few seconds or more...")
             println("---------------------------------------------------------------------------------------------\n")
             solution = HillClimberFirstImprovement(nbPhotos, numberEvaluation, null, f)
-            println("\n("+(i+1)+")HC better score found -> " + f(solution))
+            println("\n("+(i+1)+") HC better score found -> " + f(solution))
             
             if(bestResult > f(solution)){
               bestResult = f(solution)
@@ -155,18 +160,19 @@ object Main {
          
         val repetitionQuestion = "\nBefore starting your configured ILS algorithm, please indicate how many times you want to execute it. (Between 0 and 1000000)" + 
                                  "\n1. If you choose to saved solution, by default best solution found of these repetitions will be saved." +
-                                 "\n2. Futhermore, if you decide to save number of evaluation and score of solution found, each results are saved"
+                                 "\n2. Futhermore, if you decide to save number of evaluation and score of solution found, each results are saved."
                                  
         val numberRepetition = getScannerValue(repetitionQuestion, " number of repetitions", 0, 1000000)
         
         if(numberRepetition > 0){
           
           for(i <- 0 until numberRepetition){
+            nbEvaluation = 0
             println("\n------------------------------------------------------------------------------------------")
             println("("+(i+1)+") ILS algorithm starts search one of the best solution... It will take few minutes")
             println("------------------------------------------------------------------------------------------\n")
             solution = IteratedLocalSearch(nbPhotos, numberIteration, numberEvaluation, numberPermutation + 1, f)
-            println("\n("+(i+1)+")ILS better score found -> " + f(solution))
+            println("\n("+(i+1)+") ILS better score found -> " + f(solution))
             
             if(bestResult > f(solution)){
               bestResult = f(solution)
@@ -222,7 +228,7 @@ object Main {
 
         val repetitionQuestion = "\nBefore starting your configured EA algorithm, please indicate how many times you want to execute it. (Between 0 and 1000000)" + 
                                  "\n1. If you choose to saved solution, by default best solution found of these repetitions will be saved." +
-                                 "\n2. Futhermore, if you decide to save number of evaluation and score of solution found, each results are saved"
+                                 "\n2. Futhermore, if you decide to save number of evaluation and score of solution found, each results are saved."
                                  
         val numberRepetition = getScannerValue(repetitionQuestion, " number of repetitions", 0, 1000000)
         
@@ -230,12 +236,13 @@ object Main {
         if(numberRepetition > 0){
           
           for(i <- 0 until numberRepetition){
+            nbEvaluation = 0
             println("\n--------------------------------------------------------------------------------------------")
             println("("+(i+1)+") EA algorithm starts search one of the best solution... It will take few minutes or more...")
             println("---------------------------------------------------------------------------------------------\n")
             solution = GeneticEvolutionnaryAlgorithm(mu, lambda, nbPhotos, numberIteration, numberEvaluation, hcNumber, numberPermutation, f);
        
-            println("\n("+(i+1)+")EA better score found -> " + f(solution))
+            println("\n("+(i+1)+") EA better score found -> " + f(solution))
             
             if(bestResult > f(solution)){
               bestResult = f(solution)

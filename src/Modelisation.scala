@@ -105,7 +105,7 @@ object Modelisation {
   }
 
   /**
-   * Function which loads distances
+   * Function which load and compute distances
    * @param fileName
    */
   private def computeAlbumDistances(fileName: String) {
@@ -332,6 +332,32 @@ object Modelisation {
     }
     sum
   }
+  
+  /**
+   * @param solution
+   * @return
+   */
+  def tagsCommons(solution: Array[Int]): Double = {
+    var sum: Double = 0
+    for (i <- 0 until photoTagsName.length - 1) {
+      var count: Int = 0
+      var currentSum: Double = 0
+
+      //Get sum of all sames tags
+      for (j <- 0 until photoTagsName(i).length - 1) {
+        for (k <- 0 until photoTagsValue(i).length - 1) {
+          if (photoTagsName(solution(i))(j) == photoTagsName(solution(j))(k)) {
+            count += 1;
+            currentSum += math.abs(photoTagsValue(solution(i))(j) - photoTagsValue(solution(j))(k))
+          }
+        }
+      }
+      //Divide current sum by number of commons tags and add it to the sum
+      if (count != 0)
+        sum += currentSum / count;
+    }
+    sum
+  }
 
   /**
    * New objective function
@@ -455,6 +481,6 @@ object Modelisation {
     }
     
     file.writeLine(line, true)
-    println(s"Evaluation(s) saved into $filename")
+    println(s"Evaluation saved into $filename")
   }
 }
