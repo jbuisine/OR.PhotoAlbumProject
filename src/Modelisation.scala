@@ -408,7 +408,7 @@ object Modelisation {
    * @param r
    */
   def pertubationIterated(solution: Array[Int], number: Int, r: scala.util.Random) {
-    val nbMutations = number
+    val nbMutations = r.nextInt(number)+1
     for (i <- 0 until nbMutations) {
       var oldValue = 0
       val firstBoxElement = r.nextInt(solution.length)

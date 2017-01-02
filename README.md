@@ -4,7 +4,7 @@
 
 Le but du projet est de permettre la création automatique d'un album photo. Pour cela, plusieurs critères ont été évalué dans le but d'être optimisé. Il faut donc au travers d'algorithmes de recherche locale notamment ceux vus en cours, obtenir une solution proche d'un rendu d'une solution optimale.
 
-Le projet sera développé en Scala dans le but de profiter du paradigme fonctionnel composé par ce langage.
+Le projet sera développé en Scala dans le but de profiter du paradigme de programmation fonctionnelle proposé par ce langage.
 
 ### Description
 
@@ -37,7 +37,7 @@ python buildAlbum.py
 utilise par défaut le fichier data/chronologic-order.sol
 
 
-### Installation
+### Installation avec Eclipse
 
 Il s'agit d'un projet Eclipse, pour cela il vous suffit de cloner le Repository au sein d'Eclipse et d'importer le projet.
 
@@ -64,7 +64,9 @@ Pour lancer l'application, il suffira d'exécuter le fichier **Main.scala** en t
 
 ### Command Line
 
-Création du dossier 'compile' qui comprendra le code compilé et évitera les conflits de compilation avec Eclipse :
+Dans un premier temps, il vous faut installer [scala] (https://www.scala-lang.org/download/install.html)
+
+Création du dossier 'compile' qui comprendra le code compilé et évitera les conflits des fichiers compilés par Eclipse :
 
 ```
 mkdir compile

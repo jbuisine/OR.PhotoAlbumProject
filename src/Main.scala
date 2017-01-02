@@ -12,6 +12,12 @@ object Main {
   val pathAlbum = "data/info-album.json"
   val solFile = "fichier.sol"
   val nbPhotos = 55
+  val scanner = new java.util.Scanner(System.in)
+
+  // Choices variables
+  var functionChoice: Int = _;
+  var hashChoice: Int = _;
+  var algorithmChoice: Int = _;
 
   /**
    * Main method which throws all algorithms
@@ -20,7 +26,6 @@ object Main {
   def main(args: Array[String]): Unit = {
 
     //Sanner utility object
-    val scanner = new java.util.Scanner(System.in)
     val breaker = new Breaks
 
     //File where solution is writed
@@ -35,53 +40,23 @@ object Main {
 
     val hashTypes = Array("ahashdist", "phashdist", "dhashdist")
 
-    // Choices variables
-    var functionChoice = "";
-    var hashChoice = "";
-    var algorithmChoice = "";
-
-    var checkFuncChoice = false;
-    do {
-      println("Which type of objective function do you want to use ?" +
+    val functionQuestion =
+      "Which type of objective function do you want to use ?" +
         "\n1. Hash function objective (You need later to select between aHash, pHash & dHash attributes)" +
-        "\n2. Tags function objective"+
-        "\n3. Colors function objective"+
-        "\n4. Grey AVG function objective");
-      functionChoice = scanner.nextLine();
-      Try(functionChoice.toInt) match {
-        case Success(num) => {
-          if (num <= 0 || num > numberFunction)
-            println("Number written does not exist into the list")
-          else
-            checkFuncChoice = true;
-        }
-        case Failure(thrown) => {
-          println("Error, please select another function choice")
-        }
-      }
-    } while (!checkFuncChoice)
+        "\n2. Tags function objective" +
+        "\n3. Colors function objective" +
+        "\n4. Grey AVG function objective " +
+        "\n\n";
+    functionChoice = getScannerValue(functionQuestion, "function", 0, numberFunction)
 
-    if (functionChoice.toInt == 1) {
-      var attributeChoice = false;
-      do {
+    if (functionChoice == 1) {
 
-        println("Which type of attributes do you want ?" +
-          "\n1. Average hash" +
-          "\n2. Perspective hash" +
-          "\n3. Difference hash");
-        hashChoice = scanner.nextLine();
-        Try(hashChoice.toInt) match {
-          case Success(num) => {
-            if (num <= 0 || num > hashTypes.length)
-              println("Number written does not exist into the list")
-            else
-              attributeChoice = true;
-          }
-          case Failure(f) => {
-            println("Error, please select another attribute choice")
-          }
-        }
-      } while (!attributeChoice)
+      val hashQuestion = "Which type of attributes do you want ?" +
+        "\n1. Average hash" +
+        "\n2. Perspective hash" +
+        "\n3. Difference hash" +
+        "\n\n";
+      hashChoice = getScannerValue(hashQuestion, "hash attribute", 0, hashTypes.length)
     }
 
     //Initialize problem modelisation
@@ -100,37 +75,86 @@ object Main {
         f = Modelisation.greyAVGEval
     }
 
-    var checkAlgoChoice = false;
-    do {
-
-      println("Which type of algorithm do you want to executes ?" +
-        "\n1. Hill Climber First Improvment" +
-        "\n2. Iterated Local Search" +
-        "\n3. Evolutionary Algorithm");
-      algorithmChoice = scanner.nextLine();
-      Try(algorithmChoice.toInt) match {
-        case Success(num) => {
-          if (num <= 0 || num > numberAlgo)
-            println("Number written does not exist into the list")
-          else
-            checkAlgoChoice = true;
-        }
-        case Failure(f) => {
-          println("Error, please select another algorithm choice")
-        }
-      }
-    } while (!checkAlgoChoice)
+    val algorithmQuestion = "Which type of algorithm do you want to executes ?" +
+      "\n1. Hill Climber First Improvment" +
+      "\n2. Iterated Local Search" +
+      "\n3. Evolutionary Algorithm" +
+      "\n\n";
+    algorithmChoice = getScannerValue(algorithmQuestion, "algorithm", 0, numberAlgo)
 
     algorithmChoice.toInt match {
-      case 1 =>
-        solution = HillClimberFirstImprovement(nbPhotos, 10000, null, f)
-        println("HC -> " + f(solution))
-      case 2 =>
-        solution = IteratedLocalSearch(nbPhotos, 1000, 10000, 5, f)
-        println("ILS -> " + f(solution))
-      case 3 =>
-        solution = GeneticEvolutionnaryAlgorithm(50, 20, nbPhotos, 100, 10000, 100, 5, f);
-        println("EA -> " + f(solution))
+      case 1 => {
+
+        val iterationQuestion = "Please select number of evaluation you want for you HC (between 1 and 100000)"
+        val numberEvaluation = getScannerValue(iterationQuestion, "number of iteration", 1, 100000)
+
+        println("\n------------------------------------------------------------------------------------------")
+        println("HC algorithm starts search one of the best solution... It will take few seconds or more...")
+        println("------------------------------------------------------------------------------------------\n")
+        solution = HillClimberFirstImprovement(nbPhotos, numberEvaluation, null, f)
+
+        println("\nHC better score found -> " + f(solution))
+      }
+      case 2 => {
+        val ilsQuestion = "This algorithm need some paramaters : " +
+          "\n1. Number of iteration for ILS (between 1 and 100000)" +
+          "\n2. Number of evaluation for all HC (between 1 and 100000)" +
+          "\n3. Number of maximum elements you want to permute for each solution (between 1 and " + nbPhotos + ")" +
+          "\n\n"
+        println(ilsQuestion)
+
+        val iterationQuestion = "1. So, please select number of iteration for ILS"
+        val numberIteration = getScannerValue(iterationQuestion, "number of iteration", 1, 100000)
+
+        val evaluationQuestion = "2. Select number of evaluation for all HC"
+        val numberEvaluation = getScannerValue(evaluationQuestion, "number of evaluation", 1, 100000)
+
+        val permutationQuestion = "3. Select number of maximum elements permuted for each solution"
+        val numberPermutation = getScannerValue(permutationQuestion, "number of permutation", 1, nbPhotos)
+
+        println("\n------------------------------------------------------------------------------------------")
+        println("ILS algorithm starts search one of the best solution... It will take few minutes")
+        println("------------------------------------------------------------------------------------------\n")
+        solution = IteratedLocalSearch(nbPhotos, numberIteration, numberEvaluation, numberPermutation + 1, f)
+        println("\nILS better score found-> " + f(solution))
+      }
+      case 3 => {
+
+        val eaQuestion = "This algorithm need some paramaters : " +
+          "\n1. Number of mu (parents) elements (between 1 and 1000)" +
+          "\n2. Number of lambda (children) elements (between 1 and 1000)" +
+          "\n3. Number of iteration for EA algorithm (between 1 and 100000) " +
+          "\n4. Number of evaluation for each HC (between 1 and 100000)" +
+          "\n5. Number of HC you want to do for each genitors (same number of lambda) solutions (between 1 and 100000)" +
+          "\n6. Number of maximum elements you want to permute for each solution (between 1 and " + nbPhotos + ")" +
+          "\n\n"
+        println(eaQuestion)
+
+        val muQuestion = "1. So, please select number of mu elements"
+        val mu = getScannerValue(muQuestion, "number of mu", 1, 1000)
+
+        val lambdaQuestion = "2. Select number of lambda elements"
+        val lambda = getScannerValue(lambdaQuestion, "number of lambda", 1, 1000)
+
+        val iterationQuestion = "3. Select number of iteration you want for EA"
+        val numberIteration = getScannerValue(iterationQuestion, "number of iteration", 1, 100000)
+
+        val evaluationQuestion = "4. Select number of evaluation for all HC"
+        val numberEvaluation = getScannerValue(evaluationQuestion, "number of evaluation", 1, 100000)
+
+        val hcQuestion = "5. Select number of evaluation for all HC"
+        val hcNumber = getScannerValue(hcQuestion, "number of HC", 1, 100000)
+
+        val permutationQuestion = "6. Select number of maximum elements permuted for each solution"
+        val numberPermutation = getScannerValue(permutationQuestion, "number of elements to permute", 1, nbPhotos)
+
+        println("\n------------------------------------------------------------------------------------------")
+        println("EA algorithm starts search one of the best solution... It will take few minutes or more...")
+        println("------------------------------------------------------------------------------------------\n")
+
+        solution = GeneticEvolutionnaryAlgorithm(mu, lambda, nbPhotos, numberIteration, numberEvaluation, hcNumber, numberPermutation, f);
+        println("\nEA better score found -> " + f(solution))
+      }
     }
     Modelisation.writeSolution(solutionFile, solution)
   }
@@ -138,7 +162,7 @@ object Main {
   /**
    * HillClimber First improvement method used to get best local solution
    * @param numberElements
-   * @param iteratioe
+   * @param nbEval
    * @param arr
    * @return best solution
    */
@@ -194,21 +218,23 @@ object Main {
    *
    * @param numberElements
    * @param iteration
+   * @param nbEvaluationHillClimber
    * @param perturbation
    * @return the best solution
    */
-  def IteratedLocalSearch(numberElements: Int, iteration: Int, iterationHillClimber: Int, perturbation: Int, eval: (Array[Int]) => Double): Array[Int] = {
+  def IteratedLocalSearch(numberElements: Int, iteration: Int, nbEvaluationHillClimber: Int, perturbation: Int, eval: (Array[Int]) => Double): Array[Int] = {
     var random = Random
-    var solution = HillClimberFirstImprovement(numberElements, iterationHillClimber, Modelisation.generateRandomSolution(numberElements), eval)
+    var solution = HillClimberFirstImprovement(numberElements, nbEvaluationHillClimber, Modelisation.generateRandomSolution(numberElements), eval)
 
     var bestResult = eval(solution)
     var bestSolution = solution.clone();
     var i = 0
+    var percentEvolution = ""
 
     do {
       Modelisation.pertubationIterated(solution, perturbation, random)
 
-      val currentSolution = HillClimberFirstImprovement(numberElements, iterationHillClimber, solution.clone(), eval)
+      val currentSolution = HillClimberFirstImprovement(numberElements, nbEvaluationHillClimber, solution.clone(), eval)
 
       val currentResult = eval(currentSolution)
 
@@ -219,7 +245,10 @@ object Main {
       }
 
       i += 1
-      println("ILS -> " + i * 100.0 / iteration + "%")
+
+      val lengthText = percentEvolution.length()
+      percentEvolution = "ILS -> " + df.format(i * 100.0 / iteration) + "%"
+      showEvolution(lengthText, percentEvolution)
     } while (i < iteration)
 
     return bestSolution
@@ -232,11 +261,11 @@ object Main {
    * @param lambda
    * @param numberElements
    * @param iteration
-   * @param hillClimberIteration
+   * @param nbEvaluationHillClimber
    * @param numberOfPermutations
    * @return best solution object found
    */
-  def GeneticEvolutionnaryAlgorithm(mu: Int, lambda: Int, numberElements: Int, iteration: Int, hillClimberIteration: Int, numberOfHc: Int, numberOfPermutations: Int, eval: (Array[Int]) => Double): Array[Int] = {
+  def GeneticEvolutionnaryAlgorithm(mu: Int, lambda: Int, numberElements: Int, iteration: Int, nbEvaluationHillClimber: Int, numberOfHc: Int, numberOfPermutations: Int, eval: (Array[Int]) => Double): Array[Int] = {
 
     var rand = Random
 
@@ -270,10 +299,9 @@ object Main {
         // Do permutation
         Modelisation.pertubationIterated(genitorsSolutions(j), numberOfPermutations, rand);
 
-        // Make hill climber on the current solution to improve the
-        // genitor solution
+        // Make hill climber on the current solution to improve the genitor solution
         for (k <- 0 to numberOfHc - 1) {
-          var currentSolution = HillClimberFirstImprovement(genitorsSolutions(j).length, 1000,
+          var currentSolution = HillClimberFirstImprovement(genitorsSolutions(j).length, nbEvaluationHillClimber,
             genitorsSolutions(j).clone(), eval)
 
           if (eval(currentSolution) < eval(genitorsSolutions(j))) {
@@ -282,7 +310,7 @@ object Main {
         }
       }
 
-      // Get the best between old parents & Genitors to make Survivors
+      // Get the best between old parents & Children to get Survivors
 
       // First of all we need to add all children
       for (j <- 0 to lambda - 1) {
@@ -295,11 +323,59 @@ object Main {
       // Remove all elements without good result for the next step
       parentsSolutions = parentsSolutions.take(mu)
 
-      println("Genetic evolutionary algorithm : " + df.format(i * 100.0 / iteration) + "%");
+      println("EA : " + df.format(i * 100.0 / iteration) + "%");
 
     }
 
     return parentsSolutions(0);
   }
 
+  /**
+   * Function which gets integer value until is not correct
+   * @param q
+   * @param failure type
+   * @param min : criteria of minimum value asked (included)
+   * @param max : criteria of maximum value asked (excluded)
+   * @return
+   */
+  def getScannerValue(q: String, failure: String, min: Int, max: Int): Int = {
+    var output = "";
+    var choice = false;
+    do {
+
+      println(q);
+      output = scanner.nextLine();
+      Try(output.toInt) match {
+        case Success(num) => {
+          if (num <= min || num > max)
+            println("Number written is not excepted")
+          else
+            choice = true;
+        }
+        case Failure(f) => {
+          println("Error, please select another " + failure)
+        }
+      }
+    } while (!choice)
+    output.toInt
+  }
+
+  /**
+   * Function which show evolution percentage of algorithm
+   * @param previousText
+   * @param text
+   */
+  def showEvolution(previousText: Int, text: String): Unit = {
+    var lengthContent = previousText
+    if (lengthContent < text.length()) {
+      lengthContent += text.length() - previousText
+
+    }
+    for (i <- 0 until lengthContent) {
+      print("\b")
+    }
+
+    print(text)
+    
+  }
 }
