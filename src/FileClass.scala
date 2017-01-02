@@ -23,6 +23,8 @@ class FileClass(nom: String) {
     fichierReader = new BufferedReader(new FileReader(fichier))
   } catch {
     case e: FileNotFoundException => println("File does not exist... Creation of the file...")
+    fichier.getParentFile().mkdirs();
+    //val writer = new FileWriter(fichier);
   }
 
   private def open() {
@@ -71,6 +73,6 @@ class FileClass(nom: String) {
     }
     check
   }
-
+  
   def fileExist(): Boolean = fichier.exists()
 }

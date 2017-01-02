@@ -435,4 +435,26 @@ object Modelisation {
     file.writeLine(line, false)
     println(s"Solution saved into $filename")
   }
+  
+  /**
+   * Function which writes number evaluation and result
+   *
+   * @param filename
+   * @param nbEval
+   * @param result
+   * @param solution
+   * @param bestSolution
+   */
+  def writeEvaluation(filename: String, nbEval: Int, result: Double, solution: Array[Int]) {
+    
+    val file = new FileClass("scores/"+filename)
+    var line = nbEval + "," + result + ","
+    
+    for(i <- 0 until solution.length){
+      line += solution(i) + " "
+    }
+    
+    file.writeLine(line, true)
+    println(s"Evaluation(s) saved into $filename")
+  }
 }

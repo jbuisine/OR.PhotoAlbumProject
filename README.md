@@ -24,6 +24,7 @@ Liste des fichiers :
 - data/info-photo.json        : information sur les 55 photos au format json
 - data/info-album.json        : information sur les 9 pages de l'album
 - data/chronologic-order.sol  : fichier contenant une solution de disposition des photos de l'album (par ordre chronologique)
+- scores		      : dossier comprenant les différents scores enregistrés afin de les comparer
 - src : dossier du code scala donnant un exemple de lecture des données et de fonction d'évaluation. Il comprendra également l'ensemble des nouvelles fonctions d'évaluation développées.
 
 
@@ -64,9 +65,9 @@ Pour lancer l'application, il suffira d'exécuter le fichier **Main.scala** en t
 
 ### Command Line
 
-Dans un premier temps, il vous faut installer [scala] (https://www.scala-lang.org/download/install.html)
+Dans un premier temps, afin de pouvoir compiler et exécuter du code scala, il vous faudra le [télécharger] (https://www.scala-lang.org/download/install.html) et installer. 
 
-Création du dossier 'compile' qui comprendra le code compilé et évitera les conflits des fichiers compilés par Eclipse :
+Création du dossier 'compile' qui comprendra le code binaire compilé et évitera les conflits des fichiers compilés au sein du dossier bin par l'IDE Eclipse :
 
 ```
 mkdir compile
