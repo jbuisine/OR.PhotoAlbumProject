@@ -11,6 +11,10 @@ import java.io.FileWriter
 import java.io.IOException
 import scala.collection.JavaConversions._
 
+/**
+ * @author j.buisine
+ *
+ */
 class FileClass(nom: String) {
 
   private var fichier: File = new File(nom)

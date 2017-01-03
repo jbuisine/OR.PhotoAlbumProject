@@ -10,24 +10,36 @@ import org.json.simple.parser.JSONParser
 import org.json.simple.parser.ParseException
 import scala.collection.JavaConversions._
 
+/**
+ * @author j.buisine
+ *
+ */
 object Modelisation {
 
-  // Distance between photos
+  // Different hash distances between photos
   private var photoDist: Array[Array[Double]] = _
   private var albumInvDist: Array[Array[Double]] = _
 
-  // Tags of all photos
-  private var photoTagsName: Array[Array[String]] = _
-  private var photoTagsValue: Array[Array[Double]] = _
+  // Tags values distances calculates between photos
+  private var photoDistancesCommonsTags: Array[Array[Double]] = _
+  private var photoDistancesUncommonsTags: Array[Array[Double]] = _
+  private var photoDistancesUncommonsNbTags: Array[Array[Double]] = _
 
-  // Most common colors
+  // Colors values distances calculates between photos
   private var photoColor1: Array[Array[Int]] = _
   private var photoColor2: Array[Array[Int]] = _
+  private var photoDistancesColors: Array[Array[Double]] = _
 
-  // Grey AVG values
+  // Grey AVG values distances calculates between photos
   private var photoGreyAVG: Array[Int] = _
+  private var photoDistancesGreyAVG: Array[Array[Double]] = _
 
   private var df: DecimalFormat = new java.text.DecimalFormat("0.##")
+  
+  //Public variable used for know how album is generated
+  // - Value true :  Based on page cohesion
+  // - Value false : Or just based on logical sequence of photo 
+  var formatAlbum = true;
 
   /**
    * Function used for init hash objective functions
@@ -44,7 +56,8 @@ object Modelisation {
    * Function used for init tags arrays
    * @param pathPhoto
    */
-  def initTags(pathPhoto: String) {
+  def initTags(pathPhoto: String, albumFileName: String) {
+    computeAlbumDistances(albumFileName)
     computePhotoTags(pathPhoto)
   }
 
@@ -62,37 +75,6 @@ object Modelisation {
    */
   def initGreyAvg(pathPhoto: String) {
     computePhotoGreyAVG(pathPhoto)
-  }
-
-  /**
-   *
-   * Example of json file parsing
-   *
-   * see: https://code.google.com/p/json-simple/ for more example to decode
-   * json under java
-   *
-   */
-  private def readPhotoExample(fileName: String) {
-    try {
-      val reader = new FileReader(fileName)
-      val parser = new JSONParser()
-      val obj = parser.parse(reader)
-      val array = obj.asInstanceOf[JSONArray]
-      println("The first element:\n" + array.get(0))
-      val obj2 = array.get(0).asInstanceOf[JSONObject]
-      println("the id of the first element is: " + obj2.get("id"))
-      val arraytag = obj2.get("tags").asInstanceOf[JSONObject].get("classes").asInstanceOf[JSONArray]
-      println("Tag list of the first element:")
-      for (i <- 0 until arraytag.size) System.out.print(" " + arraytag.get(i))
-      println()
-    } catch {
-      case pe: ParseException => {
-        println("position: " + pe.getPosition)
-        println(pe)
-      }
-      case ex: FileNotFoundException => ex.printStackTrace()
-      case ex: IOException => ex.printStackTrace()
-    }
   }
 
   /**
@@ -193,8 +175,13 @@ object Modelisation {
       val obj = parser.parse(reader)
       val array = obj.asInstanceOf[JSONArray]
       val nbTags: Int = array.get(0).asInstanceOf[JSONObject].get("tags").asInstanceOf[JSONObject].get("classes").asInstanceOf[JSONArray].size
-      photoTagsValue = Array.ofDim[Double](array.size(), nbTags)
-      photoTagsName = Array.ofDim[String](array.size(), nbTags)
+      var photoTagsValue = Array.ofDim[Double](array.size(), nbTags)
+      var photoTagsName = Array.ofDim[String](array.size(), nbTags)
+      photoDistancesCommonsTags = Array.ofDim[Double](array.size(), array.size())
+      photoDistancesUncommonsTags = Array.ofDim[Double](array.size(), array.size())
+      photoDistancesUncommonsNbTags = Array.ofDim[Double](array.size(), array.size())
+
+      //Get information of tags
       for (i <- 0 until array.size) {
         val tags = array.get(i).asInstanceOf[JSONObject].get("tags").asInstanceOf[JSONObject].get("classes").asInstanceOf[JSONArray]
         val probs = array.get(i).asInstanceOf[JSONObject].get("tags").asInstanceOf[JSONObject].get("probs").asInstanceOf[JSONArray]
@@ -202,6 +189,34 @@ object Modelisation {
 
           photoTagsName(i)(j) = tags.get(j).toString()
           photoTagsValue(i)(j) = probs.get(j).toString().toDouble
+        }
+      }
+
+      for (i <- 0 until array.size) {
+
+        //Get sum of all sames or differents tags
+        //Make two differents array 
+        // - One to minimize commons value
+        // - The other will be used fo minimize difference between each photos
+        for (j <- 0 until array.size) {
+
+          var uncommonSum = 0.0
+          var commonSum = 0.0
+          var nbCommonTag = 0
+          for (k <- 0 until nbTags; l <- 0 until nbTags) {
+            
+            if (photoTagsName(i)(l) != photoTagsName(j)(k))
+              uncommonSum += math.abs(photoTagsValue(i)(l) - photoTagsValue(j)(k))
+            else {
+              commonSum += math.abs(photoTagsValue(i)(l) - photoTagsValue(j)(k))
+              nbCommonTag += 1
+            }
+          }
+          photoDistancesUncommonsTags(i)(j) = uncommonSum
+          photoDistancesUncommonsNbTags(i)(j) = nbTags - nbCommonTag
+          
+          if (nbCommonTag > 0)
+            photoDistancesCommonsTags(i)(j) = commonSum / nbCommonTag
         }
       }
     } catch {
@@ -213,7 +228,7 @@ object Modelisation {
       case ex: IOException => ex.printStackTrace()
     }
   }
-  
+
   /**
    * Method which loads colors values of photos
    * @param fileName
@@ -231,7 +246,7 @@ object Modelisation {
         photoColor1(i)(0) = image.get("color1").asInstanceOf[JSONObject].get("r").toString().toInt
         photoColor1(i)(1) = image.get("color1").asInstanceOf[JSONObject].get("b").toString().toInt
         photoColor1(i)(2) = image.get("color1").asInstanceOf[JSONObject].get("g").toString().toInt
-        
+
         photoColor2(i)(0) = image.get("color2").asInstanceOf[JSONObject].get("r").toString().toInt
         photoColor2(i)(1) = image.get("color2").asInstanceOf[JSONObject].get("b").toString().toInt
         photoColor2(i)(2) = image.get("color2").asInstanceOf[JSONObject].get("g").toString().toInt
@@ -245,7 +260,7 @@ object Modelisation {
       case ex: IOException => ex.printStackTrace()
     }
   }
-  
+
   /**
    * Method which loads Grey AVG values
    * @param fileName
@@ -270,8 +285,22 @@ object Modelisation {
       case ex: IOException => ex.printStackTrace()
     }
   }
-  
 
+  
+  def eval (arr: Array[Array[Double]], solution: Array[Int]): Double = {
+    var sum: Double = 0
+    if(Modelisation.formatAlbum){
+      for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length) {
+        sum += arr(solution(i))(solution(j)) * albumInvDist(i)(j)
+      }
+    }else {
+      for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length) {
+        sum += arr(solution(i))(solution(j))
+      }
+    }
+    sum
+  }
+  
   /**
    *
    * Un exemple de fonction objectif (à minimiser): distance entre les photos
@@ -293,70 +322,37 @@ object Modelisation {
    * @return
    */
   def hashEval(solution: Array[Int]): Double = {
-    var sum: Double = 0
-    for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length) {
-      sum += photoDist(solution(i))(solution(j)) * albumInvDist(i)(j)
-    }
-    sum
+    eval(photoDist, solution)
   }
 
   /**
    * New objective function
    *
-   * For each photos into a solution :
-   * Compute absolute difference between commons tag between photo n & n+1
+   * For each photos into a solution 
    *
    * After that returns the score of the solution
    *
    * @param solution
    * @return score
    */
-  def tagsEval(solution: Array[Int]): Double = {
-    var sum: Double = 0
-    for (i <- 0 until photoTagsName.length - 1) {
-      var count: Int = 0
-      var currentSum: Double = 0
+  def commonsTagEval(solution: Array[Int]): Double = {
+    eval(photoDistancesCommonsTags, solution)
+  }
 
-      //Get sum of all sames tags
-      for (j <- 0 until photoTagsName(i).length - 1) {
-        for (k <- 0 until photoTagsValue(i).length - 1) {
-          if (photoTagsName(solution(i))(j) == photoTagsName(solution(i + 1))(k)) {
-            count += 1;
-            currentSum += math.abs(photoTagsValue(solution(i))(j) - photoTagsValue(solution(i + 1))(k))
-          }
-        }
-      }
-      //Divide current sum by number of commons tags and add it to the sum
-      if (count != 0)
-        sum += currentSum / count;
-    }
-    sum
+  /**
+   * @param solution
+   * @return
+   */
+  def uncommonsTagEval(solution: Array[Int]): Double = {
+    eval(photoDistancesUncommonsTags, solution)
   }
   
   /**
    * @param solution
    * @return
    */
-  def tagsCommons(solution: Array[Int]): Double = {
-    var sum: Double = 0
-    for (i <- 0 until photoTagsName.length - 1) {
-      var count: Int = 0
-      var currentSum: Double = 0
-
-      //Get sum of all sames tags
-      for (j <- 0 until photoTagsName(i).length - 1) {
-        for (k <- 0 until photoTagsValue(i).length - 1) {
-          if (photoTagsName(solution(i))(j) == photoTagsName(solution(j))(k)) {
-            count += 1;
-            currentSum += math.abs(photoTagsValue(solution(i))(j) - photoTagsValue(solution(j))(k))
-          }
-        }
-      }
-      //Divide current sum by number of commons tags and add it to the sum
-      if (count != 0)
-        sum += currentSum / count;
-    }
-    sum
+  def nbUnommonsTagEval(solution: Array[Int]): Double = {
+    eval(photoDistancesUncommonsNbTags, solution)
   }
 
   /**
@@ -373,18 +369,18 @@ object Modelisation {
   def colorsEval(solution: Array[Int]): Double = {
 
     var sum = 0.0;
-    for(i <- 0 until photoColor1.length-1){
-      val d1 = math.sqrt((photoColor1(solution(i))(0)-photoColor1(solution(i+1))(0))*(photoColor1(solution(i))(0)-photoColor1(solution(i+1))(0))
-          +(photoColor1(solution(i))(1)-photoColor1(solution(i+1))(1))*(photoColor1(solution(i))(1)-photoColor1(solution(i+1))(1))
-          +(photoColor1(solution(i))(2)-photoColor1(solution(i+1))(2))*(photoColor1(solution(i))(2)-photoColor1(solution(i+1))(2)))
-          
-      val d2 = math.sqrt((photoColor2(solution(i))(0)-photoColor2(solution(i+1))(0))*(photoColor2(solution(i))(0)-photoColor2(solution(i+1))(0))
-          +(photoColor2(solution(i))(1)-photoColor2(solution(i+1))(1))*(photoColor2(solution(i))(1)-photoColor2(solution(i+1))(1))
-          +(photoColor2(solution(i))(2)-photoColor2(solution(i+1))(2))*(photoColor2(solution(i))(2)-photoColor2(solution(i+1))(2)))
-          
+    for (i <- 0 until photoColor1.length - 1) {
+      val d1 = math.sqrt((photoColor1(solution(i))(0) - photoColor1(solution(i + 1))(0)) * (photoColor1(solution(i))(0) - photoColor1(solution(i + 1))(0))
+        + (photoColor1(solution(i))(1) - photoColor1(solution(i + 1))(1)) * (photoColor1(solution(i))(1) - photoColor1(solution(i + 1))(1))
+        + (photoColor1(solution(i))(2) - photoColor1(solution(i + 1))(2)) * (photoColor1(solution(i))(2) - photoColor1(solution(i + 1))(2)))
+
+      val d2 = math.sqrt((photoColor2(solution(i))(0) - photoColor2(solution(i + 1))(0)) * (photoColor2(solution(i))(0) - photoColor2(solution(i + 1))(0))
+        + (photoColor2(solution(i))(1) - photoColor2(solution(i + 1))(1)) * (photoColor2(solution(i))(1) - photoColor2(solution(i + 1))(1))
+        + (photoColor2(solution(i))(2) - photoColor2(solution(i + 1))(2)) * (photoColor2(solution(i))(2) - photoColor2(solution(i + 1))(2)))
+
       sum += d1 + d2;
     }
-    
+
     return sum;
   }
 
@@ -434,7 +430,7 @@ object Modelisation {
    * @param r
    */
   def pertubationIterated(solution: Array[Int], number: Int, r: scala.util.Random) {
-    val nbMutations = r.nextInt(number)+1
+    val nbMutations = r.nextInt(number) + 1
     for (i <- 0 until nbMutations) {
       var oldValue = 0
       val firstBoxElement = r.nextInt(solution.length)
@@ -461,7 +457,7 @@ object Modelisation {
     file.writeLine(line, false)
     println(s"Solution saved into $filename")
   }
-  
+
   /**
    * Function which writes number evaluation and result
    *
@@ -472,14 +468,14 @@ object Modelisation {
    * @param bestSolution
    */
   def writeEvaluation(filename: String, nbEval: Int, result: Double, solution: Array[Int]) {
-    
-    val file = new FileClass("scores/"+filename)
+
+    val file = new FileClass("scores/" + filename)
     var line = nbEval + "," + result + ","
-    
-    for(i <- 0 until solution.length){
+
+    for (i <- 0 until solution.length) {
       line += solution(i) + " "
     }
-    
+
     file.writeLine(line, true)
     println(s"Evaluation saved into $filename")
   }

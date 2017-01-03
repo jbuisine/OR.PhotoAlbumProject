@@ -5,6 +5,10 @@ import scala.collection.mutable.MutableList
 import scala.util.control.Breaks._
 import scala.util.{ Try, Success, Failure }
 
+/**
+ * @author j.buisine
+ *
+ */
 object Main {
 
   val df = new java.text.DecimalFormat("0.##")
@@ -19,6 +23,7 @@ object Main {
   var hashChoice: Int = _;
   var algorithmChoice: Int = _;
   var nbEvaluation = 0
+  var generationTypeChoice: Int = _
   var evaluationFile = ""
 
   /**
@@ -49,13 +54,32 @@ object Main {
         "\n2. Just to inform, files are saved into 'scores' folder.")
     evaluationFile = scanner.nextLine()
     
+    // - Value true :  Based on page cohesion
+  // - Value false : Or just based on logical sequence of photo 
+    
+    val generationTypeQuestion =
+      "Which type of generation do you want ?" +
+        "\n1. Based on page cohesion" +
+        "\n2. Based on logical sequence of photo. So without page cohesion" +
+        "\n\n";
+    generationTypeChoice = getScannerValue(generationTypeQuestion, " generation type", 0, 2)
+    
+    //Set type generation choice of the User
+    if (generationTypeChoice == 1) {
+      println("true")
+      Modelisation.formatAlbum = true;
+    }else {
+      Modelisation.formatAlbum = false;
+    }
+    
     val functionQuestion =
       "Which type of objective function do you want to use ?" +
         "\n1. Hash function objective (You need later to select between aHash, pHash & dHash attributes)" +
-        "\n2. Tags function objective" +
-        "\n3. Commons Tags function objective" +
-        "\n4. Colors function objective" +
-        "\n5. Grey AVG function objective " +
+        "\n2. Commons Tags value function objective" +
+        "\n3. Uncommons Tags value function objective" +
+        "\n4. Uncommons number of tag function objective" +
+        "\n5. Colors function objective" +
+        "\n6. Grey AVG function objective " +
         "\n\n";
     functionChoice = getScannerValue(functionQuestion, "function", 0, numberFunction)
 
@@ -76,14 +100,17 @@ object Main {
         f = Modelisation.hashEval
       case 2 =>
         Modelisation.initTags(pathPhoto, pathAlbum)
-        f = Modelisation.tagsEval
+        f = Modelisation.commonsTagEval
       case 3 =>
         Modelisation.initTags(pathPhoto, pathAlbum)
-        f = Modelisation.tagsCommons
+        f = Modelisation.uncommonsTagEval
       case 4 =>
+        Modelisation.initTags(pathPhoto, pathAlbum)
+        f = Modelisation.nbUnommonsTagEval
+      case 5 =>
         Modelisation.initColors(pathPhoto)
         f = Modelisation.colorsEval
-      case 5 =>
+      case 6 =>
         Modelisation.initGreyAvg(pathPhoto)
         f = Modelisation.greyAVGEval
     }
@@ -323,7 +350,7 @@ object Main {
         bestResult = result
       }
     }
-    return solution
+    solution
   }
 
   /**
