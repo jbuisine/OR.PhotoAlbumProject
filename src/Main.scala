@@ -41,7 +41,7 @@ object Main {
     var bestSolution = Array[Int](nbPhotos)
     var bestResult = Double.PositiveInfinity
 
-    val numberFunction = 5;
+    val numberFunction = 6;
     val numberAlgo = 3;
 
     //Objective function
@@ -53,24 +53,7 @@ object Main {
         "\n1. If you do not want to save the result, please just press Enter."+
         "\n2. Just to inform, files are saved into 'scores' folder.")
     evaluationFile = scanner.nextLine()
-    
-    // - Value true :  Based on page cohesion
-  // - Value false : Or just based on logical sequence of photo 
-    
-    val generationTypeQuestion =
-      "Which type of generation do you want ?" +
-        "\n1. Based on page cohesion" +
-        "\n2. Based on logical sequence of photo. So without page cohesion" +
-        "\n\n";
-    generationTypeChoice = getScannerValue(generationTypeQuestion, " generation type", 0, 2)
-    
-    //Set type generation choice of the User
-    if (generationTypeChoice == 1) {
-      println("true")
-      Modelisation.formatAlbum = true;
-    }else {
-      Modelisation.formatAlbum = false;
-    }
+   
     
     val functionQuestion =
       "Which type of objective function do you want to use ?" +
@@ -81,7 +64,7 @@ object Main {
         "\n5. Colors function objective" +
         "\n6. Grey AVG function objective " +
         "\n\n";
-    functionChoice = getScannerValue(functionQuestion, "function", 0, numberFunction)
+    functionChoice = UtilityClass.getScannerValue(functionQuestion, "function", 0, numberFunction)
 
     if (functionChoice == 1) {
 
@@ -90,7 +73,7 @@ object Main {
         "\n2. Perspective hash" +
         "\n3. Difference hash" +
         "\n\n";
-      hashChoice = getScannerValue(hashQuestion, "hash attribute", 0, hashTypes.length)
+      hashChoice = UtilityClass.getScannerValue(hashQuestion, "hash attribute", 0, hashTypes.length)
     }
 
     //Initialize problem modelisation
@@ -108,10 +91,10 @@ object Main {
         Modelisation.initTags(pathPhoto, pathAlbum)
         f = Modelisation.nbUnommonsTagEval
       case 5 =>
-        Modelisation.initColors(pathPhoto)
+        Modelisation.initColors(pathPhoto, pathAlbum)
         f = Modelisation.colorsEval
       case 6 =>
-        Modelisation.initGreyAvg(pathPhoto)
+        Modelisation.initGreyAvg(pathPhoto, pathAlbum)
         f = Modelisation.greyAVGEval
     }
    
@@ -120,19 +103,19 @@ object Main {
       "\n2. Iterated Local Search" +
       "\n3. Evolutionary Algorithm" +
       "\n\n";
-    algorithmChoice = getScannerValue(algorithmQuestion, "algorithm", 0, numberAlgo)
+    algorithmChoice = UtilityClass.getScannerValue(algorithmQuestion, "algorithm", 0, numberAlgo)
 
     algorithmChoice.toInt match {
       case 1 => {
 
         val iterationQuestion = "Please select number of evaluation you want for you HC (between 1 and 100000)"
-        val numberEvaluation = getScannerValue(iterationQuestion, "number of iteration", 1, 100000)
+        val numberEvaluation = UtilityClass.getScannerValue(iterationQuestion, "number of iteration", 1, 100000)
 
         val repetitionQuestion = "\nBefore starting your configured HC algorithm, please indicate how many times you want to execute it. (Between 0 and 1000000)" + 
                                  "\n1. If you choose to saved solution, by default best solution found of these repetitions will be saved." +
                                  "\n2. Futhermore, if you decide to save number of evaluation and score of solution found, each results are saved."
                                  
-        val numberRepetition = getScannerValue(repetitionQuestion, " number of repetitions", 0, 1000000)
+        val numberRepetition = UtilityClass.getScannerValue(repetitionQuestion, " number of repetitions", 0, 1000000)
         
         
         if(numberRepetition > 0){
@@ -151,7 +134,7 @@ object Main {
             }
             
             if(evaluationFile.length() > 0)
-              Modelisation.writeEvaluation(evaluationFile, nbEvaluation, f(solution), solution)
+              UtilityClass.writeEvaluation(evaluationFile, nbEvaluation, f(solution), solution)
           }
         }
         else {
@@ -162,7 +145,7 @@ object Main {
           bestSolution = solution
 
           if (evaluationFile.length() > 0)
-            Modelisation.writeEvaluation(evaluationFile, nbEvaluation, f(solution), solution)
+            UtilityClass.writeEvaluation(evaluationFile, nbEvaluation, f(solution), solution)
         }
         
         println("\nHC best score found -> " + f(bestSolution))
@@ -176,20 +159,20 @@ object Main {
         println(ilsQuestion)
 
         val iterationQuestion = "1. So, please select number of iteration for ILS"
-        val numberIteration = getScannerValue(iterationQuestion, "number of iteration", 1, 100000)
+        val numberIteration = UtilityClass.getScannerValue(iterationQuestion, "number of iteration", 1, 100000)
 
         val evaluationQuestion = "2. Select number of evaluation for all HC"
-        val numberEvaluation = getScannerValue(evaluationQuestion, "number of evaluation", 1, 100000)
+        val numberEvaluation = UtilityClass.getScannerValue(evaluationQuestion, "number of evaluation", 1, 100000)
 
         val permutationQuestion = "3. Select number of maximum elements permuted for each solution"
-        val numberPermutation = getScannerValue(permutationQuestion, "number of permutation", 1, nbPhotos)
+        val numberPermutation = UtilityClass.getScannerValue(permutationQuestion, "number of permutation", 1, nbPhotos)
         
          
         val repetitionQuestion = "\nBefore starting your configured ILS algorithm, please indicate how many times you want to execute it. (Between 0 and 1000000)" + 
                                  "\n1. If you choose to saved solution, by default best solution found of these repetitions will be saved." +
                                  "\n2. Futhermore, if you decide to save number of evaluation and score of solution found, each results are saved."
                                  
-        val numberRepetition = getScannerValue(repetitionQuestion, " number of repetitions", 0, 1000000)
+        val numberRepetition = UtilityClass.getScannerValue(repetitionQuestion, " number of repetitions", 0, 1000000)
         
         if(numberRepetition > 0){
           
@@ -207,7 +190,7 @@ object Main {
             }
             
             if(evaluationFile.length() > 0)
-              Modelisation.writeEvaluation(evaluationFile, nbEvaluation, f(solution), solution)
+              UtilityClass.writeEvaluation(evaluationFile, nbEvaluation, f(solution), solution)
           }
         }
         else {
@@ -218,7 +201,7 @@ object Main {
           bestSolution = solution
 
           if (evaluationFile.length() > 0)
-            Modelisation.writeEvaluation(evaluationFile, nbEvaluation, f(solution), solution)
+            UtilityClass.writeEvaluation(evaluationFile, nbEvaluation, f(solution), solution)
         }
         
         println("\nILS best score found -> " + f(bestSolution))
@@ -236,28 +219,28 @@ object Main {
         println(eaQuestion)
 
         val muQuestion = "1. So, please select number of mu elements"
-        val mu = getScannerValue(muQuestion, "number of mu", 1, 1000)
+        val mu = UtilityClass.getScannerValue(muQuestion, "number of mu", 1, 1000)
 
         val lambdaQuestion = "2. Select number of lambda elements"
-        val lambda = getScannerValue(lambdaQuestion, "number of lambda", 1, 1000)
+        val lambda = UtilityClass.getScannerValue(lambdaQuestion, "number of lambda", 1, 1000)
 
         val iterationQuestion = "3. Select number of iteration you want for EA"
-        val numberIteration = getScannerValue(iterationQuestion, "number of iteration", 1, 100000)
+        val numberIteration = UtilityClass.getScannerValue(iterationQuestion, "number of iteration", 1, 100000)
 
         val evaluationQuestion = "4. Select number of evaluation for all HC"
-        val numberEvaluation = getScannerValue(evaluationQuestion, "number of evaluation", 1, 100000)
+        val numberEvaluation = UtilityClass.getScannerValue(evaluationQuestion, "number of evaluation", 1, 100000)
 
-        val hcQuestion = "5. Select number of evaluation for all HC"
-        val hcNumber = getScannerValue(hcQuestion, "number of HC", 1, 100000)
+        val hcQuestion = "5. Select number of HC"
+        val hcNumber = UtilityClass.getScannerValue(hcQuestion, "number of HC", 1, 100000)
 
         val permutationQuestion = "6. Select number of maximum elements permuted for each solution"
-        val numberPermutation = getScannerValue(permutationQuestion, "number of elements to permute", 1, nbPhotos)
+        val numberPermutation = UtilityClass.getScannerValue(permutationQuestion, "number of elements to permute", 1, nbPhotos)
 
         val repetitionQuestion = "\nBefore starting your configured EA algorithm, please indicate how many times you want to execute it. (Between 0 and 1000000)" + 
                                  "\n1. If you choose to saved solution, by default best solution found of these repetitions will be saved." +
                                  "\n2. Futhermore, if you decide to save number of evaluation and score of solution found, each results are saved."
                                  
-        val numberRepetition = getScannerValue(repetitionQuestion, " number of repetitions", 0, 1000000)
+        val numberRepetition = UtilityClass.getScannerValue(repetitionQuestion, " number of repetitions", 0, 1000000)
         
         
         if(numberRepetition > 0){
@@ -277,7 +260,7 @@ object Main {
             }
             
             if(evaluationFile.length() > 0)
-              Modelisation.writeEvaluation(evaluationFile, nbEvaluation, f(solution), solution)
+              UtilityClass.writeEvaluation(evaluationFile, nbEvaluation, f(solution), solution)
           }
         }
         else {
@@ -289,13 +272,13 @@ object Main {
           bestSolution = solution
 
           if (evaluationFile.length() > 0)
-            Modelisation.writeEvaluation(evaluationFile, nbEvaluation, f(solution), solution)
+            UtilityClass.writeEvaluation(evaluationFile, nbEvaluation, f(solution), solution)
         }
         
         println("\nEA best score found -> " + f(bestSolution))
       }
     }
-    Modelisation.writeSolution(solutionFile, bestSolution)
+    UtilityClass.writeSolution(solutionFile, bestSolution)
   }
 
   /**
@@ -314,7 +297,7 @@ object Main {
     val inner = new Breaks
 
     if (solution == null) {
-      solution = Modelisation.generateRandomSolution(nbPhotos)
+      solution = UtilityClass.generateRandomSolution(nbPhotos)
     }
 
     var bestResult = eval(solution)
@@ -364,7 +347,7 @@ object Main {
    */
   def IteratedLocalSearch(numberElements: Int, iteration: Int, nbEvaluationHillClimber: Int, perturbation: Int, eval: (Array[Int]) => Double): Array[Int] = {
     var random = Random
-    var solution = HillClimberFirstImprovement(numberElements, nbEvaluationHillClimber, Modelisation.generateRandomSolution(numberElements), eval)
+    var solution = HillClimberFirstImprovement(numberElements, nbEvaluationHillClimber, UtilityClass.generateRandomSolution(numberElements), eval)
 
     var bestResult = eval(solution)
     var bestSolution = solution.clone();
@@ -372,7 +355,7 @@ object Main {
     var percentEvolution = ""
 
     do {
-      Modelisation.pertubationIterated(solution, perturbation, random)
+      UtilityClass.pertubationIterated(solution, perturbation, random)
 
       val currentSolution = HillClimberFirstImprovement(numberElements, nbEvaluationHillClimber, solution.clone(), eval)
 
@@ -388,7 +371,7 @@ object Main {
 
       val lengthText = percentEvolution.length()
       percentEvolution = "ILS -> " + df.format(i * 100.0 / iteration) + "%"
-      showEvolution(lengthText, percentEvolution)
+      UtilityClass.showEvolution(lengthText, percentEvolution)
     } while (i < iteration)
 
     return bestSolution
@@ -408,12 +391,13 @@ object Main {
   def GeneticEvolutionnaryAlgorithm(mu: Int, lambda: Int, numberElements: Int, iteration: Int, nbEvaluationHillClimber: Int, numberOfHc: Int, numberOfPermutations: Int, eval: (Array[Int]) => Double): Array[Int] = {
 
     var rand = Random
+    var percentEvolution = ""
 
     // Generate all parents solutions to start the algorithm
     var parentsSolutions = MutableList[Array[Int]]()
 
     for (i <- 0 to mu - 1) {
-      parentsSolutions += Modelisation.generateRandomSolution(numberElements)
+      parentsSolutions += UtilityClass.generateRandomSolution(numberElements)
     }
     //println(parentsSolutions.length)
 
@@ -437,7 +421,7 @@ object Main {
       for (j <- 0 to genitorsSolutions.length - 1) {
 
         // Do permutation
-        Modelisation.pertubationIterated(genitorsSolutions(j), numberOfPermutations, rand);
+        UtilityClass.pertubationIterated(genitorsSolutions(j), numberOfPermutations, rand);
 
         // Make hill climber on the current solution to improve the genitor solution
         for (k <- 0 to numberOfHc - 1) {
@@ -463,61 +447,12 @@ object Main {
       // Remove all elements without good result for the next step
       parentsSolutions = parentsSolutions.take(mu)
 
-      println("EA : " + df.format(i * 100.0 / iteration) + "%");
+      val lengthText = percentEvolution.length()
+      percentEvolution = "EA -> " + df.format(i * 100.0 / iteration) + "%"
+      UtilityClass.showEvolution(lengthText, percentEvolution)
 
     }
 
     return parentsSolutions(0);
-  }
-
-  /**
-   * Function which gets integer value until is not correct
-   * @param q
-   * @param failure type
-   * @param min : criteria of minimum value asked (included)
-   * @param max : criteria of maximum value asked (excluded)
-   * @return
-   */
-  def getScannerValue(q: String, failure: String, min: Int, max: Int): Int = {
-    var output = "";
-    var choice = false;
-    do {
-
-      println(q);
-      output = scanner.nextLine();
-      Try(output.toInt) match {
-        case Success(num) => {
-          if (num <= min || num > max)
-            println("Number written is not excepted.")
-          else
-            choice = true;
-        }
-        case Failure(f) => {
-          println("Error, please select another " + failure + ".")
-        }
-      }
-    } while (!choice)
-    output.toInt
-  }
-
-  /**
-   * Function which show evolution percentage of algorithm
-   * @param previousText
-   * @param text
-   */
-  def showEvolution(previousText: Int, text: String): Unit = {
-    var lengthContent = previousText
-    if (lengthContent < text.length()) {
-      lengthContent += text.length() - previousText
-
-    }
-    for (i <- 0 until lengthContent) {
-      print("\b")
-    }
-
-    if (lengthContent < text.length())
-      print(text+ "  ")
-    else 
-      print(text) 
   }
 }
