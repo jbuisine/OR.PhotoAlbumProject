@@ -102,13 +102,13 @@ object UtilityClass {
    */
   def writeSolution(filename: String,
     bestSolution: Array[Int]) {
-    val file = new FileClass(filename)
+    val file = new FileClass("solutions/"+filename)
     var line = "";
     for (i <- 0 until bestSolution.length) {
       line += bestSolution(i) + " "
     }
     file.writeLine(line, false)
-    println(s"Solution saved into $filename")
+    println(s"Solution saved into solutions/$filename")
   }
 
   /**
@@ -130,6 +130,6 @@ object UtilityClass {
     }
 
     file.writeLine(line, true)
-    println(s"Evaluation saved into $filename")
+    println(s"Evaluation saved into scores/$filename")
   }
 }

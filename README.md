@@ -25,6 +25,7 @@ Liste des fichiers :
 - data/info-album.json        : information sur les 9 pages de l'album
 - data/chronologic-order.sol  : fichier contenant une solution de disposition des photos de l'album (par ordre chronologique)
 - scores		      : dossier comprenant les différents scores enregistrés afin de les comparer
+- solutions		      : l'une des meilleures solution trouvée pour chaque fonction objectif
 - src : dossier du code scala donnant un exemple de lecture des données et de fonction d'évaluation. Il comprendra également l'ensemble des nouvelles fonctions d'évaluation développées.
 
 
@@ -65,7 +66,7 @@ Pour lancer l'application, il suffira d'exécuter le fichier **Main.scala** en t
 
 ### Command Line
 
-Dans un premier temps, afin de pouvoir compiler et exécuter du code scala, il vous faudra le [télécharger] (https://www.scala-lang.org/download/install.html) et installer. 
+Dans un premier temps, afin de pouvoir compiler et exécuter du code scala, il vous faudra le [télécharger] (https://www.scala-lang.org/download/install.html) et installer.
 
 Création du dossier 'compile' qui comprendra le code binaire compilé et évitera les conflits des fichiers compilés au sein du dossier bin par l'IDE Eclipse :
 
@@ -98,16 +99,16 @@ En ajoutant le paramètre 'build' on compile et exécute le code :
 sh run.sh build
 ```
 
-En ajoutant le paramètre 'show' on exécute le code et génère l'album :
+En ajoutant un nom de fichier on exécute le code et sauvegarde la solution trouvée (Le fichier est sauvegardé dans le dossier solutions) :
 
 ```
-sh run.sh show
+sh run.sh fichier.sol
 ```
 
-En ajoutant les paramètres 'build' & 'show' on compile, exécute le code et génère l'album :
+En ajoutant les paramètres 'build' & un nom de fichier on compile, exécute le code et sauvegarde la solution :
 
 ```
-sh run.sh build show
+sh run.sh build fichier.sol
 ```
 
 ### Contributors

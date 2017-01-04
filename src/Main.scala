@@ -25,6 +25,7 @@ object Main {
   var nbEvaluation = 0
   var generationTypeChoice: Int = _
   var evaluationFile = ""
+  var solutionFile = ""
 
   /**
    * Main method which throws all algorithms
@@ -35,8 +36,10 @@ object Main {
     //Sanner utility object
     val breaker = new Breaks
 
-    //File where solution is writed
-    val solutionFile = "fichier.sol"
+    //File solution value 
+    if(args.length > 0)
+      solutionFile = args(0)
+   
     var solution = Array[Int](nbPhotos)
     var bestSolution = Array[Int](nbPhotos)
     var bestResult = Double.PositiveInfinity
@@ -278,7 +281,8 @@ object Main {
         println("\nEA best score found -> " + f(bestSolution))
       }
     }
-    UtilityClass.writeSolution(solutionFile, bestSolution)
+    if(solutionFile.length() > 0)
+      UtilityClass.writeSolution(solutionFile, bestSolution)
   }
 
   /**
