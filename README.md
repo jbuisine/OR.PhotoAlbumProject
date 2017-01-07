@@ -16,17 +16,18 @@ Le projet sera développé en Scala dans le but de profiter du paradigme de prog
 
 -------------------
 Liste des fichiers :
-- prj1-ro.pdf                 : fichier comprennant la description plus détaillée du projet
-- buildAlbum.py               : code python permettant de créer les pages web avec l'album à partir d'un fichier de solution
-- html                        : dossier pour recevoir les pages web avec l'album
-- html/img/*.jpg              : les 55 photos au format jpg de l'album photo
-- html/styleAlbum.css         : feuille de style associée aux pages web de l'album
-- data/info-photo.json        : information sur les 55 photos au format json
-- data/info-album.json        : information sur les 9 pages de l'album
-- data/chronologic-order.sol  : fichier contenant une solution de disposition des photos de l'album (par ordre chronologique)
-- scores		      : dossier comprenant les différents scores enregistrés afin de les comparer
-- solutions		      : l'une des meilleures solution trouvée pour chaque fonction objectif
-- src : dossier du code scala donnant un exemple de lecture des données et de fonction d'évaluation. Il comprendra également l'ensemble des nouvelles fonctions d'évaluation développées.
+- docs/prj1-ro.pdf             : fichier comprennant la description plus détaillée du projet
+- docs/CompteRenduProjetRO.pdf : fichier comprennant le compte rendu du projet suite à l'analyse des perfomances
+- buildAlbum.py                : code python permettant de créer les pages web avec l'album à partir d'un fichier de solution
+- html                         : dossier pour recevoir les pages web avec l'album
+- html/img/*.jpg               : les 55 photos au format jpg de l'album photo
+- html/styleAlbum.css          : feuille de style associée aux pages web de l'album
+- data/info-photo.json         : information sur les 55 photos au format json
+- data/info-album.json         : information sur les 9 pages de l'album
+- data/chronologic-order.sol   : fichier contenant une solution de disposition des photos de l'album (par ordre chronologique)
+- scores		                   : dossier comprenant les différents scores enregistrés afin de les comparer
+- solutions		                 : l'une des meilleures solution trouvée pour chaque fonction objectif
+- src                          : dossier du code scala donnant un exemple de lecture des données et de fonction d'évaluation. Il comprendra également l'ensemble des nouvelles fonctions d'évaluation développées.
 
 
 -------------------
