@@ -4,7 +4,11 @@
 
 Le but du projet est de permettre la création automatique d'un album photo. Pour cela, plusieurs critères ont été évalué dans le but d'être optimisé. Il faut donc au travers d'algorithmes de recherche locale notamment ceux vus en cours, obtenir une solution proche d'un rendu d'une solution optimale.
 
-Le projet sera développé en Scala dans le but de profiter du paradigme de programmation fonctionnelle proposé par ce langage.
+Deux algorithmes sont pour le moment utilisé :
+- Hill Climber First Improvement permettant l'exploitation d'une solution.
+- Iterated Local Search qui permettra d'explorer de nouveaux optimaux locaux obtenus par le biais du Hill Climber.
+
+Le projet sera développé en Scala dans le but de profiter du paradigme de programmation fonctionnelle proposé par ce langage. Il comprendra pour le moment des fonctions objectif mono. L'objectif du projet sera donc par la suite de mettre en place et d'évaluer des fonctions objectif de type multi-objectifs.
 
 ### Description
 
@@ -16,8 +20,8 @@ Le projet sera développé en Scala dans le but de profiter du paradigme de prog
 
 -------------------
 Liste des fichiers :
-- docs/prj1-ro.pdf             : fichier comprennant la description plus détaillée du projet
-- docs/CompteRenduProjetRO.pdf : fichier comprennant le compte rendu du projet suite à l'analyse des perfomances
+- [docs/prj1-ro.pdf] (https://github.com/jbuisine/M1.I2L.TD.RO.2016-11-09/blob/master/docs/prj1-ro.pdf)             : fichier comprennant la description plus détaillée du projet
+- [docs/CompteRenduProjetRO.pdf] (https://github.com/jbuisine/M1.I2L.TD.RO.2016-11-09/blob/master/docs/CompteRenduProjetRO.pdf) : fichier comprennant le compte rendu du projet suite à l'analyse des perfomances
 - buildAlbum.py                : code python permettant de créer les pages web avec l'album à partir d'un fichier de solution
 - html                         : dossier pour recevoir les pages web avec l'album
 - html/img/*.jpg               : les 55 photos au format jpg de l'album photo
@@ -33,10 +37,14 @@ Liste des fichiers :
 -------------------
 Création des pages :
 
+```
 python buildAlbum.py fichier.sol
+```
 où fichier.sol est le fichier contenant une solution de disposition
 
+```
 python buildAlbum.py
+```
 utilise par défaut le fichier data/chronologic-order.sol
 
 
@@ -67,7 +75,7 @@ Pour lancer l'application, il suffira d'exécuter le fichier **Main.scala** en t
 
 ### Command Line
 
-Dans un premier temps, afin de pouvoir compiler et exécuter du code scala, il vous faudra le [télécharger] (https://www.scala-lang.org/download/install.html) et installer.
+Dans un premier temps, afin de pouvoir compiler et exécuter du code scala, il vous faudra le [télécharger] (https://www.scala-lang.org/download/install.html) et l'installer.
 
 Création du dossier 'compile' qui comprendra le code binaire compilé et évitera les conflits des fichiers compilés au sein du dossier bin par l'IDE Eclipse :
 
