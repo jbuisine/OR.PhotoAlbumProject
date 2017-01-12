@@ -1,14 +1,9 @@
 
-import java.io.FileNotFoundException
-import java.io.FileReader
-import java.io.IOException
+import java.io.{FileNotFoundException, FileReader, IOException}
 import java.text.DecimalFormat
-import java.util.Random
-import org.json.simple.JSONArray
-import org.json.simple.JSONObject
-import org.json.simple.parser.JSONParser
-import org.json.simple.parser.ParseException
-import scala.collection.JavaConversions._
+
+import org.json.simple.{JSONArray, JSONObject}
+import org.json.simple.parser.{JSONParser, ParseException}
 
 /**
  * @author j.buisine
@@ -22,8 +17,8 @@ object Modelisation {
 
   // Tags values distances calculates between photos
   private var photoDistancesCommonsTags: Array[Array[Double]] = _
-  private var photoDistancesUncommonsTags: Array[Array[Double]] = _
-  private var photoDistancesUncommonsNbTags: Array[Array[Double]] = _
+  private var photoDistancesUncommonTags: Array[Array[Double]] = _
+  private var photoDistancesUncommonNbTags: Array[Array[Double]] = _
 
   // Colors values distances calculates between photos
   private var photoDistancesColors: Array[Array[Double]] = _
@@ -71,12 +66,22 @@ object Modelisation {
     computeAlbumDistances(albumFileName)
     computePhotoGreyAVG(pathPhoto)
   }
-  
 
   /**
-   * Compute the matrice of distance between solutions and of inverse distance
-   * between positions
-   */
+    * Compute the first multi objective function based on grey AVG and colors
+    * @param pathPhoto
+    * @param albumFileName
+    */
+  def initGreyAvgAndColors(pathPhoto: String, albumFileName: String) {
+    computeAlbumDistances(albumFileName)
+    computePhotoGreyAVG(pathPhoto)
+    computePhotoColors(pathPhoto)
+  }
+
+  /**
+    * Compute the matrice of distance between solutions and of inverse distance
+    * between positions
+    */
   private def computeDistances(photoFileName: String, albumFileName: String, attribute: String) {
     computePhotoDistances(photoFileName, attribute)
     computeAlbumDistances(albumFileName)
@@ -174,8 +179,8 @@ object Modelisation {
       var photoTagsValue = Array.ofDim[Double](array.size(), nbTags)
       var photoTagsName = Array.ofDim[String](array.size(), nbTags)
       photoDistancesCommonsTags = Array.ofDim[Double](array.size(), array.size())
-      photoDistancesUncommonsTags = Array.ofDim[Double](array.size(), array.size())
-      photoDistancesUncommonsNbTags = Array.ofDim[Double](array.size(), array.size())
+      photoDistancesUncommonTags = Array.ofDim[Double](array.size(), array.size())
+      photoDistancesUncommonNbTags = Array.ofDim[Double](array.size(), array.size())
 
       //Get information of tags
       for (i <- 0 until array.size) {
@@ -214,8 +219,8 @@ object Modelisation {
               nbCommonTag += 1
             }
           }
-          photoDistancesUncommonsTags(i)(j) = uncommonSum
-          photoDistancesUncommonsNbTags(i)(j) = nbTags - nbCommonTag
+          photoDistancesUncommonTags(i)(j) = uncommonSum
+          photoDistancesUncommonNbTags(i)(j) = nbTags - nbCommonTag
 
           if (nbCommonTag > 0)
             photoDistancesCommonsTags(i)(j) = commonSum / nbCommonTag
@@ -326,17 +331,17 @@ object Modelisation {
   }
 
   /**
+   * Objective function to minimize based on Quadratic Assignment Problem :
+   * - Photo hash distances
+   * - The inverse of the spatial distances on the album
    *
-   * Un exemple de fonction objectif (à minimiser): distance entre les photos
-   * pondérées par l'inverse des distances spatiales sur l'album Modélisation
-   * comme un problème d'assignement quadratique (QAP)
    *
-   * Cette fonction se basera sur les différents tags fournis dans le fichier JSON soit :
+   * Function based on different tags available into JSON file :
    * - ahashdist : average hash
    * - phashdist : perspective hash
    * - dhashdist : difference hash
    *
-   * Ce paramètre sera fournit lors de l'initialisation de la classe.
+   * Choice parameter will be passed into init function
    *
    * @param solution
    * @return
@@ -367,8 +372,8 @@ object Modelisation {
    * @param solution
    * @return
    */
-  def uncommonsTagEval(solution: Array[Int]): Double = {
-    eval(photoDistancesUncommonsTags, solution)
+  def uncommonTagEval(solution: Array[Int]): Double = {
+    eval(photoDistancesUncommonTags, solution)
   }
 
   /**
@@ -380,8 +385,8 @@ object Modelisation {
    * @param solution
    * @return
    */
-  def nbUnommonsTagEval(solution: Array[Int]): Double = {
-    eval(photoDistancesUncommonsNbTags, solution)
+  def nbUncommonTagEval(solution: Array[Int]): Double = {
+    eval(photoDistancesUncommonNbTags, solution)
   }
 
   /**
@@ -398,15 +403,34 @@ object Modelisation {
   }
 
   /**
-	 * New objective function based on QAP
-   *
-   * Objective function which uses distance defined by grey AVG value
-	 * weighted by the inverse of the spatial distances on the album 
-   *
-   * @param solution
-   * @return score
-   */
+    * New objective function based on QAP
+    *
+    * Objective function which uses distance defined by grey AVG value
+    * weighted by the inverse of the spatial distances on the album
+    *
+    * @param solution
+    * @return score
+    */
   def greyAVGEval(solution: Array[Int]): Double = {
     eval(photoDistancesGreyAVG, solution)
+  }
+
+  /**
+    * Multi objective function to minimize based on two objectives :
+    *
+    * - Colors of photo
+    * - Grey AVG per photo
+    *
+    * The aim of this function is to know is multi-objective function based on colors can give great result
+    * @param solution
+    * @return
+    */
+  def greyAVGAndColorsEval(solution: Array[Int]): Double = {
+    var sum: Double = 0
+
+    for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length)
+      sum += (photoDistancesGreyAVG(solution(i))(solution(j)) + photoDistancesColors(solution(i))(solution(j)))/2 * albumInvDist(i)(j)
+
+    sum
   }
 }

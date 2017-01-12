@@ -1,5 +1,6 @@
-import scala.util.{ Try, Success, Failure }
 import java.util.Random
+
+import scala.util.{Failure, Success, Try}
 
 /**
  * @author j.buisine

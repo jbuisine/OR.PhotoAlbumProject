@@ -133,7 +133,7 @@ if __name__ == '__main__':
 
     if len(sys.argv) > 1:
         if not os.path.exists(sys.argv[1]):
-            print "File not found: " + sys.argv[1]
+            print ("File not found: " + sys.argv[1])
         else: 
             solution_name = sys.argv[1]
 

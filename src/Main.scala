@@ -1,9 +1,7 @@
 
-import scala.util.control.Breaks
-import scala.util.Random
 import scala.collection.mutable.MutableList
-import scala.util.control.Breaks._
-import scala.util.{ Try, Success, Failure }
+import scala.util.Random
+import scala.util.control.Breaks
 
 /**
  * @author j.buisine
@@ -44,7 +42,7 @@ object Main {
     var bestSolution = Array[Int](nbPhotos)
     var bestResult = Double.PositiveInfinity
 
-    val numberFunction = 6;
+    val numberFunction = 7;
     val numberAlgo = 3;
 
     //Objective function
@@ -60,12 +58,13 @@ object Main {
     
     val functionQuestion =
       "Which type of objective function do you want to use ?" +
-        "\n1. Hash function objective (You need later to select between aHash, pHash & dHash attributes)" +
-        "\n2. Commons Tags value function objective" +
-        "\n3. Uncommons Tags value function objective" +
-        "\n4. Uncommons number of tag function objective" +
-        "\n5. Colors function objective" +
-        "\n6. Grey AVG function objective " +
+        "\n1. Hash objective function (You need later to select between aHash, pHash & dHash attributes)" +
+        "\n2. Commons Tags value objective function" +
+        "\n3. Uncommon Tags value objective function" +
+        "\n4. Uncommon number of tag objective function" +
+        "\n5. Colors objective function" +
+        "\n6. Grey AVG  objective function" +
+        "\n7. Grey AVG and Colors multi objective function" +
         "\n\n";
     functionChoice = UtilityClass.getScannerValue(functionQuestion, "function", 0, numberFunction)
 
@@ -89,15 +88,18 @@ object Main {
         f = Modelisation.commonsTagEval
       case 3 =>
         Modelisation.initTags(pathPhoto, pathAlbum)
-        f = Modelisation.uncommonsTagEval
+        f = Modelisation.uncommonTagEval
       case 4 =>
         Modelisation.initTags(pathPhoto, pathAlbum)
-        f = Modelisation.nbUnommonsTagEval
+        f = Modelisation.nbUncommonTagEval
       case 5 =>
         Modelisation.initColors(pathPhoto, pathAlbum)
         f = Modelisation.colorsEval
       case 6 =>
         Modelisation.initGreyAvg(pathPhoto, pathAlbum)
+        f = Modelisation.greyAVGEval
+      case 7 =>
+        Modelisation.initGreyAvgAndColors(pathPhoto, pathAlbum)
         f = Modelisation.greyAVGEval
     }
    
