@@ -35,56 +35,13 @@ object Modelisation {
    * @param pathAlbum
    * @param attribute
    */
-  def initHash(pathPhoto: String, pathAlbum: String, attribute: String) {
-    computeDistances(pathPhoto, pathAlbum, attribute)
+  def init(pathPhoto: String, pathAlbum: String, attribute: String) {
+    computeAlbumDistances(pathAlbum)
+    if(attribute != "")
+      computePhotoDistances(pathPhoto, attribute)
     computePhotoTags(pathPhoto)
-  }
-
-  /**
-   * Function used for init tags arrays
-   * @param pathPhoto
-   */
-  def initTags(pathPhoto: String, albumFileName: String) {
-    computeAlbumDistances(albumFileName)
-    computePhotoTags(pathPhoto)
-  }
-
-  /**
-   * Function used for init colors arrays
-   * @param pathPhoto
-   */
-  def initColors(pathPhoto: String, albumFileName: String) {
-    computeAlbumDistances(albumFileName)
     computePhotoColors(pathPhoto)
-  }
-
-  /**
-   * Function used for init grey avg colors array
-   * @param pathPhoto
-   */
-  def initGreyAvg(pathPhoto: String, albumFileName: String) {
-    computeAlbumDistances(albumFileName)
     computePhotoGreyAVG(pathPhoto)
-  }
-
-  /**
-    * Compute the first multi objective function based on grey AVG and colors
-    * @param pathPhoto
-    * @param albumFileName
-    */
-  def initGreyAvgAndColors(pathPhoto: String, albumFileName: String) {
-    computeAlbumDistances(albumFileName)
-    computePhotoGreyAVG(pathPhoto)
-    computePhotoColors(pathPhoto)
-  }
-
-  /**
-    * Compute the matrice of distance between solutions and of inverse distance
-    * between positions
-    */
-  private def computeDistances(photoFileName: String, albumFileName: String, attribute: String) {
-    computePhotoDistances(photoFileName, attribute)
-    computeAlbumDistances(albumFileName)
   }
 
   /**
@@ -315,20 +272,6 @@ object Modelisation {
     }
   }
 
-  /**
-   * Common eval function used for load each eval function and implements album page cohesion or not
-   * @param arr
-   * @param solution
-   * @return
-   */
-  def eval(arr: Array[Array[Double]], solution: Array[Int]): Double = {
-    var sum: Double = 0
-    
-    for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length)
-        sum += arr(solution(i))(solution(j)) * albumInvDist(i)(j)
- 
-    sum
-  }
 
   /**
    * Objective function to minimize based on Quadratic Assignment Problem :
@@ -347,7 +290,12 @@ object Modelisation {
    * @return
    */
   def hashEval(solution: Array[Int]): Double = {
-    eval(photoDist, solution)
+    var sum: Double = 0
+
+    for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length)
+      sum += photoDist(solution(i))(solution(j)) * albumInvDist(i)(j)
+
+    sum
   }
 
   /**
@@ -360,7 +308,12 @@ object Modelisation {
    * @return score
    */
   def commonsTagEval(solution: Array[Int]): Double = {
-    eval(photoDistancesCommonsTags, solution)
+    var sum: Double = 0
+
+    for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length)
+      sum += photoDistancesCommonsTags(solution(i))(solution(j)) * albumInvDist(i)(j)
+
+    sum
   }
 
   /**
@@ -373,7 +326,12 @@ object Modelisation {
    * @return
    */
   def uncommonTagEval(solution: Array[Int]): Double = {
-    eval(photoDistancesUncommonTags, solution)
+    var sum: Double = 0
+
+    for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length)
+      sum += photoDistancesUncommonTags(solution(i))(solution(j)) * albumInvDist(i)(j)
+
+    sum
   }
 
   /**
@@ -386,7 +344,12 @@ object Modelisation {
    * @return
    */
   def nbUncommonTagEval(solution: Array[Int]): Double = {
-    eval(photoDistancesUncommonNbTags, solution)
+    var sum: Double = 0
+
+    for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length)
+      sum += photoDistancesUncommonNbTags(solution(i))(solution(j)) * albumInvDist(i)(j)
+
+    sum
   }
 
   /**
@@ -399,7 +362,12 @@ object Modelisation {
    * @return score
    */
   def colorsEval(solution: Array[Int]): Double = {
-    eval(photoDistancesColors, solution)
+    var sum: Double = 0
+
+    for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length)
+      sum += photoDistancesColors(solution(i))(solution(j)) * albumInvDist(i)(j)
+
+    sum
   }
 
   /**
@@ -412,7 +380,12 @@ object Modelisation {
     * @return score
     */
   def greyAVGEval(solution: Array[Int]): Double = {
-    eval(photoDistancesGreyAVG, solution)
+    var sum: Double = 0
+
+    for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length)
+      sum += photoDistancesGreyAVG(solution(i))(solution(j)) * albumInvDist(i)(j)
+
+    sum
   }
 
   /**
@@ -430,6 +403,25 @@ object Modelisation {
 
     for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length)
       sum += (photoDistancesGreyAVG(solution(i))(solution(j)) + photoDistancesColors(solution(i))(solution(j)))/2 * albumInvDist(i)(j)
+
+    sum
+  }
+
+  /**
+    * Multi objective function to minimize based on three objectives :
+    *
+    * - Colors of photo
+    * - Grey AVG per photo
+    * - Commons tags
+    * The aim of this function is to know is multi-objective function based on colors can give great result
+    * @param solution
+    * @return
+    */
+  def greyAVGAndColorsAndCommonsTagsEval(solution: Array[Int]): Double = {
+    var sum: Double = 0
+
+    for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length)
+      sum += (photoDistancesGreyAVG(solution(i))(solution(j)) + photoDistancesColors(solution(i))(solution(j)) + photoDistancesCommonsTags(i)(j))/3 * albumInvDist(i)(j)
 
     sum
   }
