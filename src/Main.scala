@@ -24,7 +24,7 @@ object Main {
   var evaluationFile = ""
   var solutionFile = ""
 
-  val numberFunction = 8
+  val numberFunction = 9
   val numberAlgo = 3
 
   //Objective function
@@ -65,7 +65,8 @@ object Main {
         "\n5. Colors objective function" +
         "\n6. Grey AVG  objective function" +
         "\n7. Grey AVG and Colors multi objective function" +
-        "\n8. Grey AVG, Colors and tags multi objective function" +
+        "\n8. Grey AVG, Colors and common tags multi objective function" +
+        "\n9. Colors and uncommon tags multi objective function" +
         "\n";
     functionChoice = UtilityClass.getScannerValue(functionQuestion, "function", 0, numberFunction)
 
@@ -99,7 +100,9 @@ object Main {
       case 7 =>
         f = Modelisation.greyAVGAndColorsEval
       case 8 =>
-        f = Modelisation.greyAVGAndColorsAndCommonsTagsEval
+        f = Modelisation.greyAVGAndColorsAndCommonTagsEval
+      case 9 =>
+        f = Modelisation.colorsAndUncommonTagsEval
     }
 
     val algorithmQuestion = "Which type of algorithm do you want to executes ?" +

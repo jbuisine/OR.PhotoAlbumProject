@@ -402,7 +402,7 @@ object Modelisation {
     var sum: Double = 0
 
     for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length)
-      sum += (photoDistancesGreyAVG(solution(i))(solution(j)) + photoDistancesColors(solution(i))(solution(j)))/2 * albumInvDist(i)(j)
+      sum += (photoDistancesGreyAVG(solution(i))(solution(j)) + photoDistancesColors(solution(i))(solution(j))) * albumInvDist(i)(j)
 
     sum
   }
@@ -413,15 +413,33 @@ object Modelisation {
     * - Colors of photo
     * - Grey AVG per photo
     * - Commons tags
-    * The aim of this function is to know is multi-objective function based on colors can give great result
+    * The aim of this function is to know is multi-objective function based on colors, grey AVG and tags can give great result
     * @param solution
     * @return
     */
-  def greyAVGAndColorsAndCommonsTagsEval(solution: Array[Int]): Double = {
+  def greyAVGAndColorsAndCommonTagsEval(solution: Array[Int]): Double = {
     var sum: Double = 0
 
     for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length)
-      sum += (photoDistancesGreyAVG(solution(i))(solution(j)) + photoDistancesColors(solution(i))(solution(j)) + photoDistancesCommonsTags(i)(j))/3 * albumInvDist(i)(j)
+      sum += (photoDistancesGreyAVG(solution(i))(solution(j)) + photoDistancesColors(solution(i))(solution(j)) + photoDistancesCommonsTags(i)(j)) * albumInvDist(i)(j)
+
+    sum
+  }
+
+  /**
+    * Multi objective function to minimize based on two objectives :
+    *
+    * - Colors of photo
+    * - Uncommon tags
+    * The aim of this function is to know is multi-objective function based on colors and tags
+    * @param solution
+    * @return
+    */
+  def colorsAndUncommonTagsEval(solution: Array[Int]): Double = {
+    var sum: Double = 0
+
+    for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length)
+      sum += (photoDistancesColors(solution(i))(solution(j)) + photoDistancesUncommonNbTags(i)(j)) * albumInvDist(i)(j)
 
     sum
   }
