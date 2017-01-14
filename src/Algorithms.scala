@@ -124,7 +124,6 @@ object Algorithms {
       })
 
       if (checkSolution) {
-        (0 until evals.length).foreach(index => bestResults(index) = results(index))
         bestSolution = currentSolution
         solution = bestSolution
       }
@@ -150,7 +149,7 @@ object Algorithms {
     * @param numberOfPermutations
     * @return best solution object found
     */
-  def GeneticEvolutionnaryAlgorithm(mu: Int, lambda: Int, numberElements: Int, iteration: Int, nbEvaluationHillClimber: Int, numberOfHc: Int, numberOfPermutations: Int, eval: (Array[Int]) => Double): Array[Int] = {
+  def GeneticEvolutionnaryAlgorithm(mu: Int, lambda: Int, numberElements: Int, iteration: Int, nbEvaluationHillClimber: Int, numberOfHc: Int, numberOfPermutations: Int, evals: Array[(Array[Int]) => Double]): Array[Int] = {
 
     var rand = Random
     var percentEvolution = ""
@@ -171,9 +170,21 @@ object Algorithms {
         var firstSelectedIndex = rand.nextInt(parentsSolutions.length - 1);
         var secondSelectedIndex = rand.nextInt(parentsSolutions.length - 1);
 
-        if (eval(parentsSolutions(firstSelectedIndex)) >= eval(parentsSolutions(secondSelectedIndex))) {
+        var checkFisrtWinner = false
+        var checkSecondWinner = false
+        (0 until evals.length).foreach(index => {
+          if(evals(index)(parentsSolutions(firstSelectedIndex)) <= evals(index)(parentsSolutions(secondSelectedIndex))) {
+            checkFisrtWinner = true
+            checkSecondWinner = false
+          }else {
+            checkFisrtWinner = false
+            checkSecondWinner = true
+          }
+        })
+
+        if (checkFisrtWinner) {
           genitorsSolutions += parentsSolutions(firstSelectedIndex)
-        } else {
+        } else if(checkSecondWinner){
           genitorsSolutions += parentsSolutions(secondSelectedIndex)
         }
       }
@@ -188,9 +199,21 @@ object Algorithms {
         // Make hill climber on the current solution to improve the genitor solution
         for (k <- 0 to numberOfHc - 1) {
           var currentSolution = HillClimberFirstImprovement(genitorsSolutions(j).length, nbEvaluationHillClimber,
-            genitorsSolutions(j).clone(), eval)
+            genitorsSolutions(j).clone(), evals)
 
-          if (eval(currentSolution) < eval(genitorsSolutions(j))) {
+          var results = new Array[Double](evals.length)
+          var checkSolution = false
+          //For each functions we saved the current result
+          (0 until evals.length).foreach(index => results(index) = evals(index)(currentSolution))
+
+          (0 until evals.length).foreach(index => {
+            if(results(index) < evals(index)(genitorsSolutions(j)))
+              checkSolution = true
+            else
+              checkSolution = false
+          })
+
+          if (checkSolution) {
             genitorsSolutions(j) = currentSolution
           }
         }
@@ -204,7 +227,7 @@ object Algorithms {
       }
 
       // Used to order list of solution by result
-      parentsSolutions = parentsSolutions.sortWith((x, y) => eval(x) < eval(y))
+      parentsSolutions = parentsSolutions.sortWith((x, y) => evals(0)(x) < evals(0)(y))
 
       // Remove all elements without good result for the next step
       parentsSolutions = parentsSolutions.take(mu)

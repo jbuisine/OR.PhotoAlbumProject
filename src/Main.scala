@@ -16,21 +16,23 @@ object Main {
   val scanner = new java.util.Scanner(System.in)
 
   // Choices variables
+
   var functionChoice: Int = _
-  var hashChoice: Int = _
   var algorithmChoice: Int = _
 
   var generationTypeChoice: Int = _
-  var evaluationFile = ""
+  var evaluationFile: Array[String] = _
+  var criteriaChoices: Array[String] = _
   var solutionFile = ""
 
   val numberFunction = 9
   val numberAlgo = 3
 
   //Objective function
-  var f: (Array[Int]) => Double = null
+  var f: Array[(Array[Int]) => Double] = null
 
   val hashTypes = Array("ahashdist", "phashdist", "dhashdist")
+  var hashChoice: Int = _
 
   //Sanner utility object
   val breaker = new Breaks
@@ -48,13 +50,6 @@ object Main {
     var solution = Array[Int](nbPhotos)
     var bestSolution = Array[Int](nbPhotos)
     var bestResult = Double.PositiveInfinity
-
-
-    println("Before starting, indicate the file you want to save the result score and its number of evaluation."+
-        "\n1. If you do not want to save the result, please just press Enter."+
-        "\n2. Just to inform, files are saved into 'scores' folder.")
-    evaluationFile = scanner.nextLine()
-
 
     val functionQuestion =
       "Which type of objective function do you want to use ?" +
@@ -86,24 +81,49 @@ object Main {
 
     functionChoice.toInt match {
       case 1 =>
-        f = Modelisation.hashEval
+        f = Array(Modelisation.hashEval)
+        criteriaChoices = Array("hash")
       case 2 =>
-        f = Modelisation.commonsTagEval
+        f = Array(Modelisation.commonTagEval)
+        criteriaChoices = Array("common tags")
       case 3 =>
-        f = Modelisation.uncommonTagEval
+        f = Array(Modelisation.uncommonTagEval)
+        criteriaChoices = Array("uncommon tags")
       case 4 =>
-        f = Modelisation.nbUncommonTagEval
+        f = Array(Modelisation.nbUncommonTagEval)
+        criteriaChoices = Array("number of uncommon tags")
       case 5 =>
-        f = Modelisation.colorsEval
+        f = Array(Modelisation.colorsEval)
+        criteriaChoices = Array("colors")
       case 6 =>
-        f = Modelisation.greyAVGEval
+        f = Array(Modelisation.greyAVGEval)
+        criteriaChoices = Array("grey AVG")
       case 7 =>
-        f = Modelisation.greyAVGAndColorsEval
+        f = Array(Modelisation.greyAVGEval, Modelisation.colorsEval)
+        criteriaChoices = Array("greyAVG", "colors")
       case 8 =>
-        f = Modelisation.greyAVGAndColorsAndCommonTagsEval
+        f = Array(Modelisation.greyAVGEval, Modelisation.colorsEval, Modelisation.commonTagEval)
+        criteriaChoices = Array("greyAVG", "colors", "common tags")
       case 9 =>
-        f = Modelisation.colorsAndUncommonTagsEval
+        f = Array(Modelisation.colorsEval, Modelisation.uncommonTagEval)
+        criteriaChoices = Array("colors", "uncommon tags")
     }
+
+    val scoreSaved = "Before starting, indicate if you want to save the result(s) score and number of evaluation."+
+      "\n1. I do not want to save my scores."+
+      "\n2. Let me specify my files name (Just to inform, files are saved into 'scores' folder)."
+    val choiceScoreSaved = UtilityClass.getScannerValue(scoreSaved, "save choice", 0, 2)
+
+    if(choiceScoreSaved == 1){
+      evaluationFile = new Array[String](f.length )
+      (0 until f.length).foreach(index => {
+        do {
+          println("Select the file name for " + criteriaChoices(index) + " result")
+          evaluationFile(index) = scanner.nextLine()
+        }while(evaluationFile(index).length > 0)
+      })
+    }
+
 
     val algorithmQuestion = "Which type of algorithm do you want to executes ?" +
       "\n1. Hill Climber First Improvement" +
@@ -133,15 +153,31 @@ object Main {
             println("("+(i+1)+") HC algorithm starts search one of the best solution... It will take few seconds or more...")
             println("---------------------------------------------------------------------------------------------\n")
             solution = Algorithms.HillClimberFirstImprovement(nbPhotos, numberEvaluation, null, f)
-            println("\n("+(i+1)+") HC better score found -> " + f(solution))
+            println("\n("+(i+1)+") HC better score found -> " + f.foreach(x => print("-" + x(solution) +"\n")))
 
-            if(bestResult > f(solution)){
-              bestResult = f(solution)
-              bestSolution = solution.clone()
+
+            var results = new Array[Double](f.length)
+            var checkSolution = false
+            //For each functions we saved the current result
+            (0 until f.length).foreach(index => results(index) = f(index)(solution))
+
+            (0 until f.length).foreach(index => {
+              if(f(index)(solution) < results(index))
+                checkSolution = true
+              else
+                checkSolution = false
+            })
+
+            if (checkSolution) {
+              bestSolution = solution
             }
 
-            if(evaluationFile.length() > 0)
-              UtilityClass.writeEvaluation(evaluationFile, Algorithms.nbEvaluation, f(solution), solution)
+
+            if(evaluationFile.length > 0) {
+              (0 until f.length).foreach(index => {
+                UtilityClass.writeEvaluation(evaluationFile(index), Algorithms.nbEvaluation, f(index)(solution), solution)
+              })
+            }
           }
         }
         else {

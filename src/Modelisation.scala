@@ -307,7 +307,7 @@ object Modelisation {
    * @param solution
    * @return score
    */
-  def commonsTagEval(solution: Array[Int]): Double = {
+  def commonTagEval(solution: Array[Int]): Double = {
     var sum: Double = 0
 
     for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length)
