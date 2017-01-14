@@ -22,11 +22,12 @@ object Algorithms {
     * @param arr
     * @return best solution
     */
-  def HillClimberFirstImprovement(numberElements: Int, nbEval: Int, arr: Array[Int], eval: (Array[Int]) => Double): Array[Int] = {
+  def HillClimberFirstImprovement(numberElements: Int, nbEval: Int, arr: Array[Int], evals : Array[(Array[Int]) => Double]): Array[Int] = {
 
     var solution = arr
     var index = 0
     var i = 0
+    var bestResults = new Array[Double](evals.length)
 
     val random = Random
     val inner = new Breaks
@@ -35,10 +36,12 @@ object Algorithms {
       solution = UtilityClass.generateRandomSolution(Main.nbPhotos)
     }
 
-    var bestResult = eval(solution)
+    //For each function we take the best result
+    (0 until evals.length).foreach( index => bestResults(index) = evals(index)(solution))
 
     while (i < nbEval) {
-      var result = 0.0;
+      var results = new Array[Double](evals.length)
+      var checkSolution = false
 
       inner.breakable {
         for (j <- 0 to numberElements) {
@@ -50,12 +53,21 @@ object Algorithms {
           solution(firstRandomValue) = solution(secondRandomValue)
           solution(secondRandomValue) = temporyValue
 
-          result = eval(solution)
+          (0 until evals.length).foreach(index => results(index) = evals(index)(solution))
+
           i += 1
           nbEvaluation+=1
 
-          if (result < bestResult) {
+          checkSolution = false
 
+          (0 until evals.length).foreach(index => {
+            if(results(index) < bestResults(index))
+              checkSolution = true
+            else
+              checkSolution = false
+          })
+
+          if(checkSolution){
             inner.break
           }
 
@@ -64,9 +76,10 @@ object Algorithms {
         }
       }
 
-      if (result < bestResult) {
-        bestResult = result
-      }
+      (0 until evals.length).foreach(index => {
+        if (checkSolution)
+          bestResults(index) = results(index)
+      })
     }
     solution
   }
@@ -80,27 +93,40 @@ object Algorithms {
     * @param perturbation
     * @return the best solution
     */
-  def IteratedLocalSearch(numberElements: Int, iteration: Int, nbEvaluationHillClimber: Int, perturbation: Int, eval: (Array[Int]) => Double): Array[Int] = {
+  def IteratedLocalSearch(numberElements: Int, iteration: Int, nbEvaluationHillClimber: Int, perturbation: Int, evals : Array[(Array[Int]) => Double]): Array[Int] = {
 
     var random = Random
-    var solution = HillClimberFirstImprovement(numberElements, nbEvaluationHillClimber, UtilityClass.generateRandomSolution(numberElements), eval)
+    var solution = HillClimberFirstImprovement(numberElements, nbEvaluationHillClimber, UtilityClass.generateRandomSolution(numberElements), evals)
 
-    var bestResult = eval(solution)
+    var bestResults = new Array[Double](evals.length)
+    //For each function we take the best result
+    (0 until evals.length).foreach( index => bestResults(index) = evals(index)(solution))
+
     var bestSolution = solution.clone();
     var i = 0
     var percentEvolution = ""
 
     do {
+      var checkSolution = false
       UtilityClass.pertubationIterated(solution, perturbation, random)
 
-      val currentSolution = HillClimberFirstImprovement(numberElements, nbEvaluationHillClimber, solution.clone(), eval)
+      val currentSolution = HillClimberFirstImprovement(numberElements, nbEvaluationHillClimber, solution.clone(), evals)
 
-      val currentResult = eval(currentSolution)
+      var results = new Array[Double](evals.length)
+      //For each functions we saved the current result
+      (0 until evals.length).foreach(index => results(index) = evals(index)(currentSolution))
 
-      if (currentResult < bestResult) {
-        bestResult = currentResult
-        bestSolution = currentSolution.clone()
-        solution = bestSolution.clone();
+      (0 until evals.length).foreach(index => {
+        if(results(index) < bestResults(index))
+          checkSolution = true
+        else
+          checkSolution = false
+      })
+
+      if (checkSolution) {
+        (0 until evals.length).foreach(index => bestResults(index) = results(index))
+        bestSolution = currentSolution
+        solution = bestSolution
       }
 
       i += 1
