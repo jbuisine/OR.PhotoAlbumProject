@@ -24,6 +24,7 @@ object Main {
   var evaluationFile: Array[String] = _
   var criteriaChoices: Array[String] = _
   var solutionFile = ""
+  var bestResults: Array[Double] = _
 
   val numberFunction = 9
   val numberAlgo = 3
@@ -48,8 +49,9 @@ object Main {
       solutionFile = args(0)
 
     var solution = Array[Int](nbPhotos)
-    var bestSolution = Array[Int](nbPhotos)
-    var bestResult = Double.PositiveInfinity
+    var bestSolution = new Array[Int](nbPhotos)
+
+    evaluationFile = new Array[String](0)
 
     val functionQuestion =
       "Which type of objective function do you want to use ?" +
@@ -82,40 +84,44 @@ object Main {
     functionChoice.toInt match {
       case 1 =>
         f = Array(Modelisation.hashEval)
-        criteriaChoices = Array("hash")
+        criteriaChoices = Array(hashTypes(hashChoice-1))
       case 2 =>
         f = Array(Modelisation.commonTagEval)
-        criteriaChoices = Array("common tags")
+        criteriaChoices = Array("Common tags")
       case 3 =>
         f = Array(Modelisation.uncommonTagEval)
-        criteriaChoices = Array("uncommon tags")
+        criteriaChoices = Array("Uncommon tags")
       case 4 =>
         f = Array(Modelisation.nbUncommonTagEval)
-        criteriaChoices = Array("number of uncommon tags")
+        criteriaChoices = Array("Number of uncommon tags")
       case 5 =>
         f = Array(Modelisation.colorsEval)
-        criteriaChoices = Array("colors")
+        criteriaChoices = Array("Colors")
       case 6 =>
         f = Array(Modelisation.greyAVGEval)
-        criteriaChoices = Array("grey AVG")
+        criteriaChoices = Array("Grey AVG")
       case 7 =>
         f = Array(Modelisation.greyAVGEval, Modelisation.colorsEval)
-        criteriaChoices = Array("greyAVG", "colors")
+        criteriaChoices = Array("GreyAVG", "Colors")
       case 8 =>
         f = Array(Modelisation.greyAVGEval, Modelisation.colorsEval, Modelisation.commonTagEval)
-        criteriaChoices = Array("greyAVG", "colors", "common tags")
+        criteriaChoices = Array("GreyAVG", "Colors", "Common tags")
       case 9 =>
         f = Array(Modelisation.colorsEval, Modelisation.uncommonTagEval)
-        criteriaChoices = Array("colors", "uncommon tags")
+        criteriaChoices = Array("Colors", "Uncommon tags")
     }
+
+    //Init bestResult
+    bestResults = new Array[Double](f.length)
+    (0 until f.length).foreach( i => bestResults(i) = Double.PositiveInfinity)
 
     val scoreSaved = "Before starting, indicate if you want to save the result(s) score and number of evaluation."+
       "\n1. I do not want to save my scores."+
       "\n2. Let me specify my files name (Just to inform, files are saved into 'scores' folder)."
     val choiceScoreSaved = UtilityClass.getScannerValue(scoreSaved, "save choice", 0, 2)
 
-    if(choiceScoreSaved == 1){
-      evaluationFile = new Array[String](f.length )
+    if(choiceScoreSaved == 2){
+      evaluationFile = new Array[String](f.length)
       (0 until f.length).foreach(index => {
         do {
           println("Select the file name for " + criteriaChoices(index) + " result")
@@ -153,16 +159,13 @@ object Main {
             println("("+(i+1)+") HC algorithm starts search one of the best solution... It will take few seconds or more...")
             println("---------------------------------------------------------------------------------------------\n")
             solution = Algorithms.HillClimberFirstImprovement(nbPhotos, numberEvaluation, null, f)
-            println("\n("+(i+1)+") HC better score found -> " + f.foreach(x => print("-" + x(solution) +"\n")))
+            println("\n("+(i+1)+") HC better score found :")
+            (0 until f.length).foreach(index => println("- " + criteriaChoices(index) + " score => " +f(index)(solution) +"\n"))
 
-
-            var results = new Array[Double](f.length)
             var checkSolution = false
-            //For each functions we saved the current result
-            (0 until f.length).foreach(index => results(index) = f(index)(solution))
 
             (0 until f.length).foreach(index => {
-              if(f(index)(solution) < results(index))
+              if(f(index)(solution) < bestResults(index))
                 checkSolution = true
               else
                 checkSolution = false
@@ -170,8 +173,9 @@ object Main {
 
             if (checkSolution) {
               bestSolution = solution
+              //For each functions we saved the current result
+              (0 until f.length).foreach(index => bestResults(index) = f(index)(solution))
             }
-
 
             if(evaluationFile.length > 0) {
               (0 until f.length).foreach(index => {
@@ -187,11 +191,15 @@ object Main {
           solution = Algorithms.HillClimberFirstImprovement(nbPhotos, numberEvaluation, null, f)
           bestSolution = solution
 
-          if (evaluationFile.length() > 0)
-            UtilityClass.writeEvaluation(evaluationFile, Algorithms.nbEvaluation, f(solution), solution)
-        }
+          if (evaluationFile.length > 0)
+            UtilityClass.writeEvaluation(evaluationFile(0), Algorithms.nbEvaluation, f(0)(solution), solution)
+          }
 
-        println("\nHC best score found -> " + f(bestSolution))
+        println("\nHC best score found :")
+        (0 until f.length).foreach(index => {
+          println("- " + criteriaChoices(index) + " score => " + f(index)(bestSolution))
+        })
+
       }
       case 2 => {
         val ilsQuestion = "This algorithm need some paramaters : " +
@@ -225,15 +233,30 @@ object Main {
             println("("+(i+1)+") ILS algorithm starts search one of the best solution... It will take few minutes")
             println("------------------------------------------------------------------------------------------\n")
             solution = Algorithms.IteratedLocalSearch(nbPhotos, numberIteration, numberEvaluation, numberPermutation + 1, f)
-            println("\n("+(i+1)+") ILS better score found -> " + f(solution))
 
-            if(bestResult > f(solution)){
-              bestResult = f(solution)
-              bestSolution = solution.clone()
+            println("\n("+(i+1)+") ILS better score found : \n" )
+            (0 until f.length).foreach(index => println("- "+ criteriaChoices(index) + " score => " +f(index)(solution) +"\n"))
+
+            var checkSolution = false
+
+            (0 until f.length).foreach(index => {
+              if(f(index)(solution) < bestResults(index))
+                checkSolution = true
+              else
+                checkSolution = false
+            })
+
+            if (checkSolution) {
+              bestSolution = solution
+              //For each functions we saved the current result
+              (0 until f.length).foreach(index => bestResults(index) = f(index)(solution))
             }
 
-            if(evaluationFile.length() > 0)
-              UtilityClass.writeEvaluation(evaluationFile, Algorithms.nbEvaluation, f(solution), solution)
+            if(evaluationFile.length > 0) {
+              (0 until f.length).foreach(index => {
+                UtilityClass.writeEvaluation(evaluationFile(index), Algorithms.nbEvaluation, f(index)(solution), solution)
+              })
+            }
           }
         }
         else {
@@ -243,11 +266,14 @@ object Main {
           solution = Algorithms.IteratedLocalSearch(nbPhotos, numberIteration, numberEvaluation, numberPermutation + 1, f)
           bestSolution = solution
 
-          if (evaluationFile.length() > 0)
-            UtilityClass.writeEvaluation(evaluationFile, Algorithms.nbEvaluation, f(solution), solution)
+          if (evaluationFile.length > 0)
+            UtilityClass.writeEvaluation(evaluationFile(0), Algorithms.nbEvaluation, f(0)(solution), solution)
         }
 
-        println("\nILS best score found -> " + f(bestSolution))
+        println("\nILS best score found \n")
+        (0 until f.length).foreach(index => {
+          println("- " + criteriaChoices(index) + " score => " + f(index)(bestSolution))
+        })
       }
       case 3 => {
 
@@ -295,15 +321,29 @@ object Main {
             println("---------------------------------------------------------------------------------------------\n")
             solution = Algorithms.GeneticEvolutionnaryAlgorithm(mu, lambda, nbPhotos, numberIteration, numberEvaluation, hcNumber, numberPermutation, f);
 
-            println("\n("+(i+1)+") EA better score found -> " + f(solution))
+            println("\n("+(i+1)+") EA better score found : \n " )
+            (0 until f.length).foreach(index => println("- "+ criteriaChoices(index) + " score => " +f(index)(solution) +"\n"))
 
-            if(bestResult > f(solution)){
-              bestResult = f(solution)
-              bestSolution = solution.clone()
+            var checkSolution = false
+
+            (0 until f.length).foreach(index => {
+              if(f(index)(solution) < bestResults(index))
+                checkSolution = true
+              else
+                checkSolution = false
+            })
+
+            if (checkSolution) {
+              bestSolution = solution
+              //For each functions we saved the current result
+              (0 until f.length).foreach(index => bestResults(index) = f(index)(solution))
             }
 
-            if(evaluationFile.length() > 0)
-              UtilityClass.writeEvaluation(evaluationFile, Algorithms.nbEvaluation, f(solution), solution)
+            if(evaluationFile.length > 0) {
+              (0 until f.length).foreach(index => {
+                UtilityClass.writeEvaluation(evaluationFile(index), Algorithms.nbEvaluation, f(index)(solution), solution)
+              })
+            }
           }
         }
         else {
@@ -311,14 +351,16 @@ object Main {
           println("EA algorithm starts search one of the best solution... It will take few minutes or more...")
           println("------------------------------------------------------------------------------------------\n")
           solution = Algorithms.GeneticEvolutionnaryAlgorithm(mu, lambda, nbPhotos, numberIteration, numberEvaluation, hcNumber, numberPermutation, f);
-
           bestSolution = solution
 
-          if (evaluationFile.length() > 0)
-            UtilityClass.writeEvaluation(evaluationFile, Algorithms.nbEvaluation, f(solution), solution)
+          if (evaluationFile.length > 0)
+            UtilityClass.writeEvaluation(evaluationFile(0), Algorithms.nbEvaluation, f(0) (solution), solution)
         }
 
-        println("\nEA best score found -> " + f(bestSolution))
+        println("\nEA best score found \n")
+        (0 until f.length).foreach(index => {
+          println("- " + criteriaChoices(index) + " score  => " + f(index)(bestSolution))
+        })
       }
     }
     if(solutionFile.length() > 0)

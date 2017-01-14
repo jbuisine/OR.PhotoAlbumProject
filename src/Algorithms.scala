@@ -102,7 +102,6 @@ object Algorithms {
     //For each function we take the best result
     (0 until evals.length).foreach( index => bestResults(index) = evals(index)(solution))
 
-    var bestSolution = solution.clone();
     var i = 0
     var percentEvolution = ""
 
@@ -110,7 +109,7 @@ object Algorithms {
       var checkSolution = false
       UtilityClass.pertubationIterated(solution, perturbation, random)
 
-      val currentSolution = HillClimberFirstImprovement(numberElements, nbEvaluationHillClimber, solution.clone(), evals)
+      val currentSolution = HillClimberFirstImprovement(numberElements, nbEvaluationHillClimber, solution, evals)
 
       var results = new Array[Double](evals.length)
       //For each functions we saved the current result
@@ -124,8 +123,10 @@ object Algorithms {
       })
 
       if (checkSolution) {
-        bestSolution = currentSolution
-        solution = bestSolution
+        (0 until evals.length).foreach(index => {
+          bestResults(index) = results(index)
+        })
+        solution = currentSolution
       }
 
       i += 1
@@ -135,7 +136,7 @@ object Algorithms {
       UtilityClass.showEvolution(lengthText, percentEvolution)
     } while (i < iteration)
 
-    bestSolution
+    solution
   }
 
   /**
