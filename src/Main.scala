@@ -1,5 +1,6 @@
 
 
+import scala.collection.mutable.ArrayBuffer
 import scala.util.control.Breaks
 
 /**
@@ -24,10 +25,10 @@ object Main {
   var evaluationFile: Array[String] = _
   var criteriaChoices: Array[String] = _
   var solutionFile = ""
-  var bestResults: Array[Double] = _
 
   val numberFunction = 9
-  val numberAlgo = 3
+  val numberMonoObjectiveAlgo = 3
+  val numberMultiObjectiveAlgo = 1
 
   //Objective function
   var f: Array[(Array[Int]) => Double] = null
@@ -112,8 +113,7 @@ object Main {
     }
 
     //Init bestResult
-    bestResults = new Array[Double](f.length)
-    (0 until f.length).foreach( i => bestResults(i) = Double.PositiveInfinity)
+    var bestResult = Double.PositiveInfinity
 
     val scoreSaved = "Before starting, indicate if you want to save the result(s) score and number of evaluation."+
       "\n1. I do not want to save my scores."+
@@ -130,240 +130,197 @@ object Main {
       })
     }
 
+    if(f.length > 0) {
+      val algorithmQuestion = "Which type of algorithm do you want to executes ?" +
+        "\n1. Hill Climber First Improvement" +
+        "\n2. Iterated Local Search" +
+        "\n3. Evolutionary Algorithm" +
+        "\n"
+      algorithmChoice = UtilityClass.getScannerValue(algorithmQuestion, "algorithm", 0, numberMonoObjectiveAlgo)
 
-    val algorithmQuestion = "Which type of algorithm do you want to executes ?" +
-      "\n1. Hill Climber First Improvement" +
-      "\n2. Iterated Local Search" +
-      "\n3. Evolutionary Algorithm" +
-      "\n";
-    algorithmChoice = UtilityClass.getScannerValue(algorithmQuestion, "algorithm", 0, numberAlgo)
+      algorithmChoice.toInt match {
+        case 1 => {
 
-    algorithmChoice.toInt match {
-      case 1 => {
+          val iterationQuestion = "Please select number of evaluation you want for you HC (between 1 and 100000)"
+          val numberEvaluation = UtilityClass.getScannerValue(iterationQuestion, "number of iteration", 1, 100000)
 
-        val iterationQuestion = "Please select number of evaluation you want for you HC (between 1 and 100000)"
-        val numberEvaluation = UtilityClass.getScannerValue(iterationQuestion, "number of iteration", 1, 100000)
+          val repetitionQuestion = "\nBefore starting your configured HC algorithm, please indicate how many times you want to execute it. (Between 0 and 1000000)" +
+            "\n1. If you choose to saved solution, by default best solution found of these repetitions will be saved." +
+            "\n2. Futhermore, if you decide to save number of evaluation and score of solution found, each results are saved."
 
-        val repetitionQuestion = "\nBefore starting your configured HC algorithm, please indicate how many times you want to execute it. (Between 0 and 1000000)" +
-                                 "\n1. If you choose to saved solution, by default best solution found of these repetitions will be saved." +
-                                 "\n2. Furthermore, if you decide to save number of evaluation and score of solution found, each results are saved."
-
-        val numberRepetition = UtilityClass.getScannerValue(repetitionQuestion, " number of repetitions", 0, 1000000)
+          val numberRepetition = UtilityClass.getScannerValue(repetitionQuestion, " number of repetitions", 0, 1000000)
 
 
-        if(numberRepetition > 0){
+          if (numberRepetition > 0) {
 
-          for(i <- 0 until numberRepetition){
-            Algorithms.nbEvaluation = 0
-            println("\n--------------------------------------------------------------------------------------------")
-            println("("+(i+1)+") HC algorithm starts search one of the best solution... It will take few seconds or more...")
-            println("---------------------------------------------------------------------------------------------\n")
-            solution = Algorithms.HillClimberFirstImprovement(nbPhotos, numberEvaluation, null, f)
-            println("\n("+(i+1)+") HC better score found :")
-            (0 until f.length).foreach(index => println("- " + criteriaChoices(index) + " score => " +f(index)(solution) +"\n"))
+            for (i <- 0 until numberRepetition) {
 
-            var checkSolution = false
+              println("\n--------------------------------------------------------------------------------------------")
+              println("(" + (i + 1) + ") HC algorithm starts search one of the best solution... It will take few seconds or more...")
+              println("---------------------------------------------------------------------------------------------\n")
+              solution = Algorithms.HillClimberFirstImprovement(nbPhotos, numberEvaluation, null, f(0))
+              println("\n(" + (i + 1) + ") HC better score found -> " + f(0)(solution))
 
-            (0 until f.length).foreach(index => {
-              if(f(index)(solution) < bestResults(index))
-                checkSolution = true
-              else
-                checkSolution = false
-            })
+              if (bestResult > f(0)(solution)) {
+                bestResult = f(0)(solution)
+                bestSolution = solution
+              }
 
-            if (checkSolution) {
-              bestSolution = solution
-              //For each functions we saved the current result
-              (0 until f.length).foreach(index => bestResults(index) = f(index)(solution))
-            }
-
-            if(evaluationFile.length > 0) {
-              (0 until f.length).foreach(index => {
-                UtilityClass.writeEvaluation(evaluationFile(index), Algorithms.nbEvaluation, f(index)(solution), solution)
-              })
+              if (evaluationFile.length > 0)
+                UtilityClass.writeEvaluation(evaluationFile(0), Algorithms.nbEvaluation, f(0)(solution), solution)
             }
           }
-        }
-        else {
-          println("\n------------------------------------------------------------------------------------------")
-          println("HC algorithm starts search one of the best solution... It will take few seconds or more...")
-          println("------------------------------------------------------------------------------------------\n")
-          solution = Algorithms.HillClimberFirstImprovement(nbPhotos, numberEvaluation, null, f)
-          bestSolution = solution
-
-          if (evaluationFile.length > 0)
-            UtilityClass.writeEvaluation(evaluationFile(0), Algorithms.nbEvaluation, f(0)(solution), solution)
-          }
-
-        println("\nHC best score found :")
-        (0 until f.length).foreach(index => {
-          println("- " + criteriaChoices(index) + " score => " + f(index)(bestSolution))
-        })
-
-      }
-      case 2 => {
-        val ilsQuestion = "This algorithm need some paramaters : " +
-          "\n1. Number of iteration for ILS (between 1 and 100000)" +
-          "\n2. Number of evaluation for all HC (between 1 and 100000)" +
-          "\n3. Number of maximum elements you want to permute for each solution (between 1 and " + nbPhotos + ")" +
-          "\n\n"
-        println(ilsQuestion)
-
-        val iterationQuestion = "1. So, please select number of iteration for ILS"
-        val numberIteration = UtilityClass.getScannerValue(iterationQuestion, "number of iteration", 1, 100000)
-
-        val evaluationQuestion = "2. Select number of evaluation for all HC"
-        val numberEvaluation = UtilityClass.getScannerValue(evaluationQuestion, "number of evaluation", 1, 100000)
-
-        val permutationQuestion = "3. Select number of maximum elements permuted for each solution"
-        val numberPermutation = UtilityClass.getScannerValue(permutationQuestion, "number of permutation", 1, nbPhotos)
-
-
-        val repetitionQuestion = "\nBefore starting your configured ILS algorithm, please indicate how many times you want to execute it. (Between 0 and 1000000)" +
-                                 "\n1. If you choose to saved solution, by default best solution found of these repetitions will be saved." +
-                                 "\n2. Futhermore, if you decide to save number of evaluation and score of solution found, each results are saved."
-
-        val numberRepetition = UtilityClass.getScannerValue(repetitionQuestion, " number of repetitions", 0, 1000000)
-
-        if(numberRepetition > 0){
-
-          for(i <- 0 until numberRepetition){
-            Algorithms.nbEvaluation = 0
+          else {
             println("\n------------------------------------------------------------------------------------------")
-            println("("+(i+1)+") ILS algorithm starts search one of the best solution... It will take few minutes")
+            println("HC algorithm starts search one of the best solution... It will take few seconds or more...")
             println("------------------------------------------------------------------------------------------\n")
-            solution = Algorithms.IteratedLocalSearch(nbPhotos, numberIteration, numberEvaluation, numberPermutation + 1, f)
+            solution = Algorithms.HillClimberFirstImprovement(nbPhotos, numberEvaluation, null, f(0))
+            bestSolution = solution
 
-            println("\n("+(i+1)+") ILS better score found : \n" )
-            (0 until f.length).foreach(index => println("- "+ criteriaChoices(index) + " score => " +f(index)(solution) +"\n"))
+            if (evaluationFile.length > 0)
+              UtilityClass.writeEvaluation(evaluationFile(0), Algorithms.nbEvaluation, f(0)(solution), solution)
+          }
 
-            var checkSolution = false
+          println("\nHC best score found -> " + f(0)(bestSolution))
+        }
+        case 2 => {
+          val ilsQuestion = "This algorithm need some paramaters : " +
+            "\n1. Number of iteration for ILS (between 1 and 100000)" +
+            "\n2. Number of evaluation for all HC (between 1 and 100000)" +
+            "\n3. Number of maximum elements you want to permute for each solution (between 1 and " + nbPhotos + ")" +
+            "\n\n"
+          println(ilsQuestion)
 
-            (0 until f.length).foreach(index => {
-              if(f(index)(solution) < bestResults(index))
-                checkSolution = true
-              else
-                checkSolution = false
-            })
+          val iterationQuestion = "1. So, please select number of iteration for ILS"
+          val numberIteration = UtilityClass.getScannerValue(iterationQuestion, "number of iteration", 1, 100000)
 
-            if (checkSolution) {
-              bestSolution = solution
-              //For each functions we saved the current result
-              (0 until f.length).foreach(index => bestResults(index) = f(index)(solution))
-            }
+          val evaluationQuestion = "2. Select number of evaluation for all HC"
+          val numberEvaluation = UtilityClass.getScannerValue(evaluationQuestion, "number of evaluation", 1, 100000)
 
-            if(evaluationFile.length > 0) {
-              (0 until f.length).foreach(index => {
-                UtilityClass.writeEvaluation(evaluationFile(index), Algorithms.nbEvaluation, f(index)(solution), solution)
-              })
+          val permutationQuestion = "3. Select number of maximum elements permuted for each solution"
+          val numberPermutation = UtilityClass.getScannerValue(permutationQuestion, "number of permutation", 1, nbPhotos)
+
+
+          val repetitionQuestion = "\nBefore starting your configured ILS algorithm, please indicate how many times you want to execute it. (Between 0 and 1000000)" +
+            "\n1. If you choose to saved solution, by default best solution found of these repetitions will be saved." +
+            "\n2. Futhermore, if you decide to save number of evaluation and score of solution found, each results are saved."
+
+          val numberRepetition = UtilityClass.getScannerValue(repetitionQuestion, " number of repetitions", 0, 1000000)
+
+          if (numberRepetition > 0) {
+
+            for (i <- 0 until numberRepetition) {
+
+              println("\n------------------------------------------------------------------------------------------")
+              println("(" + (i + 1) + ") ILS algorithm starts search one of the best solution... It will take few minutes")
+              println("------------------------------------------------------------------------------------------\n")
+              solution = Algorithms.IteratedLocalSearch(nbPhotos, numberIteration, numberEvaluation, numberPermutation + 1, f(0))
+              println("\n(" + (i + 1) + ") ILS better score found -> " + f(0)(solution))
+
+              if (bestResult > f(0)(solution)) {
+                bestResult = f(0)(solution)
+                bestSolution = solution
+              }
+
+              if (evaluationFile.length > 0)
+                UtilityClass.writeEvaluation(evaluationFile(0), Algorithms.nbEvaluation, f(0)(solution), solution)
             }
           }
+          else {
+            println("\n------------------------------------------------------------------------------------------")
+            println("ILS algorithm starts search one of the best solution... It will take few minutes")
+            println("------------------------------------------------------------------------------------------\n")
+            solution = Algorithms.IteratedLocalSearch(nbPhotos, numberIteration, numberEvaluation, numberPermutation + 1, f(0))
+            bestSolution = solution
+
+            if (evaluationFile.length > 0)
+              UtilityClass.writeEvaluation(evaluationFile(0), Algorithms.nbEvaluation, f(0)(solution), solution)
+          }
+
+          println("\nILS best score found -> " + f(0)(bestSolution))
         }
-        else {
-          println("\n------------------------------------------------------------------------------------------")
-          println("ILS algorithm starts search one of the best solution... It will take few minutes")
-          println("------------------------------------------------------------------------------------------\n")
-          solution = Algorithms.IteratedLocalSearch(nbPhotos, numberIteration, numberEvaluation, numberPermutation + 1, f)
-          bestSolution = solution
+        case 3 => {
 
-          if (evaluationFile.length > 0)
-            UtilityClass.writeEvaluation(evaluationFile(0), Algorithms.nbEvaluation, f(0)(solution), solution)
-        }
+          val eaQuestion = "This algorithm need some paramaters : " +
+            "\n1. Number of mu (parents) elements (between 1 and 1000)" +
+            "\n2. Number of lambda (children) elements (between 1 and 1000)" +
+            "\n3. Number of iteration for EA algorithm (between 1 and 100000) " +
+            "\n4. Number of evaluation for each HC (between 1 and 100000)" +
+            "\n5. Number of HC you want to do for each genitors (same number of lambda) solutions (between 1 and 100000)" +
+            "\n6. Number of maximum elements you want to permute for each solution (between 1 and " + nbPhotos + ")" +
+            "\n\n"
+          println(eaQuestion)
 
-        println("\nILS best score found \n")
-        (0 until f.length).foreach(index => {
-          println("- " + criteriaChoices(index) + " score => " + f(index)(bestSolution))
-        })
-      }
-      case 3 => {
+          val muQuestion = "1. So, please select number of mu elements"
+          val mu = UtilityClass.getScannerValue(muQuestion, "number of mu", 1, 1000)
 
-        val eaQuestion = "This algorithm need some paramaters : " +
-          "\n1. Number of mu (parents) elements (between 1 and 1000)" +
-          "\n2. Number of lambda (children) elements (between 1 and 1000)" +
-          "\n3. Number of iteration for EA algorithm (between 1 and 100000) " +
-          "\n4. Number of evaluation for each HC (between 1 and 100000)" +
-          "\n5. Number of HC you want to do for each genitors (same number of lambda) solutions (between 1 and 100000)" +
-          "\n6. Number of maximum elements you want to permute for each solution (between 1 and " + nbPhotos + ")" +
-          "\n\n"
-        println(eaQuestion)
+          val lambdaQuestion = "2. Select number of lambda elements"
+          val lambda = UtilityClass.getScannerValue(lambdaQuestion, "number of lambda", 1, 1000)
 
-        val muQuestion = "1. So, please select number of mu elements"
-        val mu = UtilityClass.getScannerValue(muQuestion, "number of mu", 1, 1000)
+          val iterationQuestion = "3. Select number of iteration you want for EA"
+          val numberIteration = UtilityClass.getScannerValue(iterationQuestion, "number of iteration", 1, 100000)
 
-        val lambdaQuestion = "2. Select number of lambda elements"
-        val lambda = UtilityClass.getScannerValue(lambdaQuestion, "number of lambda", 1, 1000)
+          val evaluationQuestion = "4. Select number of evaluation for all HC"
+          val numberEvaluation = UtilityClass.getScannerValue(evaluationQuestion, "number of evaluation", 1, 100000)
 
-        val iterationQuestion = "3. Select number of iteration you want for EA"
-        val numberIteration = UtilityClass.getScannerValue(iterationQuestion, "number of iteration", 1, 100000)
+          val hcQuestion = "5. Select number of HC"
+          val hcNumber = UtilityClass.getScannerValue(hcQuestion, "number of HC", 1, 100000)
 
-        val evaluationQuestion = "4. Select number of evaluation for all HC"
-        val numberEvaluation = UtilityClass.getScannerValue(evaluationQuestion, "number of evaluation", 1, 100000)
+          val permutationQuestion = "6. Select number of maximum elements permuted for each solution"
+          val numberPermutation = UtilityClass.getScannerValue(permutationQuestion, "number of elements to permute", 1, nbPhotos)
 
-        val hcQuestion = "5. Select number of HC"
-        val hcNumber = UtilityClass.getScannerValue(hcQuestion, "number of HC", 1, 100000)
+          val repetitionQuestion = "\nBefore starting your configured EA algorithm, please indicate how many times you want to execute it. (Between 0 and 1000000)" +
+            "\n1. If you choose to saved solution, by default best solution found of these repetitions will be saved." +
+            "\n2. Futhermore, if you decide to save number of evaluation and score of solution found, each results are saved."
 
-        val permutationQuestion = "6. Select number of maximum elements permuted for each solution"
-        val numberPermutation = UtilityClass.getScannerValue(permutationQuestion, "number of elements to permute", 1, nbPhotos)
-
-        val repetitionQuestion = "\nBefore starting your configured EA algorithm, please indicate how many times you want to execute it. (Between 0 and 1000000)" +
-                                 "\n1. If you choose to saved solution, by default best solution found of these repetitions will be saved." +
-                                 "\n2. Futhermore, if you decide to save number of evaluation and score of solution found, each results are saved."
-
-        val numberRepetition = UtilityClass.getScannerValue(repetitionQuestion, " number of repetitions", 0, 1000000)
+          val numberRepetition = UtilityClass.getScannerValue(repetitionQuestion, " number of repetitions", 0, 1000000)
 
 
-        if(numberRepetition > 0){
+          if (numberRepetition > 0) {
 
-          for(i <- 0 until numberRepetition){
-            Algorithms.nbEvaluation = 0
-            println("\n--------------------------------------------------------------------------------------------")
-            println("("+(i+1)+") EA algorithm starts search one of the best solution... It will take few minutes or more...")
-            println("---------------------------------------------------------------------------------------------\n")
-            solution = Algorithms.GeneticEvolutionnaryAlgorithm(mu, lambda, nbPhotos, numberIteration, numberEvaluation, hcNumber, numberPermutation, f);
+            for (i <- 0 until numberRepetition) {
 
-            println("\n("+(i+1)+") EA better score found : \n " )
-            (0 until f.length).foreach(index => println("- "+ criteriaChoices(index) + " score => " +f(index)(solution) +"\n"))
+              println("\n--------------------------------------------------------------------------------------------")
+              println("(" + (i + 1) + ") EA algorithm starts search one of the best solution... It will take few minutes or more...")
+              println("---------------------------------------------------------------------------------------------\n")
+              solution = Algorithms.GeneticEvolutionnaryAlgorithm(mu, lambda, nbPhotos, numberIteration, numberEvaluation, hcNumber, numberPermutation, f(0));
 
-            var checkSolution = false
+              println("\n(" + (i + 1) + ") EA better score found -> " + f(0)(solution))
 
-            (0 until f.length).foreach(index => {
-              if(f(index)(solution) < bestResults(index))
-                checkSolution = true
-              else
-                checkSolution = false
-            })
+              if (bestResult > f(0)(solution)) {
+                bestResult = f(0)(solution)
+                bestSolution = solution
+              }
 
-            if (checkSolution) {
-              bestSolution = solution
-              //For each functions we saved the current result
-              (0 until f.length).foreach(index => bestResults(index) = f(index)(solution))
-            }
-
-            if(evaluationFile.length > 0) {
-              (0 until f.length).foreach(index => {
-                UtilityClass.writeEvaluation(evaluationFile(index), Algorithms.nbEvaluation, f(index)(solution), solution)
-              })
+              if (evaluationFile.length > 0)
+                UtilityClass.writeEvaluation(evaluationFile(0), Algorithms.nbEvaluation, f(0)(solution), solution)
             }
           }
-        }
-        else {
-          println("\n------------------------------------------------------------------------------------------")
-          println("EA algorithm starts search one of the best solution... It will take few minutes or more...")
-          println("------------------------------------------------------------------------------------------\n")
-          solution = Algorithms.GeneticEvolutionnaryAlgorithm(mu, lambda, nbPhotos, numberIteration, numberEvaluation, hcNumber, numberPermutation, f);
-          bestSolution = solution
+          else {
+            println("\n------------------------------------------------------------------------------------------")
+            println("EA algorithm starts search one of the best solution... It will take few minutes or more...")
+            println("------------------------------------------------------------------------------------------\n")
+            solution = Algorithms.GeneticEvolutionnaryAlgorithm(mu, lambda, nbPhotos, numberIteration, numberEvaluation, hcNumber, numberPermutation, f(0));
 
-          if (evaluationFile.length > 0)
-            UtilityClass.writeEvaluation(evaluationFile(0), Algorithms.nbEvaluation, f(0) (solution), solution)
-        }
+            bestSolution = solution
 
-        println("\nEA best score found \n")
-        (0 until f.length).foreach(index => {
-          println("- " + criteriaChoices(index) + " score  => " + f(index)(bestSolution))
-        })
+            if (evaluationFile.length > 0)
+              UtilityClass.writeEvaluation(evaluationFile(0), Algorithms.nbEvaluation, f(0)(solution), solution)
+          }
+
+          println("\nEA best score found -> " + f(0)(bestSolution))
+        }
       }
+
+      if(solutionFile.length() > 0)
+        UtilityClass.writeSolution(solutionFile, bestSolution)
     }
-    if(solutionFile.length() > 0)
-      UtilityClass.writeSolution(solutionFile, bestSolution)
+    else{
+      //Multi objective functions implementation here for example with pareto algorithm
+      val algorithmQuestion = "Which type of algorithm do you want to executes ?" +
+        "\n1. Pareto local search" +
+        "\n"
+      algorithmChoice = UtilityClass.getScannerValue(algorithmQuestion, "algorithm", 0, numberMultiObjectiveAlgo)
+    }
   }
 }

@@ -1,5 +1,6 @@
 import java.util.Random
 
+import scala.collection.mutable.ArrayBuffer
 import scala.util.{Failure, Success, Try}
 
 /**
@@ -119,7 +120,6 @@ object UtilityClass {
    * @param nbEval
    * @param result
    * @param solution
-   * @param bestSolution
    */
   def writeEvaluation(filename: String, nbEval: Int, result: Double, solution: Array[Int]) {
 
@@ -132,5 +132,51 @@ object UtilityClass {
 
     file.writeLine(line, true)
     println(s"Evaluation saved into scores/$filename")
+  }
+
+  /**
+    * Function used to check if solutions can be removed because it is a non-determinist solution
+    * @param arr
+    * @param evals
+    * @return better solutions
+    */
+  def getBetterSolutions(arr: ArrayBuffer[Array[Int]], evals : Array[(Array[Int]) => Double]) : ArrayBuffer[Array[Int]] = {
+    var solutions = arr
+
+    var countFalseSol = 0
+    (0 until solutions.length).foreach( current_sol_index => {
+
+      solutions.foreach( sol => {
+        var checkSol = true
+        (0 until evals.length).foreach( index => {
+          if(evals(index)(solutions(current_sol_index)) >= evals(index)(sol))
+            checkSol = false
+        })
+
+        if(checkSol)
+          countFalseSol += 1
+      })
+
+      if(countFalseSol == 0)
+        solutions.remove(current_sol_index)
+    })
+    solutions
+  }
+
+  def checkCurrentSolution(arr: ArrayBuffer[Array[Int]], evals: Array[(Array[Int]) => Double], current_solution: Array[Int]) : Boolean = {
+
+    arr.foreach( sol => {
+
+      var checkSol = true
+      (0 until evals.length).foreach( index => {
+
+        if(evals(index)(current_solution) >= evals(index)(sol))
+          checkSol = false
+      })
+      if(checkSol)
+        return true
+    })
+
+    return false
   }
 }

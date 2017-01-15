@@ -8,7 +8,9 @@ Deux algorithmes sont pour le moment utilisé :
 - Hill Climber First Improvement permettant l'exploitation d'une solution.
 - Iterated Local Search qui permettra d'explorer de nouveaux optimaux locaux obtenus par le biais du Hill Climber.
 
-Le projet sera développé en Scala dans le but de profiter du paradigme de programmation fonctionnelle proposé par ce langage. Il comprendra pour le moment des fonctions objectif mono. L'objectif du projet sera donc par la suite de mettre en place et d'évaluer des fonctions objectif de type multi-objectifs.
+Le projet sera développé en Scala dans le but de profiter du paradigme de programmation fonctionnelle proposé par ce langage. Il comprendra des problèmes mono et multi-objectives.
+
+L'algorithme Pareto local search sera utilisé pour les problèmes multi-objectives.
 
 ### Description
 

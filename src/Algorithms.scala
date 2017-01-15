@@ -1,6 +1,6 @@
 
 import scala.util.control.Breaks
-import scala.collection.mutable.MutableList
+import scala.collection.mutable.{ArrayBuffer, MutableList}
 import scala.util.Random
 
 /**
@@ -22,12 +22,10 @@ object Algorithms {
     * @param arr
     * @return best solution
     */
-  def HillClimberFirstImprovement(numberElements: Int, nbEval: Int, arr: Array[Int], evals : Array[(Array[Int]) => Double]): Array[Int] = {
-
+  def HillClimberFirstImprovement(numberElements: Int, nbEval: Int, arr: Array[Int], eval: (Array[Int]) => Double): Array[Int] = {
     var solution = arr
-    var index = 0
+    var index = 0;
     var i = 0
-    var bestResults = new Array[Double](evals.length)
 
     val random = Random
     val inner = new Breaks
@@ -36,12 +34,10 @@ object Algorithms {
       solution = UtilityClass.generateRandomSolution(Main.nbPhotos)
     }
 
-    //For each function we take the best result
-    (0 until evals.length).foreach( index => bestResults(index) = evals(index)(solution))
+    var bestResult = eval(solution)
 
     while (i < nbEval) {
-      var results = new Array[Double](evals.length)
-      var checkSolution = false
+      var result = 0.0;
 
       inner.breakable {
         for (j <- 0 to numberElements) {
@@ -53,21 +49,12 @@ object Algorithms {
           solution(firstRandomValue) = solution(secondRandomValue)
           solution(secondRandomValue) = temporyValue
 
-          (0 until evals.length).foreach(index => results(index) = evals(index)(solution))
-
+          result = eval(solution)
           i += 1
           nbEvaluation+=1
 
-          checkSolution = false
+          if (result < bestResult) {
 
-          (0 until evals.length).foreach(index => {
-            if(results(index) < bestResults(index))
-              checkSolution = true
-            else
-              checkSolution = false
-          })
-
-          if(checkSolution){
             inner.break
           }
 
@@ -76,10 +63,9 @@ object Algorithms {
         }
       }
 
-      (0 until evals.length).foreach(index => {
-        if (checkSolution)
-          bestResults(index) = results(index)
-      })
+      if (result < bestResult) {
+        bestResult = result
+      }
     }
     solution
   }
@@ -93,40 +79,26 @@ object Algorithms {
     * @param perturbation
     * @return the best solution
     */
-  def IteratedLocalSearch(numberElements: Int, iteration: Int, nbEvaluationHillClimber: Int, perturbation: Int, evals : Array[(Array[Int]) => Double]): Array[Int] = {
-
+  def IteratedLocalSearch(numberElements: Int, iteration: Int, nbEvaluationHillClimber: Int, perturbation: Int, eval: (Array[Int]) => Double): Array[Int] = {
     var random = Random
-    var solution = HillClimberFirstImprovement(numberElements, nbEvaluationHillClimber, UtilityClass.generateRandomSolution(numberElements), evals)
+    var solution = HillClimberFirstImprovement(numberElements, nbEvaluationHillClimber, UtilityClass.generateRandomSolution(numberElements), eval)
 
-    var bestResults = new Array[Double](evals.length)
-    //For each function we take the best result
-    (0 until evals.length).foreach( index => bestResults(index) = evals(index)(solution))
-
+    var bestResult = eval(solution)
+    var bestSolution = solution.clone();
     var i = 0
     var percentEvolution = ""
 
     do {
-      var checkSolution = false
       UtilityClass.pertubationIterated(solution, perturbation, random)
 
-      val currentSolution = HillClimberFirstImprovement(numberElements, nbEvaluationHillClimber, solution, evals)
+      val currentSolution = HillClimberFirstImprovement(numberElements, nbEvaluationHillClimber, solution.clone(), eval)
 
-      var results = new Array[Double](evals.length)
-      //For each functions we saved the current result
-      (0 until evals.length).foreach(index => results(index) = evals(index)(currentSolution))
+      val currentResult = eval(currentSolution)
 
-      (0 until evals.length).foreach(index => {
-        if(results(index) < bestResults(index))
-          checkSolution = true
-        else
-          checkSolution = false
-      })
-
-      if (checkSolution) {
-        (0 until evals.length).foreach(index => {
-          bestResults(index) = results(index)
-        })
-        solution = currentSolution
+      if (currentResult < bestResult) {
+        bestResult = currentResult
+        bestSolution = currentSolution.clone()
+        solution = bestSolution.clone();
       }
 
       i += 1
@@ -136,7 +108,7 @@ object Algorithms {
       UtilityClass.showEvolution(lengthText, percentEvolution)
     } while (i < iteration)
 
-    solution
+    return bestSolution
   }
 
   /**
@@ -150,7 +122,7 @@ object Algorithms {
     * @param numberOfPermutations
     * @return best solution object found
     */
-  def GeneticEvolutionnaryAlgorithm(mu: Int, lambda: Int, numberElements: Int, iteration: Int, nbEvaluationHillClimber: Int, numberOfHc: Int, numberOfPermutations: Int, evals: Array[(Array[Int]) => Double]): Array[Int] = {
+  def GeneticEvolutionnaryAlgorithm(mu: Int, lambda: Int, numberElements: Int, iteration: Int, nbEvaluationHillClimber: Int, numberOfHc: Int, numberOfPermutations: Int, eval: (Array[Int]) => Double): Array[Int] = {
 
     var rand = Random
     var percentEvolution = ""
@@ -171,21 +143,9 @@ object Algorithms {
         var firstSelectedIndex = rand.nextInt(parentsSolutions.length - 1);
         var secondSelectedIndex = rand.nextInt(parentsSolutions.length - 1);
 
-        var checkFisrtWinner = false
-        var checkSecondWinner = false
-        (0 until evals.length).foreach(index => {
-          if(evals(index)(parentsSolutions(firstSelectedIndex)) <= evals(index)(parentsSolutions(secondSelectedIndex))) {
-            checkFisrtWinner = true
-            checkSecondWinner = false
-          }else {
-            checkFisrtWinner = false
-            checkSecondWinner = true
-          }
-        })
-
-        if (checkFisrtWinner) {
+        if (eval(parentsSolutions(firstSelectedIndex)) >= eval(parentsSolutions(secondSelectedIndex))) {
           genitorsSolutions += parentsSolutions(firstSelectedIndex)
-        } else if(checkSecondWinner){
+        } else {
           genitorsSolutions += parentsSolutions(secondSelectedIndex)
         }
       }
@@ -200,21 +160,9 @@ object Algorithms {
         // Make hill climber on the current solution to improve the genitor solution
         for (k <- 0 to numberOfHc - 1) {
           var currentSolution = HillClimberFirstImprovement(genitorsSolutions(j).length, nbEvaluationHillClimber,
-            genitorsSolutions(j).clone(), evals)
+            genitorsSolutions(j).clone(), eval)
 
-          var results = new Array[Double](evals.length)
-          var checkSolution = false
-          //For each functions we saved the current result
-          (0 until evals.length).foreach(index => results(index) = evals(index)(currentSolution))
-
-          (0 until evals.length).foreach(index => {
-            if(results(index) < evals(index)(genitorsSolutions(j)))
-              checkSolution = true
-            else
-              checkSolution = false
-          })
-
-          if (checkSolution) {
+          if (eval(currentSolution) < eval(genitorsSolutions(j))) {
             genitorsSolutions(j) = currentSolution
           }
         }
@@ -228,7 +176,7 @@ object Algorithms {
       }
 
       // Used to order list of solution by result
-      parentsSolutions = parentsSolutions.sortWith((x, y) => evals(0)(x) < evals(0)(y))
+      parentsSolutions = parentsSolutions.sortWith((x, y) => eval(x) < eval(y))
 
       // Remove all elements without good result for the next step
       parentsSolutions = parentsSolutions.take(mu)
@@ -236,8 +184,61 @@ object Algorithms {
       val lengthText = percentEvolution.length()
       percentEvolution = "EA -> " + Main.df.format(i * 100.0 / iteration) + "%"
       UtilityClass.showEvolution(lengthText, percentEvolution)
+
     }
 
-    parentsSolutions(0);
+    return parentsSolutions(0);
+  }
+
+  /**
+    * Method which used method implement pareto local search and find non determinist solution
+    * @param numberElements
+    * @param nbEval
+    * @param arr
+    * @return best solution
+    */
+  def ParetoLocalSearch(numberElements: Int, nbEval: Int, arr: ArrayBuffer[Array[Int]], evals : Array[(Array[Int]) => Double]): ArrayBuffer[Array[Int]] = {
+
+    var solutions = arr
+    var index = 0
+    var i = 0
+
+    val random = Random
+    val inner = new Breaks
+
+    if (solutions == null) {
+      solutions = new ArrayBuffer()
+      solutions += UtilityClass.generateRandomSolution(Main.nbPhotos)
+    }
+
+    while (i < nbEval) {
+
+      inner.breakable {
+        for (j <- 0 to numberElements) {
+
+          (0 until solutions.length).foreach( index => {
+            val firstRandomValue = random.nextInt(Main.nbPhotos)
+            val secondRandomValue = random.nextInt(Main.nbPhotos)
+
+            val temporyValue = solutions(index)(firstRandomValue)
+            solutions(index)(firstRandomValue) = solutions(index)(secondRandomValue)
+            solutions(index)(secondRandomValue) = temporyValue
+
+            i += 1
+            nbEvaluation+=1
+
+            if(UtilityClass.checkCurrentSolution(solutions, evals, solutions(index))){
+              solutions += solutions(index)
+            }
+
+            solutions(index)(secondRandomValue) = solutions(index)(firstRandomValue)
+            solutions(index)(firstRandomValue) = temporyValue
+          })
+        }
+
+        solutions = UtilityClass.getBetterSolutions(solutions, evals)
+      }
+    }
+    solutions
   }
 }
