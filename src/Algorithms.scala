@@ -1,6 +1,6 @@
 
 import scala.util.control.Breaks
-import scala.collection.mutable.{ArrayBuffer, MutableList}
+import scala.collection.mutable.{ListBuffer, MutableList}
 import scala.util.Random
 
 /**
@@ -73,15 +73,14 @@ object Algorithms {
   /**
     * Method which used the iterated local search algorithm to find a better solution
     *
-    * @param numberElements
     * @param iteration
     * @param nbEvaluationHillClimber
     * @param perturbation
     * @return the best solution
     */
-  def IteratedLocalSearch(numberElements: Int, iteration: Int, nbEvaluationHillClimber: Int, perturbation: Int, eval: (Array[Int]) => Double): Array[Int] = {
+  def IteratedLocalSearch(iteration: Int, nbEvaluationHillClimber: Int, perturbation: Int, eval: (Array[Int]) => Double): Array[Int] = {
     var random = Random
-    var solution = HillClimberFirstImprovement(numberElements, nbEvaluationHillClimber, UtilityClass.generateRandomSolution(numberElements), eval)
+    var solution = HillClimberFirstImprovement(Main.nbPhotos, nbEvaluationHillClimber, UtilityClass.generateRandomSolution(Main.nbPhotos), eval)
 
     var bestResult = eval(solution)
     var bestSolution = solution.clone();
@@ -91,7 +90,7 @@ object Algorithms {
     do {
       UtilityClass.pertubationIterated(solution, perturbation, random)
 
-      val currentSolution = HillClimberFirstImprovement(numberElements, nbEvaluationHillClimber, solution.clone(), eval)
+      val currentSolution = HillClimberFirstImprovement(Main.nbPhotos, nbEvaluationHillClimber, solution.clone(), eval)
 
       val currentResult = eval(currentSolution)
 
@@ -116,13 +115,12 @@ object Algorithms {
     *
     * @param mu
     * @param lambda
-    * @param numberElements
     * @param iteration
     * @param nbEvaluationHillClimber
     * @param numberOfPermutations
     * @return best solution object found
     */
-  def GeneticEvolutionnaryAlgorithm(mu: Int, lambda: Int, numberElements: Int, iteration: Int, nbEvaluationHillClimber: Int, numberOfHc: Int, numberOfPermutations: Int, eval: (Array[Int]) => Double): Array[Int] = {
+  def GeneticEvolutionnaryAlgorithm(mu: Int, lambda: Int, iteration: Int, nbEvaluationHillClimber: Int, numberOfHc: Int, numberOfPermutations: Int, eval: (Array[Int]) => Double): Array[Int] = {
 
     var rand = Random
     var percentEvolution = ""
@@ -131,7 +129,7 @@ object Algorithms {
     var parentsSolutions = MutableList[Array[Int]]()
 
     for (i <- 0 to mu - 1) {
-      parentsSolutions += UtilityClass.generateRandomSolution(numberElements)
+      parentsSolutions += UtilityClass.generateRandomSolution(Main.nbPhotos)
     }
     //println(parentsSolutions.length)
 
@@ -192,14 +190,15 @@ object Algorithms {
 
   /**
     * Method which used method implement pareto local search and find non determinist solution
-    * @param numberElements
     * @param nbEval
     * @param arr
     * @return best solution
     */
-  def ParetoLocalSearch(numberElements: Int, nbEval: Int, arr: ArrayBuffer[Array[Int]], evals : Array[(Array[Int]) => Double]): ArrayBuffer[Array[Int]] = {
+  def ParetoLocalSearch(nbEval: Int, numberSolution: Int, arr: ListBuffer[Array[Int]], evals : Array[(Array[Int]) => Double]): ListBuffer[Array[Int]] = {
 
+    var rand = new Random
     var solutions = arr
+    var solutionsPassed = new ListBuffer[Array[Int]]
     var index = 0
     var i = 0
 
@@ -207,37 +206,45 @@ object Algorithms {
     val inner = new Breaks
 
     if (solutions == null) {
-      solutions = new ArrayBuffer()
+      solutions = new ListBuffer[Array[Int]]()
       solutions += UtilityClass.generateRandomSolution(Main.nbPhotos)
     }
 
     while (i < nbEval) {
+      println("=> "+ i)
+      //Select a non visited solution of solutions
+      var current_sol = new Array[Int](Main.nbPhotos)
+      do{
 
-      inner.breakable {
-        for (j <- 0 to numberElements) {
+        val randIndex = rand.nextInt(solutions.length)
+        current_sol = solutions(randIndex)
 
-          (0 until solutions.length).foreach( index => {
-            val firstRandomValue = random.nextInt(Main.nbPhotos)
-            val secondRandomValue = random.nextInt(Main.nbPhotos)
+      }while(solutionsPassed.contains(current_sol))
 
-            val temporyValue = solutions(index)(firstRandomValue)
-            solutions(index)(firstRandomValue) = solutions(index)(secondRandomValue)
-            solutions(index)(secondRandomValue) = temporyValue
+      //Flypping each bit of the current solution
+      (0 until Main.nbPhotos).foreach( index => {
+        val randomValue = random.nextInt(Main.nbPhotos)
 
-            i += 1
-            nbEvaluation+=1
+        val temporyValue = current_sol(index)
+        current_sol(index) = current_sol(randomValue)
+        current_sol(randomValue) = temporyValue
 
-            if(UtilityClass.checkCurrentSolution(solutions, evals, solutions(index))){
-              solutions += solutions(index)
-            }
+        //Add this new solutions with all old solutions
+        solutions += current_sol.clone()
 
-            solutions(index)(secondRandomValue) = solutions(index)(firstRandomValue)
-            solutions(index)(firstRandomValue) = temporyValue
-          })
-        }
+        current_sol(randomValue) = current_sol(index)
+        current_sol(index) = temporyValue
 
-        solutions = UtilityClass.getBetterSolutions(solutions, evals)
-      }
+      })
+
+      i += 1
+      nbEvaluation+=1
+
+      //Flag solution as visited
+      solutionsPassed += current_sol
+
+      //Take only non dominated solutions
+      solutions = UtilityClass.getBetterSolutions(solutions, numberSolution, evals)
     }
     solutions
   }

@@ -1,6 +1,7 @@
 import java.util.Random
 
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable
+import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import scala.util.{Failure, Success, Try}
 
 /**
@@ -135,48 +136,38 @@ object UtilityClass {
   }
 
   /**
-    * Function used to check if solutions can be removed because it is a non-determinist solution
+    * Function used to check if solutions can be removed because it is a non dominated solution
     * @param arr
     * @param evals
-    * @return better solutions
+    * @return non dominated solutions
     */
-  def getBetterSolutions(arr: ArrayBuffer[Array[Int]], evals : Array[(Array[Int]) => Double]) : ArrayBuffer[Array[Int]] = {
+  def getBetterSolutions(arr: ListBuffer[Array[Int]], numberSolution: Int, evals : Array[(Array[Int]) => Double]) : ListBuffer[Array[Int]] = {
     var solutions = arr
+    var elements = new ListBuffer[Int]
 
-    var countFalseSol = 0
-    (0 until solutions.length).foreach( current_sol_index => {
-
-      solutions.foreach( sol => {
-        var checkSol = true
+    println("Sols => " + arr.length)
+    (0 until arr.length).foreach( sol_index => {
+      var countDominatedSol = 0
+      var checkSol = false
+      (0 until arr.length).foreach( current_sol_index => {
         (0 until evals.length).foreach( index => {
-          if(evals(index)(solutions(current_sol_index)) >= evals(index)(sol))
-            checkSol = false
+          if(evals(index)(arr(sol_index)) < evals(index)(solutions(current_sol_index)))
+            checkSol = true
         })
 
-        if(checkSol)
-          countFalseSol += 1
+        if(!checkSol && !elements.contains(sol_index))
+            elements += sol_index
       })
-
-      if(countFalseSol == 0)
-        solutions.remove(current_sol_index)
     })
-    solutions
-  }
-
-  def checkCurrentSolution(arr: ArrayBuffer[Array[Int]], evals: Array[(Array[Int]) => Double], current_solution: Array[Int]) : Boolean = {
-
-    arr.foreach( sol => {
-
-      var checkSol = true
-      (0 until evals.length).foreach( index => {
-
-        if(evals(index)(current_solution) >= evals(index)(sol))
-          checkSol = false
+    println("Element to remove " + elements.length)
+    var elem = 0
+    if(elements.length != arr.length){
+      elements.foreach( x => {
+        solutions.remove(x - elem)
+        elem += 1
       })
-      if(checkSol)
-        return true
-    })
-
-    return false
+    }
+    println("Sols after => " + solutions.length)
+    solutions.take(numberSolution)
   }
 }

@@ -130,7 +130,7 @@ object Main {
       })
     }
 
-    if(f.length > 0) {
+    if(f.length  <= 1) {
       val algorithmQuestion = "Which type of algorithm do you want to executes ?" +
         "\n1. Hill Climber First Improvement" +
         "\n2. Iterated Local Search" +
@@ -214,7 +214,7 @@ object Main {
               println("\n------------------------------------------------------------------------------------------")
               println("(" + (i + 1) + ") ILS algorithm starts search one of the best solution... It will take few minutes")
               println("------------------------------------------------------------------------------------------\n")
-              solution = Algorithms.IteratedLocalSearch(nbPhotos, numberIteration, numberEvaluation, numberPermutation + 1, f(0))
+              solution = Algorithms.IteratedLocalSearch(numberIteration, numberEvaluation, numberPermutation + 1, f(0))
               println("\n(" + (i + 1) + ") ILS better score found -> " + f(0)(solution))
 
               if (bestResult > f(0)(solution)) {
@@ -230,7 +230,7 @@ object Main {
             println("\n------------------------------------------------------------------------------------------")
             println("ILS algorithm starts search one of the best solution... It will take few minutes")
             println("------------------------------------------------------------------------------------------\n")
-            solution = Algorithms.IteratedLocalSearch(nbPhotos, numberIteration, numberEvaluation, numberPermutation + 1, f(0))
+            solution = Algorithms.IteratedLocalSearch(numberIteration, numberEvaluation, numberPermutation + 1, f(0))
             bestSolution = solution
 
             if (evaluationFile.length > 0)
@@ -283,7 +283,7 @@ object Main {
               println("\n--------------------------------------------------------------------------------------------")
               println("(" + (i + 1) + ") EA algorithm starts search one of the best solution... It will take few minutes or more...")
               println("---------------------------------------------------------------------------------------------\n")
-              solution = Algorithms.GeneticEvolutionnaryAlgorithm(mu, lambda, nbPhotos, numberIteration, numberEvaluation, hcNumber, numberPermutation, f(0));
+              solution = Algorithms.GeneticEvolutionnaryAlgorithm(mu, lambda, numberIteration, numberEvaluation, hcNumber, numberPermutation, f(0));
 
               println("\n(" + (i + 1) + ") EA better score found -> " + f(0)(solution))
 
@@ -300,7 +300,7 @@ object Main {
             println("\n------------------------------------------------------------------------------------------")
             println("EA algorithm starts search one of the best solution... It will take few minutes or more...")
             println("------------------------------------------------------------------------------------------\n")
-            solution = Algorithms.GeneticEvolutionnaryAlgorithm(mu, lambda, nbPhotos, numberIteration, numberEvaluation, hcNumber, numberPermutation, f(0));
+            solution = Algorithms.GeneticEvolutionnaryAlgorithm(mu, lambda, numberIteration, numberEvaluation, hcNumber, numberPermutation, f(0));
 
             bestSolution = solution
 
@@ -321,6 +321,27 @@ object Main {
         "\n1. Pareto local search" +
         "\n"
       algorithmChoice = UtilityClass.getScannerValue(algorithmQuestion, "algorithm", 0, numberMultiObjectiveAlgo)
+
+      val eaQuestion = "This algorithm need some paramaters : " +
+        "\n1. Number of iteration (between 1 and 100000) " +
+        "\n2. Number of solutions in return (between 1 and 1000) " +
+        "\n\n"
+      println(eaQuestion)
+
+      val iterationQuestion = "1. Select number of iteration you want for Pareto local search"
+      val numberIteration = UtilityClass.getScannerValue(iterationQuestion, "number of iteration", 1, 100000)
+
+      val numberSolutionsQuestion = "2. Select number of solutions you want for Pareto local search"
+      val numberSolutions = UtilityClass.getScannerValue(numberSolutionsQuestion, "number of iteration", 1, 1000)
+
+
+      var solutions = Algorithms.ParetoLocalSearch(numberIteration, numberSolutions, null, f)
+      (0 until solutions.length).foreach(sol_index => {
+
+        (0 until f.length).foreach( f_index => {
+          println("- " + criteriaChoices(f_index) + " => " + f(f_index)(solutions(sol_index)))
+        })
+      })
     }
   }
 }
