@@ -25,14 +25,15 @@ Liste des fichiers :
 - [docs/prj1-ro.pdf] (https://github.com/jbuisine/M1.I2L.TD.RO.2016-11-09/blob/master/docs/prj1-ro.pdf)             : fichier comprennant la description plus détaillée du projet
 - [docs/CompteRenduProjetRO.pdf] (https://github.com/jbuisine/M1.I2L.TD.RO.2016-11-09/blob/master/docs/CompteRenduProjetRO.pdf) : fichier comprennant le compte rendu du projet suite à l'analyse des perfomances
 - buildAlbum.py                : code python permettant de créer les pages web avec l'album à partir d'un fichier de solution
+- generate_Pareto_Front.R      : code R qui permet de générer le front de pareto pour un fichier score
 - html                         : dossier pour recevoir les pages web avec l'album
 - html/img/*.jpg               : les 55 photos au format jpg de l'album photo
 - html/styleAlbum.css          : feuille de style associée aux pages web de l'album
 - data/info-photo.json         : information sur les 55 photos au format json
 - data/info-album.json         : information sur les 9 pages de l'album
 - data/chronologic-order.sol   : fichier contenant une solution de disposition des photos de l'album (par ordre chronologique)
-- scores		                   : dossier comprenant les différents scores enregistrés afin de les comparer
-- solutions		                 : l'une des meilleures solution trouvée pour chaque fonction objectif
+- scores		               : dossier comprenant les différents scores enregistrés afin de les comparer
+- solutions		               : l'une des meilleures solution trouvée pour chaque fonction objectif
 - src                          : dossier du code scala donnant un exemple de lecture des données et de fonction d'évaluation. Il comprendra également l'ensemble des nouvelles fonctions d'évaluation développées.
 
 

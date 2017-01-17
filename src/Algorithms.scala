@@ -194,9 +194,11 @@ object Algorithms {
     * @param arr
     * @return best solution
     */
-  def ParetoLocalSearch(nbEval: Int, numberSolution: Int, arr: ListBuffer[Array[Int]], evals : Array[(Array[Int]) => Double]): ListBuffer[Array[Int]] = {
+  def ParetoLocalSearch(nbEval: Int, arr: ListBuffer[Array[Int]], evals : Array[(Array[Int]) => Double]): ListBuffer[Array[Int]] = {
 
     var rand = new Random
+    var percentEvolution = ""
+
     var solutions = arr
     var solutionsPassed = new ListBuffer[Array[Int]]
     var index = 0
@@ -211,7 +213,6 @@ object Algorithms {
     }
 
     while (i < nbEval) {
-      println("=> "+ i)
       //Select a non visited solution of solutions
       var current_sol = new Array[Int](Main.nbPhotos)
       do{
@@ -244,7 +245,11 @@ object Algorithms {
       solutionsPassed += current_sol
 
       //Take only non dominated solutions
-      solutions = UtilityClass.getBetterSolutions(solutions, numberSolution, evals)
+      solutions = UtilityClass.getNonDominatedSolutions(solutions, evals)
+
+      val lengthText = percentEvolution.length()
+      percentEvolution = "PLS -> " + Main.df.format(i * 100.0 / nbEval) + "% "
+      UtilityClass.showEvolution(lengthText, percentEvolution)
     }
     solutions
   }

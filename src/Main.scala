@@ -22,7 +22,7 @@ object Main {
   var algorithmChoice: Int = _
 
   var generationTypeChoice: Int = _
-  var evaluationFile: Array[String] = _
+  var evaluationFile = ""
   var criteriaChoices: Array[String] = _
   var solutionFile = ""
 
@@ -52,7 +52,6 @@ object Main {
     var solution = Array[Int](nbPhotos)
     var bestSolution = new Array[Int](nbPhotos)
 
-    evaluationFile = new Array[String](0)
 
     val functionQuestion =
       "Which type of objective function do you want to use ?" +
@@ -121,13 +120,10 @@ object Main {
     val choiceScoreSaved = UtilityClass.getScannerValue(scoreSaved, "save choice", 0, 2)
 
     if(choiceScoreSaved == 2){
-      evaluationFile = new Array[String](f.length)
-      (0 until f.length).foreach(index => {
-        do {
-          println("Select the file name for " + criteriaChoices(index) + " result")
-          evaluationFile(index) = scanner.nextLine()
-        }while(evaluationFile(index).length > 0)
-      })
+      do {
+        println("Select the file name for PLS result")
+        evaluationFile = scanner.nextLine()
+      }while(evaluationFile.length <= 0)
     }
 
     if(f.length  <= 1) {
@@ -167,7 +163,7 @@ object Main {
               }
 
               if (evaluationFile.length > 0)
-                UtilityClass.writeEvaluation(evaluationFile(0), Algorithms.nbEvaluation, f(0)(solution), solution)
+                UtilityClass.writeEvaluation(evaluationFile, Algorithms.nbEvaluation, f(0)(solution), solution)
             }
           }
           else {
@@ -178,7 +174,7 @@ object Main {
             bestSolution = solution
 
             if (evaluationFile.length > 0)
-              UtilityClass.writeEvaluation(evaluationFile(0), Algorithms.nbEvaluation, f(0)(solution), solution)
+              UtilityClass.writeEvaluation(evaluationFile, Algorithms.nbEvaluation, f(0)(solution), solution)
           }
 
           println("\nHC best score found -> " + f(0)(bestSolution))
@@ -223,7 +219,7 @@ object Main {
               }
 
               if (evaluationFile.length > 0)
-                UtilityClass.writeEvaluation(evaluationFile(0), Algorithms.nbEvaluation, f(0)(solution), solution)
+                UtilityClass.writeEvaluation(evaluationFile, Algorithms.nbEvaluation, f(0)(solution), solution)
             }
           }
           else {
@@ -234,7 +230,7 @@ object Main {
             bestSolution = solution
 
             if (evaluationFile.length > 0)
-              UtilityClass.writeEvaluation(evaluationFile(0), Algorithms.nbEvaluation, f(0)(solution), solution)
+              UtilityClass.writeEvaluation(evaluationFile, Algorithms.nbEvaluation, f(0)(solution), solution)
           }
 
           println("\nILS best score found -> " + f(0)(bestSolution))
@@ -293,7 +289,7 @@ object Main {
               }
 
               if (evaluationFile.length > 0)
-                UtilityClass.writeEvaluation(evaluationFile(0), Algorithms.nbEvaluation, f(0)(solution), solution)
+                UtilityClass.writeEvaluation(evaluationFile, Algorithms.nbEvaluation, f(0)(solution), solution)
             }
           }
           else {
@@ -305,7 +301,7 @@ object Main {
             bestSolution = solution
 
             if (evaluationFile.length > 0)
-              UtilityClass.writeEvaluation(evaluationFile(0), Algorithms.nbEvaluation, f(0)(solution), solution)
+              UtilityClass.writeEvaluation(evaluationFile, Algorithms.nbEvaluation, f(0)(solution), solution)
           }
 
           println("\nEA best score found -> " + f(0)(bestSolution))
@@ -331,17 +327,23 @@ object Main {
       val iterationQuestion = "1. Select number of iteration you want for Pareto local search"
       val numberIteration = UtilityClass.getScannerValue(iterationQuestion, "number of iteration", 1, 100000)
 
-      val numberSolutionsQuestion = "2. Select number of solutions you want for Pareto local search"
-      val numberSolutions = UtilityClass.getScannerValue(numberSolutionsQuestion, "number of iteration", 1, 1000)
-
-
-      var solutions = Algorithms.ParetoLocalSearch(numberIteration, numberSolutions, null, f)
-      (0 until solutions.length).foreach(sol_index => {
+      var solutions = Algorithms.ParetoLocalSearch(numberIteration, null, f)
+      println("\nNumber of solutions found : " + solutions.length + "\n")
+      /*(0 until solutions.length).foreach(sol_index => {
 
         (0 until f.length).foreach( f_index => {
           println("- " + criteriaChoices(f_index) + " => " + f(f_index)(solutions(sol_index)))
         })
-      })
+      })*/
+
+      if (evaluationFile.length > 0){
+        (0 until solutions.length).foreach(sol_index => {
+          (0 until f.length).foreach(f_index => {
+            UtilityClass.writePLSScores(evaluationFile, f, solutions(sol_index))
+          })
+        })
+        println(s"Scores saved into scores/$evaluationFile")
+      }
     }
   }
 }

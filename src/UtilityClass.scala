@@ -136,30 +136,52 @@ object UtilityClass {
   }
 
   /**
+    * Function which writes number evaluation and result
+    *
+    * @param filename
+    * @param solution
+    */
+  def writePLSScores(filename: String, evals : Array[(Array[Int]) => Double], solution: Array[Int]) {
+
+    val file = new FileClass("scores/" + filename)
+
+    var line = ""
+    (0 until evals.length).foreach( index => {
+      line += evals(index)(solution) + ","
+    })
+
+    for (i <- 0 until solution.length) {
+      line += solution(i) + " "
+    }
+
+    file.writeLine(line, true)
+  }
+
+  /**
     * Function used to check if solutions can be removed because it is a non dominated solution
     * @param arr
     * @param evals
     * @return non dominated solutions
     */
-  def getBetterSolutions(arr: ListBuffer[Array[Int]], numberSolution: Int, evals : Array[(Array[Int]) => Double]) : ListBuffer[Array[Int]] = {
+  def getNonDominatedSolutions(arr: ListBuffer[Array[Int]], evals : Array[(Array[Int]) => Double]) : ListBuffer[Array[Int]] = {
     var solutions = arr
     var elements = new ListBuffer[Int]
 
-    println("Sols => " + arr.length)
     (0 until arr.length).foreach( sol_index => {
       var countDominatedSol = 0
-      var checkSol = false
+
       (0 until arr.length).foreach( current_sol_index => {
+        var numberDominatedFunction = 0
         (0 until evals.length).foreach( index => {
-          if(evals(index)(arr(sol_index)) < evals(index)(solutions(current_sol_index)))
-            checkSol = true
+          if(evals(index)(arr(sol_index)) > evals(index)(solutions(current_sol_index)))
+            numberDominatedFunction += 1
         })
 
-        if(!checkSol && !elements.contains(sol_index))
+        if(numberDominatedFunction >= evals.length && !elements.contains(sol_index))
             elements += sol_index
       })
     })
-    println("Element to remove " + elements.length)
+
     var elem = 0
     if(elements.length != arr.length){
       elements.foreach( x => {
@@ -167,7 +189,7 @@ object UtilityClass {
         elem += 1
       })
     }
-    println("Sols after => " + solutions.length)
-    solutions.take(numberSolution)
+
+    solutions
   }
 }
