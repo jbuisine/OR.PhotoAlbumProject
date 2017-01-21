@@ -1,6 +1,6 @@
 
 
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import scala.util.control.Breaks
 
 /**
@@ -11,7 +11,7 @@ object Main {
 
   val df = new java.text.DecimalFormat("0.##")
   val pathPhoto = "data/info-photo.json"
-  val pathAlbum = "data/info-album.json"
+  val pathAlbum = "data/info-album-6.json"
   val solFile = "fichier.sol"
   val nbPhotos = 55
   val scanner = new java.util.Scanner(System.in)
@@ -28,6 +28,7 @@ object Main {
 
   val numberFunction = 9
   val numberMonoObjectiveAlgo = 3
+  val numberTwoObjectiveAlgo = 2
   val numberMultiObjectiveAlgo = 1
 
   //Objective function
@@ -121,7 +122,7 @@ object Main {
 
     if(choiceScoreSaved == 2){
       do {
-        println("Select the file name for PLS result")
+        println("Select the file name you want to save results")
         evaluationFile = scanner.nextLine()
       }while(evaluationFile.length <= 0)
     }
@@ -311,18 +312,76 @@ object Main {
       if(solutionFile.length() > 0)
         UtilityClass.writeSolution(solutionFile, bestSolution)
     }
-    else{
+    else if(f.length == 2) {
+      //Multi objective functions implementation here for example with pareto algorithm
+      val algorithmQuestion = "Which type of algorithm do you want to executes ?" +
+        "\n1. Pareto local search" +
+        "\n2. MOEA/D algorithm"
+      algorithmChoice = UtilityClass.getScannerValue(algorithmQuestion, "algorithm", 0, numberTwoObjectiveAlgo)
+
+      var solutions = new ListBuffer[Array[Int]]()
+      algorithmChoice.toInt match {
+
+        case 1 =>
+          val plsQuestion = "PLS algorithm need some paramaters : " +
+            "\n1. Number of iteration (between 1 and 100000) " +
+            "\n\n"
+          println(plsQuestion)
+
+          val iterationQuestion = "1. Select number of iteration you want for Pareto local search"
+          val numberIteration = UtilityClass.getScannerValue(iterationQuestion, "number of iteration", 1, 100000)
+
+          solutions = Algorithms.ParetoLocalSearch(numberIteration, null, f)
+          println("\nNumber of solutions found : " + solutions.length + "\n")
+
+          if (evaluationFile.length > 0){
+            (0 until solutions.length).foreach(sol_index => {
+              (0 until f.length).foreach(f_index => {
+                UtilityClass.writePLSScores(evaluationFile, f, solutions(sol_index))
+              })
+            })
+            println(s"Scores saved into scores/$evaluationFile")
+          }
+
+        case 2 =>
+
+          val plsQuestion = "MOEA/D algorithm need some paramaters : " +
+            "\n1. Number of iteration (between 1 and 100000) " +
+            "\n2. Number of direction you want in return, it will return the same number of solutions (between 1 and 1000)" +
+            "\n\n"
+          println(plsQuestion)
+
+          val iterationQuestion = "1. Select number of iteration you want for MOEA/D algorithm"
+          val numberIteration = UtilityClass.getScannerValue(iterationQuestion, "number of iteration", 1, 100000)
+
+          val directionQuestion = "2. Select number of direction you want for MOEA/D algorithm"
+          val numberDirection = UtilityClass.getScannerValue(directionQuestion, "number of iteration", 1, 1000)
+
+          solutions = Algorithms.MOEAD_Algorithm(numberIteration, numberDirection, f)
+          println("\nNumber of solutions found : " + solutions.length + "\n")
+      }
+
+      if (evaluationFile.length > 0){
+        (0 until solutions.length).foreach(sol_index => {
+          (0 until f.length).foreach(f_index => {
+            UtilityClass.writePLSScores(evaluationFile, f, solutions(sol_index))
+          })
+        })
+        println(s"Scores saved into scores/$evaluationFile file")
+      }
+
+    }else{
       //Multi objective functions implementation here for example with pareto algorithm
       val algorithmQuestion = "Which type of algorithm do you want to executes ?" +
         "\n1. Pareto local search" +
         "\n"
       algorithmChoice = UtilityClass.getScannerValue(algorithmQuestion, "algorithm", 0, numberMultiObjectiveAlgo)
 
-      val eaQuestion = "This algorithm need some paramaters : " +
+      val plsQuestion = "PLS algorithm need some paramaters : " +
         "\n1. Number of iteration (between 1 and 100000) " +
         "\n2. Number of solutions in return (between 1 and 1000) " +
         "\n\n"
-      println(eaQuestion)
+      println(plsQuestion)
 
       val iterationQuestion = "1. Select number of iteration you want for Pareto local search"
       val numberIteration = UtilityClass.getScannerValue(iterationQuestion, "number of iteration", 1, 100000)
@@ -342,7 +401,7 @@ object Main {
             UtilityClass.writePLSScores(evaluationFile, f, solutions(sol_index))
           })
         })
-        println(s"Scores saved into scores/$evaluationFile")
+        println(s"Scores saved into scores/$evaluationFile file")
       }
     }
   }

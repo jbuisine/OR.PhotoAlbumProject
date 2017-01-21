@@ -14,23 +14,23 @@
 setwd("/home/jbuisine/git/M1.I2L.TD.RO.2016-11-09/scores")
 
 # lit les données du pareto local search entre la moyenne des couleurs et des tags non communs
-df.rs <- read.table("PLS_greyAVGAndColorsAndCommonTags.xls", sep = ",")
+df.rs <- read.table("MOEA_D_test.xls", sep = ",")
 
-names(df.rs) <- c("greyAVG", "colors", "CommonTags")
+names(df.rs) <- c("colors", "uncommonTags", "CommonTags")
 
 # vérification du fichier: affiche les premières lignes
 head(df.rs)
 
 # nuage de points obtenus en fonction des deux scores des fonctions (solution)
-#plot(colors ~ uncommonTags, data = df.rs, col="blue")
+plot(colors ~ uncommonTags, data = df.rs, col="blue")
 
 ## Load scatterplot3d
-library(scatterplot3d)
+#library(scatterplot3d)
 
 ## Simple scatter plot
-with(data = df.rs,
-     scatterplot3d(x = colors,
-                   y = greyAVG,
-                   z = CommonTags,
-     )
-)
+#with(data = df.rs,
+#     scatterplot3d(x = colors,
+#                   y = greyAVG,
+#                   z = CommonTags,
+#     )
+#)

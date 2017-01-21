@@ -235,7 +235,6 @@ object Algorithms {
 
         current_sol(randomValue) = current_sol(index)
         current_sol(index) = temporyValue
-
       })
 
       i += 1
@@ -251,6 +250,60 @@ object Algorithms {
       percentEvolution = "PLS -> " + Main.df.format(i * 100.0 / nbEval) + "% "
       UtilityClass.showEvolution(lengthText, percentEvolution)
     }
+    solutions
+  }
+
+  def MOEAD_Algorithm(nbEval: Int, nbDirection: Int, evals : Array[(Array[Int]) => Double]): ListBuffer[Array[Int]] = {
+
+    var random = new Random
+    var percentEvolution = ""
+
+    //Fixed objective size to 2 functions
+    var directions = new Array[Array[Double]](nbDirection)
+    var solutions = new ListBuffer[Array[Int]]
+
+    //Init vectors direction
+    (0 until nbDirection).foreach( index => {
+      directions(index) = new Array[Double](2)
+      directions(index)(0) = Math.cos(index * Math.PI / (2*(nbDirection-1)))
+      directions(index)(1) = Math.sin(index * Math.PI / (2*(nbDirection-1)))
+
+      //Generate random sol for each direction
+      solutions += UtilityClass.generateRandomSolution(Main.nbPhotos)
+    })
+
+    var i = 0
+
+    do{
+
+      (0 until directions.length).foreach( direction_index => {
+
+        //Flypping each bit of the current solution
+        (0 until Main.nbPhotos).foreach( index => {
+          val randomValue = random.nextInt(Main.nbPhotos)
+
+          val result_sol:Double = directions(direction_index)(0)*evals(0)(solutions(direction_index)) + directions(direction_index)(1)*evals(1)(solutions(direction_index))
+
+          val temporyValue = solutions(direction_index)(index)
+          solutions(direction_index)(index) = solutions(direction_index)(randomValue)
+          solutions(direction_index)(randomValue) = temporyValue
+
+          val current_sol:Double = directions(direction_index)(0)*evals(0)(solutions(direction_index)) + directions(direction_index)(1)*evals(1)(solutions(direction_index))
+
+          if(current_sol >= result_sol){
+            solutions(direction_index)(randomValue) = solutions(direction_index)(index)
+            solutions(direction_index)(index) = temporyValue
+          }
+          i+=1
+        })
+      })
+
+      val lengthText = percentEvolution.length()
+      percentEvolution = "MOEA/D -> " + Main.df.format(i * 100.0 / nbEval) + "% "
+      UtilityClass.showEvolution(lengthText, percentEvolution)
+
+    }while(i < nbEval)
+
     solutions
   }
 }
