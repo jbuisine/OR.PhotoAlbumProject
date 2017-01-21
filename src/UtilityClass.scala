@@ -168,12 +168,11 @@ object UtilityClass {
     var elements = new ListBuffer[Int]
 
     (0 until arr.length).foreach( sol_index => {
-      var countDominatedSol = 0
 
       (0 until arr.length).foreach( current_sol_index => {
         var numberDominatedFunction = 0
         (0 until evals.length).foreach( index => {
-          if(evals(index)(arr(sol_index)) > evals(index)(solutions(current_sol_index)))
+          if(evals(index)(arr(sol_index)) > evals(index)(arr(current_sol_index)))
             numberDominatedFunction += 1
         })
 

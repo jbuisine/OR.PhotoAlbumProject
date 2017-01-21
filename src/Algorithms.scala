@@ -24,7 +24,7 @@ object Algorithms {
     */
   def HillClimberFirstImprovement(numberElements: Int, nbEval: Int, arr: Array[Int], eval: (Array[Int]) => Double): Array[Int] = {
     var solution = arr
-    var index = 0;
+    var index = 0
     var i = 0
 
     val random = Random
@@ -37,7 +37,7 @@ object Algorithms {
     var bestResult = eval(solution)
 
     while (i < nbEval) {
-      var result = 0.0;
+      var result = 0.0
 
       inner.breakable {
         for (j <- 0 to numberElements) {
@@ -83,7 +83,7 @@ object Algorithms {
     var solution = HillClimberFirstImprovement(Main.nbPhotos, nbEvaluationHillClimber, UtilityClass.generateRandomSolution(Main.nbPhotos), eval)
 
     var bestResult = eval(solution)
-    var bestSolution = solution.clone();
+    var bestSolution = solution.clone()
     var i = 0
     var percentEvolution = ""
 
@@ -97,7 +97,7 @@ object Algorithms {
       if (currentResult < bestResult) {
         bestResult = currentResult
         bestSolution = currentSolution.clone()
-        solution = bestSolution.clone();
+        solution = bestSolution.clone()
       }
 
       i += 1
@@ -138,8 +138,8 @@ object Algorithms {
       var genitorsSolutions = MutableList[Array[Int]]()
 
       for (j <- 0 to lambda - 1) {
-        var firstSelectedIndex = rand.nextInt(parentsSolutions.length - 1);
-        var secondSelectedIndex = rand.nextInt(parentsSolutions.length - 1);
+        var firstSelectedIndex = rand.nextInt(parentsSolutions.length - 1)
+        var secondSelectedIndex = rand.nextInt(parentsSolutions.length - 1)
 
         if (eval(parentsSolutions(firstSelectedIndex)) >= eval(parentsSolutions(secondSelectedIndex))) {
           genitorsSolutions += parentsSolutions(firstSelectedIndex)
@@ -153,7 +153,7 @@ object Algorithms {
       for (j <- 0 to genitorsSolutions.length - 1) {
 
         // Do permutation
-        UtilityClass.pertubationIterated(genitorsSolutions(j), numberOfPermutations, rand);
+        UtilityClass.pertubationIterated(genitorsSolutions(j), numberOfPermutations, rand)
 
         // Make hill climber on the current solution to improve the genitor solution
         for (k <- 0 to numberOfHc - 1) {
@@ -170,7 +170,7 @@ object Algorithms {
 
       // First of all we need to add all children
       for (j <- 0 to lambda - 1) {
-        parentsSolutions += genitorsSolutions(j);
+        parentsSolutions += genitorsSolutions(j)
       }
 
       // Used to order list of solution by result
@@ -185,7 +185,7 @@ object Algorithms {
 
     }
 
-    return parentsSolutions(0);
+    return parentsSolutions(0)
   }
 
   /**
