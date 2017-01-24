@@ -304,6 +304,8 @@ object Algorithms {
 
     }while(i < nbEval)
 
+    solutions = ParetoLocalSearch(nbEval, solutions, evals)
+
     solutions
   }
 }
