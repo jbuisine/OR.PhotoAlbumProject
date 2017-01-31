@@ -1,3 +1,4 @@
+import scala.collection.immutable.ListMap
 /**
   * Created by jbuisine on 30/01/17.
   *
@@ -11,7 +12,7 @@ object MOEADInit {
     * @param N : Number of directions
     * @return the vectors generated
     */
-  def generateDirections(N: Int): Array[Array[Double]] = {
+  def generateVectors(N: Int): Array[Array[Double]] = {
 
     val directions = new Array[Array[Double]](N)(2)
 
@@ -38,14 +39,14 @@ object MOEADInit {
     val N = vectors.length
 
     //Variable which stock matrix with distances between each vectors
-    val distances = new Array[Array[Double]](N)(N)
+    val distances = new Array[ListMap[Int, Double]](N)(N)
 
     //Initialize matrix distances with Euclidean distances method for each vector
     (0 until distances.length).foreach( i => {
       (0 until distances.length).foreach( j => {
         val distance = math.sqrt(math.pow(vectors(i)(0) - vectors(j)(0), 2) + math.pow(vectors(i)(1), vectors(j)(1)))
-        distances(i)(j) = distance
-        distances(j)(i) = distance
+        distances(i) += j -> distance
+        distances(j) += j -> distance
       })
     })
 
@@ -54,7 +55,7 @@ object MOEADInit {
 
     (0 until closests.length).foreach( index => {
       //Get the T indices sorted
-      closests(index) = distances(index).indices.sorted.toArray.slice(0, T)
+      closests(index) = distances(index).toSeq.sortBy(_._2).unzip._1.slice(0, T).toArray
     })
 
     closests
@@ -62,21 +63,73 @@ object MOEADInit {
 
 
   /**
-    * Method which generate population for each sub problems of MOEA/D algorithm
+    * Method which generate solution for each sub problems of MOEA/D algorithm
     *
     * @param N : Number of sub problems
-    * @param genomeSize : Number of genome for each sub problems
-    * @return random populations
+    * @return random population
     */
-  def generateRandomPopulation(N: Int, genomeSize: Int): Array[Array[Array[Int]]] = {
+  def generateRandomPopulation(N: Int): Array[Array[Int]] = {
 
-    val populations = new Array[Array[Array[Int]]](N)(genomeSize)(Main.nbPhotos)
+    val population = new Array[Array[Int]](N)(Main.nbPhotos)
     (0 until N).foreach(i => {
-      (0 until genomeSize).foreach( j => {
-        populations(i)(j) = UtilityClass.generateRandomSolution(Main.nbPhotos)
-      })
+        population(i)= UtilityClass.generateRandomSolution(Main.nbPhotos)
     })
 
-    populations
+    population
+  }
+
+  /**
+    * Method which compute values for each solution of the population
+    *
+    * @param population : Set of solution
+    * @param f : Functions used for multi objective problem
+    * @return values obtained by each solution of population
+    */
+  def computeFunctionValues(population: Array[Array[Int]], f : Array[(Array[Int]) => Double]): Array[Array[Double]] = {
+    val values = new Array[Array[Double]](population.length)(f.length)
+
+    //Compute for each solution of population its scores obtained with each function
+    (0 until population.length).foreach( i => {
+      (0 until f.length).foreach( j => values(i)(j) = f(j)(population(i)))
+    })
+
+    values
+  }
+
+  /**
+    * Method used for create reference point
+    *
+    * @param v : function values of the set of solution (population)
+    * @param nbAxes : number of function
+    * @return reference point
+    */
+  def getRefPoint(v: Array[Array[Double]], nbAxes: Int): Array[Double] = {
+    val point = new Array[Double](nbAxes)
+
+    //Compute point with each max values of each axes (each function)
+    (0 until point.length).foreach( i => {
+       point(i) = v(i).min
+    })
+
+    point
+  }
+
+  /**
+    * Tchebivech computed method
+    *
+    * @param y : new solution of the iteration
+    * @param z : reference point
+    * @param vector : current vector used
+    * @param f : all functions of the multi objective problem
+    * @return min computed value
+    */
+  def computeCombinedValues(y: Array[Int], z: Array[Double], vector: Array[Double], f : Array[(Array[Int]) => Double]): Double = {
+    val values = new Array[Double](f.length)
+
+    (0 until f.length).foreach( i => {
+      values(i) = vector(i) * math.abs(f(i)(y) - z(i))
+    })
+
+    values.min
   }
 }

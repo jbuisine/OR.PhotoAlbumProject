@@ -253,7 +253,7 @@ object Algorithms {
     solutions
   }
 
-  def MOEAD_Algorithm(nbEval: Int, N: Int, T: Int, genomeSize: Int, evals : Array[(Array[Int]) => Double]): ListBuffer[Array[Int]] = {
+  def MOEAD_Algorithm(nbEval: Int, N: Int, T: Int, evals : Array[(Array[Int]) => Double]): ListBuffer[Array[Int]] = {
 
     /**
       * All utilities local variables
@@ -266,30 +266,117 @@ object Algorithms {
       */
 
     //Step 1.0 : Initialization of each scalar sub problems
-    var directions = MOEADInit.generateDirections(N)
+    var vectors = MOEADInit.generateVectors(N)
 
     //Step 1.1 : Initialization of EP (set to empty)
     var nonDominatedSolutions = new ListBuffer[Array[Int]]()
 
     //Step 1.2 : Compute distances between T closest weight vector to each weight vector
-    var B = MOEADInit.getNeightborsVectors(directions, T)
+    var B = MOEADInit.getNeightborsVectors(vectors, T)
 
-    //Step 1.3 : Initialize population and function values of this new populations
-    var populations = MOEADInit.generateRandomPopulation(N, genomeSize)
+    //Step 1.3 : Initialize population (solution for each sub problems)
+    var population = MOEADInit.generateRandomPopulation(N)
+    var values = MOEADInit.computeFunctionValues(population, evals)
+
+    //Step 1.4 : Initialize reference point
+    var z = MOEADInit.getRefPoint(values, evals.length)
 
     var i = 0
 
+    /**
+      * 2. Update
+      */
     do{
 
 
+      (0 until N).foreach( j => {
+
+        /**
+          *  2.1 Reproduction : Select randomly two solutions to create new solution y
+          */
+
+        //2.1.1 : Getting random index of closest vectors and retrieve solution associated
+        val firstIndex = B(j)(random.nextInt(B(j).length))
+        val secondIndex = B(j)(random.nextInt(B(j).length))
+
+        var firstSol = population(firstIndex).clone()
+        var secondSol = population(secondIndex).clone()
+
+        //2.1.1. Create new solution with the selected solutions
+
+        UtilityClass.pertubationIterated(firstSol, 10, random)
+        //UtilityClass.pertubationIterated(secondSol, 10, random)
+
+        var newSol = new Array[Int](Main.nbPhotos)
+
+        //Review this mutation method later
+        /*(0 until Main.nbPhotos).foreach( index => {
+          if(random.nextInt(1) == 0)
+            newSol(firstSol.indexOf(index)) = index
+          else
+            newSol(secondSol.indexOf(index)) = index
+        })*/
+
+        newSol = firstSol
+        newSol.foreach( x => println(x))
+
+        /**
+          * 2.2 Improvement : Not developed at this time (Perhaps later)
+          */
+
+
+        /**
+          * 2.3 Update z : reference point
+          */
+        //Setting new reference point if exists
+        (0 until evals.length).foreach( index => {
+          z(index) = math.min(z(0), evals(index)(newSol))
+        })
+
+        /**
+          * 2.4 Update of Neighboring Solutions
+          */
+
+        //For each solution into the population check if new solution is better
+        (0 until B(i).length).foreach( index => {
+          val neighborIndex = B(i)(index)
+
+          //Getting Tchebivech function result for the new solution and current solution
+          val gNeighbor = MOEADInit.computeCombinedValues(population(neighborIndex), z, vectors(neighborIndex), evals)
+          val gY = MOEADInit.computeCombinedValues(newSol, z, vectors(neighborIndex), evals)
+
+          //If better update population and values
+          if (gY <= gNeighbor) {
+            population(neighborIndex) = newSol
+            (0 until evals.length).foreach( current => {
+              values(neighborIndex)(current) = evals(current)(population(neighborIndex))
+            })
+          }
+        })
+
+        /**
+          * 2.5 Update of EP : Update non dominated solutions
+          */
+
+        //Add new solution to EP
+        nonDominatedSolutions += newSol
+
+        val oldLength = nonDominatedSolutions.length
+
+        //Get new EP without dominated solutions (if they exist)
+        nonDominatedSolutions = UtilityClass.getNonDominatedSolutions(nonDominatedSolutions, evals)
+
+        //If adding new solution does not imply to remove dominated solutions then remove new solution (New solution is dominated)
+        if(nonDominatedSolutions.length == oldLength)
+          nonDominatedSolutions.remove(nonDominatedSolutions.indexOf(newSol))
+
+      })
 
       val lengthText = percentEvolution.length()
       percentEvolution = "MOEA/D -> " + Main.df.format(i * 100.0 / nbEval) + "% "
       UtilityClass.showEvolution(lengthText, percentEvolution)
 
     }while(i < nbEval)
-
-    //solutions = ParetoLocalSearch(nbEval, solutions, evals)
 
     nonDominatedSolutions
   }

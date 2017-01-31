@@ -347,17 +347,21 @@ object Main {
 
           val plsQuestion = "MOEA/D algorithm need some paramaters : " +
             "\n1. Number of iteration (between 1 and 100000) " +
-            "\n2. Number of direction you want in return, it will return the same number of solutions (between 1 and 1000)" +
+            "\n2. Number of vectors N (between 1 and 1000)" +
+            "\n3. Number of closest vectors take in consideration for each vector (between 1 and N)" +
             "\n\n"
           println(plsQuestion)
 
           val iterationQuestion = "1. Select number of iteration you want for MOEA/D algorithm"
           val numberIteration = UtilityClass.getScannerValue(iterationQuestion, "number of iteration", 1, 100000)
 
-          val directionQuestion = "2. Select number of direction you want for MOEA/D algorithm"
-          val numberDirection = UtilityClass.getScannerValue(directionQuestion, "number of iteration", 1, 1000)
+          val vectorsQuestion = "2. Select number of vectors you want for MOEA/D algorithm"
+          val numberVectors = UtilityClass.getScannerValue(vectorsQuestion, "number of vectors", 1, 1000)
 
-          solutions = Algorithms.MOEAD_Algorithm(numberIteration, numberDirection, f)
+          val closestQuestion = "3. Select number of closest vectors you want to take in consideration for each vector"
+          val numberClosest = UtilityClass.getScannerValue(closestQuestion, "number of closest vectors", 1, numberVectors)
+
+          solutions = Algorithms.MOEAD_Algorithm(numberIteration, numberVectors, numberClosest, f)
           println("\nNumber of solutions found : " + solutions.length + "\n")
       }
 
