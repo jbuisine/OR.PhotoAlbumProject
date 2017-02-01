@@ -281,7 +281,7 @@ object Algorithms {
     //Step 1.4 : Initialize reference point
     var z = MOEADInit.getRefPoint(values, evals.length)
 
-    var i = 0
+    var evaluation = 0
 
     /**
       * 2. Update
@@ -289,15 +289,15 @@ object Algorithms {
     do{
 
 
-      (0 until N).foreach( j => {
+      (0 until N).foreach( i => {
 
         /**
           *  2.1 Reproduction : Select randomly two solutions to create new solution y
           */
 
         //2.1.1 : Getting random index of closest vectors and retrieve solution associated
-        val firstIndex = B(j)(random.nextInt(B(j).length))
-        val secondIndex = B(j)(random.nextInt(B(j).length))
+        val firstIndex = B(i)(random.nextInt(B(i).length))
+        val secondIndex = B(i)(random.nextInt(B(i).length))
 
         var firstSol = population(firstIndex).clone()
         var secondSol = population(secondIndex).clone()
@@ -318,7 +318,6 @@ object Algorithms {
         })*/
 
         newSol = firstSol
-        newSol.foreach( x => println(x))
 
         /**
           * 2.2 Improvement : Not developed at this time (Perhaps later)
@@ -330,7 +329,7 @@ object Algorithms {
           */
         //Setting new reference point if exists
         (0 until evals.length).foreach( index => {
-          z(index) = math.min(z(0), evals(index)(newSol))
+          z(index) = math.min(z(index), evals(index)(newSol))
         })
 
         /**
@@ -346,13 +345,16 @@ object Algorithms {
           val gY = MOEADInit.computeCombinedValues(newSol, z, vectors(neighborIndex), evals)
 
           //If better update population and values
-          if (gY <= gNeighbor) {
+          if (gY < gNeighbor) {
             population(neighborIndex) = newSol
             (0 until evals.length).foreach( current => {
               values(neighborIndex)(current) = evals(current)(population(neighborIndex))
             })
           }
         })
+
+        //Increment number of evaluation
+        evaluation += 1
 
         /**
           * 2.5 Update of EP : Update non dominated solutions
@@ -366,17 +368,13 @@ object Algorithms {
         //Get new EP without dominated solutions (if they exist)
         nonDominatedSolutions = UtilityClass.getNonDominatedSolutions(nonDominatedSolutions, evals)
 
-        //If adding new solution does not imply to remove dominated solutions then remove new solution (New solution is dominated)
-        if(nonDominatedSolutions.length == oldLength)
-          nonDominatedSolutions.remove(nonDominatedSolutions.indexOf(newSol))
-
       })
 
       val lengthText = percentEvolution.length()
-      percentEvolution = "MOEA/D -> " + Main.df.format(i * 100.0 / nbEval) + "% "
+      percentEvolution = "MOEA/D -> " + Main.df.format(evaluation * 100.0 / nbEval) + "% "
       UtilityClass.showEvolution(lengthText, percentEvolution)
 
-    }while(i < nbEval)
+    }while(evaluation < nbEval)
 
     nonDominatedSolutions
   }

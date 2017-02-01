@@ -14,7 +14,7 @@ object MOEADInit {
     */
   def generateVectors(N: Int): Array[Array[Double]] = {
 
-    val directions = new Array[Array[Double]](N)(2)
+    val directions = new Array[Array[Double]](N)
 
     //Init vectors direction
     (0 until N).foreach( index => {
@@ -39,19 +39,22 @@ object MOEADInit {
     val N = vectors.length
 
     //Variable which stock matrix with distances between each vectors
-    val distances = new Array[ListMap[Int, Double]](N)(N)
+    val distances = new Array[ListMap[Int, Double]](N)
+
+    //Init list map of each item
+    (0 until distances.length).foreach(index => distances(index) = new ListMap[Int, Double])
 
     //Initialize matrix distances with Euclidean distances method for each vector
     (0 until distances.length).foreach( i => {
       (0 until distances.length).foreach( j => {
-        val distance = math.sqrt(math.pow(vectors(i)(0) - vectors(j)(0), 2) + math.pow(vectors(i)(1), vectors(j)(1)))
+        val distance = math.sqrt(math.pow(vectors(i)(0) - vectors(j)(0), 2) + math.pow(vectors(i)(1) - vectors(j)(1), 2))
         distances(i) += j -> distance
         distances(j) += j -> distance
       })
     })
 
     //Return variable which just return the closest vectors for each vectors
-    val closests = new Array[Array[Int]](N)(T)
+    val closests = new Array[Array[Int]](N)
 
     (0 until closests.length).foreach( index => {
       //Get the T indices sorted
@@ -70,7 +73,7 @@ object MOEADInit {
     */
   def generateRandomPopulation(N: Int): Array[Array[Int]] = {
 
-    val population = new Array[Array[Int]](N)(Main.nbPhotos)
+    val population = new Array[Array[Int]](N)
     (0 until N).foreach(i => {
         population(i)= UtilityClass.generateRandomSolution(Main.nbPhotos)
     })
@@ -86,10 +89,11 @@ object MOEADInit {
     * @return values obtained by each solution of population
     */
   def computeFunctionValues(population: Array[Array[Int]], f : Array[(Array[Int]) => Double]): Array[Array[Double]] = {
-    val values = new Array[Array[Double]](population.length)(f.length)
+    val values = new Array[Array[Double]](population.length)
 
     //Compute for each solution of population its scores obtained with each function
     (0 until population.length).foreach( i => {
+      values(i) = new Array[Double](f.length)
       (0 until f.length).foreach( j => values(i)(j) = f(j)(population(i)))
     })
 

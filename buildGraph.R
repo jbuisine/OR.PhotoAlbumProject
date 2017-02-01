@@ -12,9 +12,9 @@
 
 
 main <- function(){
-   setwd("/home/jbuisine/git/M1.I2L.TD.RO.2016-11-09/scores")
+   setwd("/home/jbuisine/IdeaProjects/RO.PhotoAlbumProject/scores")
    
-   twoDimPlot("PLS_greyAVGAndColors.xls", ",", c("greyAVG", "colors"))
+   twoDimPlot("MOEAD_greyAVGAndColors.xls", ",", c("greyAVG", "colors"))
    #threeDimPlot("PLS_greyAVGAndColorsAndCommonTags.xls", ",", c("greyAVG", "colors", "commonTags"))
    
 }
