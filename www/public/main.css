@@ -1,0 +1,13 @@
+.custom-container{
+    margin-top: 40px;
+}
+
+.footer{
+    padding: 10px 0;
+    text-align: center;
+    background-color: #F8F8F8;
+    border-top: solid 1px lightgrey;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}

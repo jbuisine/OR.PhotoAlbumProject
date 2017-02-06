@@ -1,0 +1,28 @@
+{
+  "name": "photoAlbumOptimization",
+  "description": "Photo album optimization algorithms",
+  "main": "app.js",
+  "authors": [
+    "Jérôme Buisine"
+  ],
+  "license": "ISC",
+  "keywords": [
+    "Optimizations",
+    "Algorithms",
+    "Research",
+    "Multi-objectives",
+    "Mono-objectives"
+  ],
+  "homepage": "https://github.com/jbuisine/RO.PhotoAlbumProject",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^3.1.1",
+    "bootstrap": "^3.3.7"
+  }
+}
