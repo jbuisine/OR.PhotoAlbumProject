@@ -22,8 +22,8 @@ L'algorithme Pareto local search sera utilisé pour les problèmes multi-objecti
 
 -------------------
 Liste des fichiers :
-- [docs/prj1-ro.pdf] (https://github.com/jbuisine/M1.I2L.TD.RO.2016-11-09/blob/master/docs/prj1-ro.pdf)             : fichier comprennant la description plus détaillée du projet
-- [docs/CompteRenduProjetRO.pdf] (https://github.com/jbuisine/M1.I2L.TD.RO.2016-11-09/blob/master/docs/CompteRenduProjetRO.pdf) : fichier comprennant le compte rendu du projet suite à l'analyse des perfomances
+- [resources/docs/prj1-ro.pdf] (https://github.com/jbuisine/M1.I2L.TD.RO.2016-11-09/blob/master/resources/docs/prj1-ro.pdf)             : fichier comprennant la description plus détaillée du projet
+- [resources/docs/CompteRenduProjetRO.pdf] (https://github.com/jbuisine/M1.I2L.TD.RO.2016-11-09/blob/master/resources/docs/CompteRenduProjetRO.pdf) : fichier comprennant le compte rendu du projet suite à l'analyse des perfomances
 - utilities/buildAlbum.py               : code python permettant de créer les pages web avec l'album à partir d'un fichier de solution
 - utilities/buildGraph.R                : code R qui permet de générer le front de pareto pour un fichier score
 - utilities/run.sh                      : script bash permettant l'exécution du programme
