@@ -119,21 +119,27 @@ object MOEADInit {
   }
 
   /**
-    * Tchebivech computed method
+    *  Computed method
     *
     * @param y : new solution of the iteration
     * @param z : reference point
     * @param vector : current vector used
     * @param f : all functions of the multi objective problem
+    * @param choice : choice between Tchebivech or weigthed function
     * @return min computed value
     */
-  def computeCombinedValues(y: Array[Int], z: Array[Double], vector: Array[Double], f : Array[(Array[Int]) => Double]): Double = {
+  def computeCombinedValues(y: Array[Int], z: Array[Double], vector: Array[Double], f : Array[(Array[Int]) => Double], choice: Int): Double = {
     val values = new Array[Double](f.length)
-
     (0 until f.length).foreach( i => {
-      values(i) = vector(i) * math.abs(f(i)(y) - z(i))
+      if(choice == 0)
+        values(i) = vector(i) * math.abs(f(i)(y) - z(i))
+      else
+        values(i) = vector(i) * f(i)(y)
     })
 
-    values.min
+    if(choice == 0)
+      values.min
+    else
+      values.sum
   }
 }

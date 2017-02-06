@@ -253,7 +253,7 @@ object Algorithms {
     solutions
   }
 
-  def MOEAD_Algorithm(nbEval: Int, N: Int, T: Int, evals : Array[(Array[Int]) => Double]): ListBuffer[Array[Int]] = {
+  def MOEAD_Algorithm(nbEval: Int, N: Int, T: Int, evals : Array[(Array[Int]) => Double], choice: Int): ListBuffer[Array[Int]] = {
 
     /**
       * All utilities local variables
@@ -293,6 +293,8 @@ object Algorithms {
 
         /**
           *  2.1 Reproduction : Select randomly two solutions to create new solution y
+          *
+          *  For the moment we just permute randomly values of solution selected to create new solution
           */
 
         //2.1.1 : Getting random index of closest vectors and retrieve solution associated
@@ -300,7 +302,7 @@ object Algorithms {
         val secondIndex = B(i)(random.nextInt(B(i).length))
 
         var firstSol = population(firstIndex).clone()
-        var secondSol = population(secondIndex).clone()
+        //var secondSol = population(secondIndex).clone()
 
         //2.1.1. Create new solution with the selected solutions
 
@@ -341,8 +343,8 @@ object Algorithms {
           val neighborIndex = B(i)(index)
 
           //Getting Tchebivech function result for the new solution and current solution
-          val gNeighbor = MOEADInit.computeCombinedValues(population(neighborIndex), z, vectors(neighborIndex), evals)
-          val gY = MOEADInit.computeCombinedValues(newSol, z, vectors(neighborIndex), evals)
+          val gNeighbor = MOEADInit.computeCombinedValues(population(neighborIndex), z, vectors(neighborIndex), evals, choice)
+          val gY = MOEADInit.computeCombinedValues(newSol, z, vectors(neighborIndex), evals, choice)
 
           //If better update population and values
           if (gY < gNeighbor) {

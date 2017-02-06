@@ -125,11 +125,11 @@ class Album:
 
 #===================================================================
 if __name__ == '__main__':
-    album_name     = "data/info-album-6.json"        # file name of the album information
-    photos_name    = "data/info-photo.json"        # file name of the photo information
-    html_dir       = "albums/album-2per3"                        # path to html source files
+    album_name     = "../resources/data/info-album-6.json"        # file name of the album information
+    photos_name    = "../resources/data/info-photo.json"        # file name of the photo information
+    html_dir       = "../albums/album-2per3"                        # path to html source files
     photos_dir     = "img"                         # path to images from the html directory
-    solution_name  = "data/chronologic-order.sol"  # (default) file name of the solution which gives the assignement of the photos
+    solution_name  = "../resources/data/chronologic-order.sol"  # (default) file name of the solution which gives the assignement of the photos
 
     if len(sys.argv) > 1:
         if not os.path.exists(sys.argv[1]):

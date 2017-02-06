@@ -14,7 +14,7 @@
 main <- function(){
    setwd("/home/jbuisine/IdeaProjects/RO.PhotoAlbumProject/scores")
    
-   twoDimPlot("MOEAD_greyAVGAndColors.xls", ",", c("greyAVG", "colors"))
+   twoDimPlot("MOEAD_ColorsAndUncommonTags.xls", ",", c("greyAVG", "colors"))
    #threeDimPlot("PLS_greyAVGAndColorsAndCommonTags.xls", ",", c("greyAVG", "colors", "commonTags"))
    
 }

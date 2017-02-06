@@ -10,9 +10,8 @@ import scala.util.control.Breaks
 object Main {
 
   val df = new java.text.DecimalFormat("0.##")
-  val pathPhoto = "data/info-photo.json"
-  val pathAlbum = "data/info-album-6.json"
-  val solFile = "fichier.sol"
+  val pathPhoto = "../resources/data/info-photo.json"
+  val pathAlbum = "../resources/data/info-album-6.json"
   val nbPhotos = 55
   val scanner = new java.util.Scanner(System.in)
 
@@ -65,7 +64,7 @@ object Main {
         "\n7. Grey AVG and Colors multi objective function" +
         "\n8. Grey AVG, Colors and common tags multi objective function" +
         "\n9. Colors and uncommon tags multi objective function" +
-        "\n";
+        "\n"
     functionChoice = UtilityClass.getScannerValue(functionQuestion, "function", 0, numberFunction)
 
     if (functionChoice == 1) {
@@ -349,6 +348,7 @@ object Main {
             "\n1. Number of iteration (between 1 and 100000) " +
             "\n2. Number of vectors N (between 1 and 1000)" +
             "\n3. Number of closest vectors take in consideration for each vector (between 1 and N)" +
+            "\n3. Choice of computed function (1 for Tchebivech or 2 for Weighted sum function)" +
             "\n\n"
           println(plsQuestion)
 
@@ -361,7 +361,10 @@ object Main {
           val closestQuestion = "3. Select number of closest vectors you want to take in consideration for each vector"
           val numberClosest = UtilityClass.getScannerValue(closestQuestion, "number of closest vectors", 1, numberVectors)
 
-          solutions = Algorithms.MOEAD_Algorithm(numberIteration, numberVectors, numberClosest, f)
+          val computedQuestion = "3. Select number of closest vectors you want to take in consideration for each vector"
+          val computedChoice = UtilityClass.getScannerValue(computedQuestion, "number of closest vectors", 1, 3)
+
+          solutions = Algorithms.MOEAD_Algorithm(numberIteration, numberVectors, numberClosest, f, computedChoice)
           println("\nNumber of solutions found : " + solutions.length + "\n")
       }
 

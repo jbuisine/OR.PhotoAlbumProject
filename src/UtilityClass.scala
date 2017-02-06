@@ -105,7 +105,7 @@ object UtilityClass {
    */
   def writeSolution(filename: String,
     bestSolution: Array[Int]) {
-    val file = new FileClass("solutions/"+filename)
+    val file = new FileClass("../resources/solutions/"+filename)
     var line = "";
     for (i <- 0 until bestSolution.length) {
       line += bestSolution(i) + " "
@@ -124,7 +124,7 @@ object UtilityClass {
    */
   def writeEvaluation(filename: String, nbEval: Int, result: Double, solution: Array[Int]) {
 
-    val file = new FileClass("scores/" + filename)
+    val file = new FileClass("../resources/scores/" + filename)
     var line = nbEval + "," + result + ","
 
     for (i <- 0 until solution.length) {
@@ -143,7 +143,7 @@ object UtilityClass {
     */
   def writePLSScores(filename: String, evals : Array[(Array[Int]) => Double], solution: Array[Int]) {
 
-    val file = new FileClass("scores/" + filename)
+    val file = new FileClass("../resources/scores/" + filename)
 
     var line = ""
     (0 until evals.length).foreach( index => {
