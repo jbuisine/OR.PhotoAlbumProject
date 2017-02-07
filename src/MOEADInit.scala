@@ -125,7 +125,7 @@ object MOEADInit {
     * @param z : reference point
     * @param vector : current vector used
     * @param f : all functions of the multi objective problem
-    * @param choice : choice between Tchebivech or weigthed function
+    * @param choice : choice between Tchebivech or weighted function
     * @return min computed value
     */
   def computeCombinedValues(y: Array[Int], z: Array[Double], vector: Array[Double], f : Array[(Array[Int]) => Double], choice: Int): Double = {

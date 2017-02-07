@@ -253,6 +253,17 @@ object Algorithms {
     solutions
   }
 
+  /**
+    *
+    * MOEAD Algorithm implementation
+    *
+    * @param nbEval
+    * @param N
+    * @param T
+    * @param evals
+    * @param choice
+    * @return
+    */
   def MOEAD_Algorithm(nbEval: Int, N: Int, T: Int, evals : Array[(Array[Int]) => Double], choice: Int): ListBuffer[Array[Int]] = {
 
     /**

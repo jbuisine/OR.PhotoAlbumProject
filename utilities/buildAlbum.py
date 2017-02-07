@@ -31,31 +31,9 @@ class Album:
     @param photoList the ordered list of photo in the page
     '''
     def create_page(self, html_dir, photos_dir, numPage, photoList):
-        f = open(os.path.join(html_dir, "%s_%d.html" % (self.album["basename"], numPage)), "w")
-        self.create_header_page(f, numPage)
+        f = open(os.path.join(html_dir, "%s_%d.ejs" % (self.album["basename"], numPage)), "w")
         self.create_body_page(f, photos_dir, numPage, photoList)
-        self.create_footer_page(f, numPage)
         f.close()
-
-    '''
-    Create the header of the page 
-    @param numPage the number of the page
-    @param photoList the ordered list of photo in the page
-    '''
-    def create_header_page(self, f, numPage):
-        f.write("<html>\n")
-
-        f.write("<header>\n")
-        f.write("<title>Mon album</title>\n")
-        f.write("<link rel=\"stylesheet\" media=\"screen\" type=\"text/css\" title=\"\" href=\"styleAlbum.css\" />\n")
-        f.write("</header>\n")
-
-        f.write("<body>\n")
-        f.write("<div id=\"main\"/>\n")        
-        f.write("<div id=\"titre\">\n")
-        f.write("<h1>Mon album de r&ecirc;ve</h1>\n")
-        f.write("</div>\n")
-        f.write("\n")
 
     '''
     Create the bottom of the page 
@@ -63,16 +41,15 @@ class Album:
     '''
     def create_body_page(self, f, photos_dir, numPage, photoList):
         f.write("<div id=\"album\">\n")
-        f.write("<h3>page %d</h3>\n" % (numPage + 1))
-        f.write("<a name=\"photo\">\n")
+        f.write("<h3>Page %d</h3>\n" % (numPage + 1))
 
         self.create_navigation(f, numPage)
 
-        f.write("<div id=\"pictures\">\n")
+        f.write("<div id=\"pictures\" style=\"width:%dpx; height:%dpx\">\n" % (self.album["pages"][numPage]["width"], self.album["pages"][numPage]["height"]))
         pos = 0
         for i in photoList:
             photo = self.album["pages"][numPage]["photos"][pos]
-            f.write("<img src=\"%s/%s\" width=\"%d\" height=\"%d\">"% (photos_dir, self.photos[i]["name"], photo["width"], photo["height"]))
+            f.write("<img src=\"/<%%= albumName %%>/%s/%s\" width=\"%d\" height=\"%d\">\n" % (photos_dir, self.photos[i]["name"], photo["width"], photo["height"]))
             pos += 1
 
         f.write("</div>\n") # pictures
@@ -85,27 +62,26 @@ class Album:
     @param numPage the number of the page
     '''
     def create_navigation(self, f, numPage):
-        f.write("<div class=\"navigation\">\n")            
-        f.write("<a href=\"%s_%d.html#photo\">first</a>" "" % (self.album["basename"], 0))
+        f.write("<div id=\"navigation\">\n")
+        f.write("<nav aria-label=\"Page navigation\">\n")
+        f.write("<ul class=\"pagination\">\n")
+
         if numPage > 0:
-            f.write("<a class=\"apres\" href=\"%s_%d.html#photo\">prev</a>" "" % (self.album["basename"], numPage-1))
-        else:
-            f.write("<a class=\"apres\" href=\"%s_%d.html#photo\">prev</a>" "" % (self.album["basename"], numPage))
+            f.write("<li><a href=\"/album/<%%= albumName %%>/%d\" aria-label=\"Previous\"><span aria-hidden=\"true\">&laquo;</span></a></li>\n" % (numPage -1))
+
+        for i in xrange(0, self.album["page"]):
+            if(i == numPage):
+                f.write("<li class=\"active\">")
+            else:
+                f.write("<li>")
+            f.write("<a href=\"/album/<%%= albumName %%>/%d\">%d</a></li>\n" % (i, i+1))
+
         if numPage < self.album["page"] - 1:
-            f.write("<a class=\"apres\" href=\"%s_%d.html#photo\">next</a>" "" % (self.album["basename"], numPage+1))
-        else:
-            f.write("<a class=\"apres\" href=\"%s_%d.html#photo\">next</a>" "" % (self.album["basename"], numPage))
-        f.write("<a class=\"apres\" href=\"%s_%d.html#photo\">last</a>\n" "" % (self.album["basename"], self.album["page"]-1))
-        f.write("</div>\n") # navigation
-        
-    '''
-    Create the body of the page 
-    @param photoList the ordered list of photo in the page
-    '''
-    def create_footer_page(self, f, numPage):
-        f.write("</div>\n") # main
-        f.write("</body>\n")
-        f.write("</html>\n")
+            f.write("<li><a href=\"/album/<%%= albumName %%>/%d\" aria-label=\"Next\"><span aria-hidden=\"true\">&raquo;</span></a></li>\n" % (numPage + 1))
+
+        f.write("</ul>\n")
+        f.write("</nav>\n")
+        f.write("</div>")
 
     ''' 
     Create all the pages of the album 
@@ -127,17 +103,29 @@ class Album:
 if __name__ == '__main__':
     album_name     = "../resources/data/info-album-6.json"        # file name of the album information
     photos_name    = "../resources/data/info-photo.json"        # file name of the photo information
-    html_dir       = "../albums/album-2per3"                        # path to html source files
+    html_dir       = "../www/views/albums/"                        # path to html source files
     photos_dir     = "img"                         # path to images from the html directory
     solution_name  = "../resources/data/chronologic-order.sol"  # (default) file name of the solution which gives the assignement of the photos
 
     if len(sys.argv) > 1:
         if not os.path.exists(sys.argv[1]):
             print ("File not found: " + sys.argv[1])
+            sys.exit()
         else: 
             solution_name = sys.argv[1]
 
-    album = Album(album_name, photos_name)
-    
-    album.create_album(html_dir, photos_dir, solution_name)
+        print (html_dir + sys.argv[2])
+        if not os.path.exists(html_dir + sys.argv[2]):
+            print ("Album not found: " + sys.argv[2])
+            sys.exit()
+        else:
+            album = Album(album_name, photos_name)
+            album.create_album(html_dir + sys.argv[2], photos_dir, solution_name)
+
+            infoFile = open(html_dir + sys.argv[2] + "/info.txt", "w")
+            infoFile.write(solution_name)
+            infoFile.close()
+
+
+
 

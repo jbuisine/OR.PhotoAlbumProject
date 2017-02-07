@@ -1,0 +1,32 @@
+<div class="page-header">
+    <div class="row">
+        <div class="col-md-6 col-sm-12">
+            <h1><% if(locals.albumName){ %><%= albumName %> <% } %></h1>
+        </div>
+
+        <% if(locals.albumName){ %>
+        <div class="col-md-6 col-sm-12">
+            <form action="/generate-album" method="POST" id="generate-album" class="form-inline">
+              <div class="form-group">
+
+                <input name="albumName" type="hidden" value="<%= albumName %>" />
+
+                <label for="solutionFile">Solution file : </label>
+                <select name="solutionFile" id="solutionFile" class="form-control">
+
+                  <% solutions.forEach(function(sol){ %>
+
+                      <option value="<%= sol %>"> <%= sol %></option>
+
+                  <% }); %>
+
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary">Generate</button>
+            </form>
+        </div>
+        <% } %>
+    </div>
+</div>
+
+<%- include('../albums/' + albumName + '/page_' + idPage) %>

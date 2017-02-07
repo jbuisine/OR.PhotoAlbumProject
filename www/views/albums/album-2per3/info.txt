@@ -1,0 +1,1 @@
+./../resources/solutions/HC_uncommonTags.sol
