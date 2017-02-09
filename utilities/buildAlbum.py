@@ -2,6 +2,7 @@
 # -*- coding=utf-8 -*-
 
 import json
+import time
 #import PIL
 import os, sys
 
@@ -101,7 +102,7 @@ class Album:
 
 #===================================================================
 if __name__ == '__main__':
-    album_name     = "../resources/data/info-album-6.json"        # file name of the album information
+    album_name     = "../resources/data/albums-type/"        # file name of the album information
     photos_name    = "../resources/data/info-photo.json"        # file name of the photo information
     html_dir       = "../www/views/albums/"                        # path to html source files
     photos_dir     = "img"                         # path to images from the html directory
@@ -114,17 +115,23 @@ if __name__ == '__main__':
         else: 
             solution_name = sys.argv[1]
 
-        print (html_dir + sys.argv[2])
-        if not os.path.exists(html_dir + sys.argv[2]):
-            print ("Album not found: " + sys.argv[2])
+        if not os.path.exists(album_name + sys.argv[2]):
+            print ("Album type not found: " + sys.argv[2])
+            sys.exit()
+        else:
+            album_name += sys.argv[2]
+
+        if not os.path.exists(html_dir + sys.argv[3]):
+            print ("Album folder not found: " + sys.argv[3])
             sys.exit()
         else:
             album = Album(album_name, photos_name)
-            album.create_album(html_dir + sys.argv[2], photos_dir, solution_name)
+            album.create_album(html_dir + sys.argv[3], photos_dir, solution_name)
 
-            infoFile = open(html_dir + sys.argv[2] + "/info.txt", "w")
+            infoFile = open(html_dir + sys.argv[3] + "/info.txt", "w")
             infoFile.write(solution_name)
             infoFile.close()
+
 
 
 

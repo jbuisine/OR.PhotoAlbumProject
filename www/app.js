@@ -2,12 +2,25 @@
  * Created by jbuisine on 06/02/17.
  */
 var express = require('express');
+var app = module.exports = express();
+
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
+
+//Set connection
+io.on('connection', function () {
+    console.log("connection")
+});
+
+//Export module io for routes
+module.exports.io = io;
+
 var path = require('path');
 var bodyParser = require('body-parser');
 
-var routes = require('./modules/routes');
-
-var app = express();
+var homeRoutes = require('./modules/routes/index');
+var albumRoutes = require('./modules/routes/album');
+var solutionRoutes = require('./modules/routes/solution');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -22,7 +35,9 @@ app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 //Use routes defined in other module
-app.use('/', routes);
+app.use('/', homeRoutes);
+app.use('/', albumRoutes);
+app.use('/', solutionRoutes);
 
 //Catch error page
 app.get('*', function(req, res, next) {
@@ -37,13 +52,9 @@ app.use(function(err, req, res, next) {
         return next();
     }
     res.status(err.status || 500);
-    res.render('index', {
-        page: 'error',
-        message: err.message,
-        error: err
-    });
+    res.redirect('/error');
 });
 
-app.listen(3000, function () {
+server.listen(3000, function () {
     console.log('Photo album app listening on port 3000!');
 });

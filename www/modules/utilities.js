@@ -29,11 +29,13 @@ var utilities = {
         });
     },
     readFileContent: function(filePath){
-        fs.readFile(filePath, function (err,data) {
-            if (err) {
-                return console.log(err);
-            }
-            return data;
+        return new Promise((resolve, reject) => {
+            fs.readFile(filePath, function (err, data) {
+                if (err) {
+                    return reject(err);
+                }
+                return resolve(data.toString('utf8'));
+            });
         });
     }
 };

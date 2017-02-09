@@ -80,6 +80,7 @@ object Algorithms {
     */
   def IteratedLocalSearch(iteration: Int, nbEvaluationHillClimber: Int, perturbation: Int, eval: (Array[Int]) => Double): Array[Int] = {
     var random = Random
+    println(Main.nbPhotos)
     var solution = HillClimberFirstImprovement(Main.nbPhotos, nbEvaluationHillClimber, UtilityClass.generateRandomSolution(Main.nbPhotos), eval)
 
     var bestResult = eval(solution)

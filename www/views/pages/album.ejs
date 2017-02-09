@@ -1,17 +1,27 @@
 <div class="page-header">
     <div class="row">
-        <div class="col-md-6 col-sm-12">
+        <div class="col-md-4 col-sm-12">
             <h1><% if(locals.albumName){ %><%= albumName %> <% } %></h1>
+            <p style="font-size:0.9em">Generated with <b><%= currentSolution %></b></p>
         </div>
 
         <% if(locals.albumName){ %>
-        <div class="col-md-6 col-sm-12">
+        <div class="col-md-8 col-sm-12">
             <form action="/generate-album" method="POST" id="generate-album" class="form-inline">
               <div class="form-group">
 
                 <input name="albumName" type="hidden" value="<%= albumName %>" />
 
-                <label for="solutionFile">Solution file : </label>
+                <select name="albumType" id="albumType" class="form-control">
+
+                  <% albumsType.forEach(function(albumType){ %>
+
+                      <option value="<%= albumType %>"> <%= albumType %></option>
+
+                  <% }); %>
+
+                </select>
+
                 <select name="solutionFile" id="solutionFile" class="form-control">
 
                   <% solutions.forEach(function(sol){ %>

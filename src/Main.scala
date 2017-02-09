@@ -10,8 +10,8 @@ import scala.util.control.Breaks
 object Main {
 
   val df = new java.text.DecimalFormat("0.##")
-  val pathPhoto = "../resources/data/info-photo.json"
-  val pathAlbum = "../resources/data/info-album-6.json"
+  val pathPhoto = "../../resources/data/info-photo.json"
+  val pathAlbum = "../../resources/data/albums-type/album-6-2per3.json"
   val nbPhotos = 55
   val scanner = new java.util.Scanner(System.in)
 

@@ -26,6 +26,16 @@
         <!-- Placed at the end of the document so the pages load faster -->
         <script src="/bower_components/jquery/dist/jquery.min.js"></script>
         <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/main.js"></script>
+
+        <% if(locals.page == "album"){ %>
+            <script src="/album.js"></script>
+        <% } %>
+
+        <% if(locals.page == "solution"){ %>
+            <script src="/solution.js"></script>
+        <% } %>
 
     </body>
 
