@@ -89,7 +89,7 @@ router.post('/generate-album', function (req, res) {
     if (albums.indexOf(album) !== -1) {
 
         var solutionPath = solsPath + albumType.replace(".json", "") + "/" + solutionFile;
-        var python = spawn('python', [buildAlbumFile, solsPath + solutionPath, albumType, album]);
+        var python = spawn('python', [buildAlbumFile, solutionPath, albumType, album]);
 
         python.stdout.on('data', function (data) {
             io.sockets.emit('uploadProgress', data.toString());
