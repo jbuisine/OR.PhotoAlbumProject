@@ -1,3 +1,4 @@
+# Java & scala files/folder
 .cache-main
 .classpath
 bin/*
@@ -6,5 +7,16 @@ bin/*
 .DS_Store
 /bin/
 compile
+
+# Intellij files
 Project.RO.2016.11.08.Scala.v2.iml
 .idea/
+
+# Node & bower files
+node_modules
+bower_components
+public/bower_components/*
+
+
+
+
