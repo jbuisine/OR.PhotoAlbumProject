@@ -348,7 +348,7 @@ object Main {
             "\n1. Number of iteration (between 1 and 100000) " +
             "\n2. Number of vectors N (between 1 and 1000)" +
             "\n3. Number of closest vectors take in consideration for each vector (between 1 and N)" +
-            "\n3. Choice of computed function (1 for Tchebivech or 2 for Weighted sum function)" +
+            "\n4. Choice of computed function (1 for Tchebivech or 2 for Weighted sum function)" +
             "\n\n"
           println(plsQuestion)
 
@@ -361,8 +361,8 @@ object Main {
           val closestQuestion = "3. Select number of closest vectors you want to take in consideration for each vector"
           val numberClosest = UtilityClass.getScannerValue(closestQuestion, "number of closest vectors", 1, numberVectors)
 
-          val computedQuestion = "3. Select number of closest vectors you want to take in consideration for each vector"
-          val computedChoice = UtilityClass.getScannerValue(computedQuestion, "number of closest vectors", 1, 3)
+          val computedQuestion = "4. Choice of computed function (1 for Tchebivech or 2 for Weighted sum function)"
+          val computedChoice = UtilityClass.getScannerValue(computedQuestion, "computed choice", 1, 3)
 
           solutions = Algorithms.MOEAD_Algorithm(numberIteration, numberVectors, numberClosest, f, computedChoice)
           println("\nNumber of solutions found : " + solutions.length + "\n")
