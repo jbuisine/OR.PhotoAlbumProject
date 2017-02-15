@@ -2,8 +2,13 @@
     <h1>Create solution</h1>
 </div>
 
+<div id="progress-bar" class="progress">
+  <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
 
-<form method="post" action="#" class="form-horizontal">
+  </div>
+</div>
+
+<form id="create-solution-form" enctype='application/json' class="form-horizontal">
 
     <div class="form-group">
         <label for="solutionFile" class="col-sm-4 control-label">Solution file</label>
@@ -82,31 +87,31 @@
         <div class="col-sm-8">
             <div class="radio">
                 <label>
-                    <input type="radio" name="functions" id="HC" value="0">
+                        <input type="radio" name="algorithm" id="HC" value="0">
                     Hill climber first improvement
                 </label>
             </div>
             <div class="radio">
                 <label>
-                    <input type="radio" name="functions" id="ILS" value="1">
+                    <input type="radio" name="algorithm" id="ILS" value="1">
                     Iterated local search
                 </label>
             </div>
             <div class="radio">
                 <label>
-                    <input type="radio" name="functions" id="EA" value="2">
+                    <input type="radio" name="algorithm" id="EA" value="2">
                     Evolutionary algorithm
                 </label>
             </div>
             <div class="radio">
                 <label>
-                    <input type="radio" name="functions" id="PLS" value="3">
+                    <input type="radio" name="algorithm" id="PLS" value="3">
                     Pareto local search
                 </label>
             </div>
             <div class="radio">
                 <label>
-                    <input type="radio" name="functions" id="MOEAD" value="4">
+                    <input type="radio" name="algorithm" id="MOEAD" value="4">
                     MOEA/D
                 </label>
             </div>
@@ -220,11 +225,7 @@
         <div class="form-group">
             <div class="col-sm-4"></div>
             <div class="col-sm-4">
-                <button type="submit" id="createSolutionHC" class="btn btn-primary">Create solution</button>
-                <button type="submit" id="createSolutionILS" class="btn btn-primary">Create solution</button>
-                <button type="submit" id="createSolutionEA" class="btn btn-primary">Create solution</button>
-                <button type="submit" id="createSolutionPLS" class="btn btn-primary">Create solution</button>
-                <button type="submit" id="createSolutionMOEAD" class="btn btn-primary">Create solution</button>
+                <button type="submit" id="createSolution" class="btn btn-primary">Create solution</button>
             </div>
         </div>
 

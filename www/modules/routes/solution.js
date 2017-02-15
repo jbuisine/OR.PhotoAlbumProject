@@ -15,6 +15,7 @@ const albumsPath = './views/albums/';
 const solsPath = './../resources/solutions/';
 const albumsTypePath = './../resources/data/albums-type/';
 const buildAlbumFile = './../utilities/buildAlbum.py';
+const classPathUtils = './../utilities/compile:./../utilities/lib/json-simple-1.1.1.jar';
 
 router.get('/solution', function (req, res) {
     res.render('index', {
@@ -25,32 +26,41 @@ router.get('/solution', function (req, res) {
 });
 
 
-router.post('/solution-HC', function (req, res) {
+router.post('/create-solution', function (req, res) {
 
-    var solutionFile = req.body.solutionFile;
-    var albumType = req.body.albumType;
-    var criteria = req.body.criteria;
-    var iteration = req.body.iterationAlgo;
-    var permutation = req.body.permutation;
+    console.log(req.body)
 
-    console.log(criteria);
 
-    res.send('success');
-    /*
-    var python = spawn('python', [buildAlbumFile, solsPath + solutionPath, albumType, album]);
+    var solutionScript = spawn('scala', ['-cp', classPathUtils, 'MainWebApp', JSON.stringify(req.body)]);
 
-    python.stdout.on('data', function (data) {
+    solutionScript.stdout.on('data', function (data) {
         io.sockets.emit('uploadProgress', data.toString());
         console.log('stdout: ' + data.toString());
     });
 
-    python.stderr.on('data', function (data) {
+    solutionScript.stderr.on('data', function (data) {
         console.log('stderr: ' + data.toString());
     });
 
-    python.on('close', function(code) {
+    solutionScript.on('close', function(code) {
         console.log('closing code: ' + code);
-        res.redirect('/album/' + album);
+        res.contentType('text/html');
+        res.send('Finished');
+    });
+
+    /*exec('scala -cp ' + classPathUtils + ' MainWebApp ' + JSON.stringify(req.body), (error, stdout, stderr) => {
+      if (error) {
+        console.log('stderr: ' + error.toString());
+        res.contentType('text/html');
+        res.send("error");
+      }
+
+      if(stdout){
+        io.sockets.emit('uploadProgress', stdout.toString());
+        console.log('stdout: ' + stdout.toString());
+      }
+      console.log(`stdout: ${stdout}`);
+      console.log(`stderr: ${stderr}`);
     });*/
 });
 

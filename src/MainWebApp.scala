@@ -1,18 +1,21 @@
 
 
+import java.io.FileReader
 import java.nio.file.Paths
 
 import scala.util.control.Breaks
+import org.json.simple.{JSONArray, JSONObject}
+import org.json.simple.parser.{JSONParser, ParseException}
 
 /**
  * @author j.buisine
  *
  */
-object MainTest {
+object MainWebApp {
 
   val df = new java.text.DecimalFormat("0.##")
-  val pathPhoto = "./resources/data/info-photo.json"
-  val pathAlbum = "./resources/data/albums-type/album-6-2per3.json"
+  val pathPhoto = "./../resources/data/info-photo.json"
+  val pathAlbum = "./../resources/data/albums-type/album-6-2per3.json"
   val nbPhotos = 55
   val scanner = new java.util.Scanner(System.in)
 
@@ -46,34 +49,27 @@ object MainTest {
    */
   def main(args: Array[String]): Unit = {
 
-    //File solution value
-    solutionFile = args(0)
-
-    val criteriaChoice = args(1).toArray
-    val choiceAlgo = args(2).toInt
-
-    println(criteriaChoice)
-    /*
-    if(criteriaChoice >= 0 && criteriaChoice <= 2)
-      hashChoice = criteriaChoice+1
-
-    */
-    println(hashChoice)
     f = Array(Modelisation.hashEval, Modelisation.hashEval, Modelisation.hashEval, Modelisation.colorsEval, Modelisation.greyAVGEval, Modelisation.commonTagEval, Modelisation.uncommonTagEval, Modelisation.nbUncommonTagEval)
+
+    val parser = new JSONParser()
+
+    println(args(0))
+    val data =  parser.parse(args(0).toString).asInstanceOf[JSONObject]
+
+    solutionFile = data.get("solutionFile").toString
+    val directory = data.get("albumType").toString.split('.')(0)
+
 
     val hashValue = if (hashChoice > 0) hashTypes(hashChoice - 1) else ""
 
     Modelisation.init(pathPhoto, pathAlbum, hashValue)
 
     var solution = new Array[Int](Main.nbPhotos)
-    choiceAlgo.toInt match {
-      case 0 => {
-        solution = Algorithms.IteratedLocalSearch(1000, 15000, 20, f(0))
-        println(f(0)(solution))
-      }
-    }
+
+    solution = Algorithms.IteratedLocalSearch(300, 15000, 20, f(3))
+
 
     if(solutionFile.length() > 0)
-      UtilityClass.writeSolution(solutionFile, solution)
+      UtilityClass.writeSolution(directory + "/" + solutionFile, solution)
   }
 }
