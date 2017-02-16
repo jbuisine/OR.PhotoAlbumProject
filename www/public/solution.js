@@ -3,34 +3,38 @@
  */
 
 var socket = io.connect('http://localhost:3000');
+var LIMIT_PROCESS = 4;
+var modal_error = $('#create-solution-dialog');
+var modal_error_content = modal_error.find('.modal-body p');
+$('#content').hide();
+$('button[id^="createSolution"]').show();
+$('button[id^="createSolution"]').attr('disabled', true);
 
-var bar = $('#progress-bar');
+/* Listen on generationProgress canal to get progress of generation */
+socket.on('generationProgress' , function (data){
 
-bar.hide();
+    if(data.percent.indexOf('%') !== -1){
 
-/* Listen on uploadProgress canal to get */
-socket.on('uploadProgress' , function (percent){
-    if(!bar.is(":visible")){
-        bar.show('1000');
-    }
+        var formattedPercent = parseInt(data.percent.split('>')[1].replace('%', ''));
 
-    if(percent.indexOf('%') !== -1){
-        var formattedPercent = parseFloat(percent.split('>')[1].replace('%', '')).toFixed(2);
+        var circleID = data.solFile.replace('.', '-');
+        var circle = $('#'+circleID);
 
-        var progressBarItem = bar.find('.progress-bar')
-        progressBarItem.text('');
+        if(!circle.length){
+            generateProgressCircle(circleID, formattedPercent);
+            return;
+        }
 
-        progressBarItem.width(formattedPercent + '%');
-        progressBarItem.attr('aria-valuenow', formattedPercent);
+        updateProgressCircle(circle, formattedPercent);
 
-        if(formattedPercent > 5){
-            progressBarItem.text(formattedPercent + '%');
+        if(formattedPercent >= 100){
+            $('#solution-generation-' + circleID).hide('2000', function(){
+                $(this).remove();
+            });
         }
     }
 });
 
-$('#content').hide();
-$('button[id^="createSolution"]').hide();
 
 $(document).ready(function () {
     $('#algorithmChoice input').attr('disabled', true);
@@ -47,60 +51,79 @@ $('#HC').change(function () {
 
     updateContent();
 
-    $('#numberPermutation').show();
+    $('#numberPermutation').show('200');
 });
 
 $('#EA').change(function () {
 
     updateContent();
 
-    $('#HillClimber').show();
-    $('#EAAlgorithm').show();
-    $('#numberPermutation').show();
+    $('#HillClimber').show('200');
+    $('#EAAlgorithm').show('200');
+    $('#numberPermutation').show('200');
 });
 
 $('#ILS').change(function () {
 
     updateContent();
 
-    $('#HillClimber').show();
-    $('#numberPermutation').show();
+    $('#HillClimber').show('200');
+    $('#numberPermutation').show('200');
 });
 
 $('#PLS').change(function () {
 
     updateContent();
 
-    $('#createSolutionPLS').show();
+    $('#createSolutionPLS').show('200');
 });
 
 $('#MOEAD').change(function () {
 
     updateContent();
 
-    $('#MOEADAlgorithm').show();
-    $('#numberPermutation').show();
+    $('#MOEADAlgorithm').show('200');
+    $('#numberPermutation').show('200');
 });
 
 $('#createSolution').click(function (e) {
     e.preventDefault();
 
     var model_data = $("#create-solution-form").serializeObject();
+    var circleID = 'solution-generation-' + model_data.solutionFile.replace('.', '-');
+
+    if($("div[id^='solution-generation']").length >= LIMIT_PROCESS){
+        modal_error_content.text("You cannot run more generation currently. Please wait a moment while one of solution is generated.");
+        modal_error.modal('show');
+        return;
+    }
+
+    if($("#"+circleID).length > 0){
+        modal_error_content.text("A solution with same name is already running. Please select another name or wait the end of the generation to replace it later");
+        modal_error.modal('show');
+        return;
+    }
+
+    console.log(checkInputFilled());
+
+    if(!checkInputFilled()){
+        modal_error_content.text("Please filled all required input.");
+        modal_error.modal('show');
+        return;
+    }
 
     $.ajax({
         type: "POST",
         url: '/create-solution',
         contentType: 'application/json',
-        data: JSON.stringify(model_data),
-        success: function (data) {
-
-            console.log(data);
-        }
+        data: JSON.stringify(model_data)
     });
 });
 
 function showOrHideCriteria(nbElem) {
-    console.log(nbElem);
+
+    $('button[id^="createSolution"]').attr('disabled', true);
+
     if(nbElem > 1 && nbElem <= 2){
         //One objective hidden
         $('#HC').attr('disabled',true);
@@ -145,13 +168,60 @@ function showOrHideCriteria(nbElem) {
 
 function updateContent() {
 
-    $('#content').show();
-
+    $('#content').hide();
     $('#EAAlgorithm').hide();
-    $('#createSolutionILS').show();
     $('#HillClimber').hide();
     $('#EAAlgorithm').hide();
     $('#MOEADAlgorithm').hide();
     $('#numberPermutation').hide();
-    $('button[id^="createSolution"]').show();
+    $('button[id^="createSolution"]').attr('disabled', false);
+    $('#content').show('200');
+    $('#createSolutionILS').show('200');
+}
+
+function generateProgressCircle(id, percent){
+
+    var pos = id.lastIndexOf('-');
+
+    var filename = id.substring(0,pos)+'.'+id.substring(pos+1);
+
+    var content = '<div id="solution-generation-' + id + '" class="row">';
+
+    if($('div[id^="solution-generation"]').length !== 0){
+        content += '<hr />';
+    }
+
+    content += '<div class="col-md-9" style="padding-top:10px;"><h4>' + filename + '</h4></div>';
+    content += '<div class="col-md-3">';
+    content += '<div id="' + id + '" class="c100 p' + percent + ' small green">';
+    content += '<span>' + percent + '%</span>';
+    content += '<div class="slice">';
+    content += '<div class="bar"></div>';
+    content += '<div class="fill"></div>';
+    content += '</div>';
+    content += '</div>';
+    content += '</div>';
+    content += '</div>';
+
+
+    $('#progress-content').append(content);
+    $('#solution-generation-' + id).hide().show('2000');
+
+}
+
+function updateProgressCircle(circle, percent){
+
+    circle.removeClass('p'+ percent -1).addClass('p' + percent);
+    circle.find('span').text(percent + '%');
+}
+
+function checkInputFilled(){
+
+    var check = true;
+    $('input[type="text"]:visible, input[type="number"]:visible').each(function(){
+       if($(this).val().length <= 0){
+           check = false;
+       }
+    });
+    return check;
 }

@@ -32,3 +32,9 @@
 #generate-album{
     padding-top: 30px;
 }
+
+.create-solution-modal-header{
+    background-color: #f43558;
+    color: #ffffff;
+    border-radius: 4px 4px 0px 0px;
+}

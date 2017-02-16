@@ -66,7 +66,7 @@ object MainWebApp {
 
     var solution = new Array[Int](Main.nbPhotos)
 
-    solution = Algorithms.IteratedLocalSearch(300, 15000, 20, f(3))
+    solution = Algorithms.IteratedLocalSearch(1000, 15000, 20, f(3))
 
 
     if(solutionFile.length() > 0)

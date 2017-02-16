@@ -34,7 +34,7 @@ router.post('/create-solution', function (req, res) {
     var solutionScript = spawn('scala', ['-cp', classPathUtils, 'MainWebApp', JSON.stringify(req.body)]);
 
     solutionScript.stdout.on('data', function (data) {
-        io.sockets.emit('uploadProgress', data.toString());
+        io.sockets.emit('generationProgress', { solFile: req.body.solutionFile, percent: data.toString() });
         console.log('stdout: ' + data.toString());
     });
 
@@ -43,25 +43,10 @@ router.post('/create-solution', function (req, res) {
     });
 
     solutionScript.on('close', function(code) {
-        console.log('closing code: ' + code);
+        io.sockets.emit('generationFinished', { solFile: req.body.solutionFile });
         res.contentType('text/html');
         res.send('Finished');
     });
-
-    /*exec('scala -cp ' + classPathUtils + ' MainWebApp ' + JSON.stringify(req.body), (error, stdout, stderr) => {
-      if (error) {
-        console.log('stderr: ' + error.toString());
-        res.contentType('text/html');
-        res.send("error");
-      }
-
-      if(stdout){
-        io.sockets.emit('uploadProgress', stdout.toString());
-        console.log('stdout: ' + stdout.toString());
-      }
-      console.log(`stdout: ${stdout}`);
-      console.log(`stderr: ${stderr}`);
-    });*/
 });
 
 router.post('/solution-ILS', function (req, res) {
