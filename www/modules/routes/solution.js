@@ -10,26 +10,22 @@ var router = express.Router();
 var utilities = require('./../utilities');
 const spawn = require('child_process').spawn;
 
-const albumsPath = './views/albums/';
-
-const solsPath = './../resources/solutions/';
-const albumsTypePath = './../resources/data/albums-type/';
-const buildAlbumFile = './../utilities/buildAlbum.py';
+const templatesPath = './views/templates/';
+const templatesTypePath = './../resources/data/templates-type/';
 const classPathUtils = './../utilities/compile:./../utilities/lib/json-simple-1.1.1.jar';
 
 router.get('/solution', function (req, res) {
     res.render('index', {
         page: "solution",
-        albums: utilities.getDirectories(albumsPath),
-        albumsType: utilities.getFiles(albumsTypePath)
+        templates: utilities.getDirectories(templatesPath),
+        templatesType: utilities.getFiles(templatesTypePath)
     });
 });
 
 
 router.post('/create-solution', function (req, res) {
 
-    console.log(req.body)
-
+    console.log(req.body);
 
     var solutionScript = spawn('scala', ['-cp', classPathUtils, 'MainWebApp', JSON.stringify(req.body)]);
 
@@ -45,24 +41,8 @@ router.post('/create-solution', function (req, res) {
     solutionScript.on('close', function(code) {
         io.sockets.emit('generationFinished', { solFile: req.body.solutionFile });
         res.contentType('text/html');
-        res.send('Finished');
+        res.send('Success');
     });
-});
-
-router.post('/solution-ILS', function (req, res) {
-
-});
-
-router.post('/solution-EA', function (req, res) {
-
-});
-
-router.post('/solution-PLS', function (req, res) {
-
-});
-
-router.post('/solution-MOEAD', function (req, res) {
-
 });
 
 module.exports = router;

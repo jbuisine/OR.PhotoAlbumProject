@@ -9,7 +9,7 @@ var io = require('socket.io')(server);
 
 //Set connection
 io.on('connection', function () {
-    console.log("connection")
+    console.log('connection');
 });
 
 //Export module io for routes
@@ -19,7 +19,7 @@ var path = require('path');
 var bodyParser = require('body-parser');
 
 var homeRoutes = require('./modules/routes/index');
-var albumRoutes = require('./modules/routes/album');
+var templatesRoutes = require('./modules/routes/template');
 var solutionRoutes = require('./modules/routes/solution');
 
 // view engine setup
@@ -29,15 +29,15 @@ app.set('view engine', 'ejs');
 //Use css components
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(express.static(path.join(__dirname, 'views/albums')));
+app.use(express.static(path.join(__dirname, 'views/templates')));
 
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 
 //Use routes defined in other module
 app.use('/', homeRoutes);
-app.use('/', albumRoutes);
 app.use('/', solutionRoutes);
+app.use('/', templatesRoutes);
 
 //Catch error page
 app.get('*', function(req, res, next) {

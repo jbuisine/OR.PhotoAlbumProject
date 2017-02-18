@@ -50,7 +50,7 @@ class Album:
         pos = 0
         for i in photoList:
             photo = self.album["pages"][numPage]["photos"][pos]
-            f.write("<img src=\"/<%%= albumName %%>/%s/%s\" width=\"%d\" height=\"%d\">\n" % (photos_dir, self.photos[i]["name"], photo["width"], photo["height"]))
+            f.write("<img src=\"/<%%= templateName %%>/%s/%s\" width=\"%d\" height=\"%d\">\n" % (photos_dir, self.photos[i]["name"], photo["width"], photo["height"]))
             pos += 1
 
         f.write("</div>\n") # pictures
@@ -68,17 +68,17 @@ class Album:
         f.write("<ul class=\"pagination\">\n")
 
         if numPage > 0:
-            f.write("<li><a href=\"/album/<%%= albumName %%>/%d\" aria-label=\"Previous\"><span aria-hidden=\"true\">&laquo;</span></a></li>\n" % (numPage -1))
+            f.write("<li><a href=\"/templates/<%%= templateName %%>/%d\" aria-label=\"Previous\"><span aria-hidden=\"true\">&laquo;</span></a></li>\n" % (numPage -1))
 
         for i in xrange(0, self.album["page"]):
             if(i == numPage):
                 f.write("<li class=\"active\">")
             else:
                 f.write("<li>")
-            f.write("<a href=\"/album/<%%= albumName %%>/%d\">%d</a></li>\n" % (i, i+1))
+            f.write("<a href=\"/templates/<%%= templateName %%>/%d\">%d</a></li>\n" % (i, i+1))
 
         if numPage < self.album["page"] - 1:
-            f.write("<li><a href=\"/album/<%%= albumName %%>/%d\" aria-label=\"Next\"><span aria-hidden=\"true\">&raquo;</span></a></li>\n" % (numPage + 1))
+            f.write("<li><a href=\"/templates/<%%= templateName %%>/%d\" aria-label=\"Next\"><span aria-hidden=\"true\">&raquo;</span></a></li>\n" % (numPage + 1))
 
         f.write("</ul>\n")
         f.write("</nav>\n")
@@ -102,9 +102,9 @@ class Album:
 
 #===================================================================
 if __name__ == '__main__':
-    album_name     = "../resources/data/albums-type/"        # file name of the album information
+    album_name     = "../resources/data/templates-type/"        # file name of the album information
     photos_name    = "../resources/data/info-photo.json"        # file name of the photo information
-    html_dir       = "../www/views/albums/"                        # path to html source files
+    html_dir       = "../www/views/templates/"                        # path to html source files
     photos_dir     = "img"                         # path to images from the html directory
     solution_name  = "../resources/data/chronologic-order.sol"  # (default) file name of the solution which gives the assignement of the photos
 

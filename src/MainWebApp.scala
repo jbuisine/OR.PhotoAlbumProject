@@ -15,7 +15,7 @@ object MainWebApp {
 
   val df = new java.text.DecimalFormat("0.##")
   val pathPhoto = "./../resources/data/info-photo.json"
-  val pathAlbum = "./../resources/data/albums-type/album-6-2per3.json"
+  val pathAlbum = "./../resources/data/templates-type/album-6-2per3.json"
   val nbPhotos = 55
   val scanner = new java.util.Scanner(System.in)
 
@@ -52,22 +52,37 @@ object MainWebApp {
     f = Array(Modelisation.hashEval, Modelisation.hashEval, Modelisation.hashEval, Modelisation.colorsEval, Modelisation.greyAVGEval, Modelisation.commonTagEval, Modelisation.uncommonTagEval, Modelisation.nbUncommonTagEval)
 
     val parser = new JSONParser()
-
-    println(args(0))
     val data =  parser.parse(args(0).toString).asInstanceOf[JSONObject]
 
     solutionFile = data.get("solutionFile").toString
-    val directory = data.get("albumType").toString.split('.')(0)
+    val directory = data.get("templateType").toString.split('.')(0)
+    var criteriasIndexes = data.get("criterias").asInstanceOf[Array[Int]]
 
+    println(criteriasIndexes)
+    val hashValues = criteriasIndexes.filter(_ < 3)
 
-    val hashValue = if (hashChoice > 0) hashTypes(hashChoice - 1) else ""
-
-    Modelisation.init(pathPhoto, pathAlbum, hashValue)
+    if(hashValues.length > 0)
+      hashValues.foreach( value => { Modelisation.init(pathPhoto, pathAlbum, hashTypes(value)) })
+    else
+      Modelisation.init(pathPhoto, pathAlbum, "")
 
     var solution = new Array[Int](Main.nbPhotos)
 
-    solution = Algorithms.IteratedLocalSearch(1000, 15000, 20, f(3))
+    criteriasIndexes.length match {
+      case 1 => {
 
+      }
+
+      case 2 => {
+
+      }
+
+      case 3 => {
+
+      }
+    }
+
+    solution = Algorithms.IteratedLocalSearch(1000, 15000, 20, f(3))
 
     if(solutionFile.length() > 0)
       UtilityClass.writeSolution(directory + "/" + solutionFile, solution)
