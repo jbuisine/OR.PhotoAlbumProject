@@ -50,8 +50,6 @@ $('#criteriaChoice input').change(function(){
 $('#HC').change(function () {
 
     updateContent();
-
-    $('#numberPermutation').show('200');
 });
 
 $('#EA').change(function () {

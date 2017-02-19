@@ -13,7 +13,7 @@ const spawn = require('child_process').spawn;
 const templatesPath = './views/templates/';
 
 const solsPath = './../resources/solutions/';
-const templatesTypePath = './../resources/data/templates-type/';
+const albumsTypePath = './../resources/data/albums-type/';
 const buildTemplateFile = './../utilities/buildAlbum.py';
 
 router.get('/templates/:name', function (req, res) {
@@ -24,17 +24,19 @@ router.get('/templates/:name', function (req, res) {
 
         var templates = utilities.getDirectories(templatesPath);
 
-        var templatesType = utilities.getFiles(templatesTypePath);
+        var albumsType = utilities.getFiles(albumsTypePath);
+
+        var template = req.params.name;
 
         if(templates.indexOf(req.params.name) !== -1){
 
             res.render('index', {
                 page: "template",
-                templateName: req.params.name,
+                templateName: template,
                 idPage: 0,
                 templates: utilities.getDirectories(templatesPath),
-                templatesType: templatesType,
-                solutions: utilities.getFiles(solsPath + "/" + templatesType[0].replace('.json', '')),
+                albumsType: albumsType,
+                solutions: utilities.getFiles(solsPath + template + "/" + albumsType[0].replace('.json', '')),
                 currentSolution: currentSol
             });
         }else{
@@ -54,17 +56,17 @@ router.get('/templates/:name/:id', function (req, res) {
         utilities.filePathExists(templatesPath + template + '/page_' + id + '.ejs').then(function(exists) {
 
             if(exists){
-                utilities.readFileContent(templatesPath + req.params.name + "/info.txt").then(function(dataFile) {
+                utilities.readFileContent(templatesPath + template + "/info.txt").then(function(dataFile) {
 
                     var currentSol = dataFile.substr(dataFile.lastIndexOf("/") + 1);
-                    var templatesType = utilities.getFiles(templatesTypePath);
+                    var albumsType = utilities.getFiles(albumsTypePath);
                     res.render('index', {
                         page: "template",
                         templateName: template,
                         idPage: id,
                         templates: templates,
-                        templatesType: templatesType,
-                        solutions: utilities.getFiles(solsPath + "/" + templatesType[0].replace('.json', '')),
+                        albumsType: albumsType,
+                        solutions: utilities.getFiles(solsPath + template + "/" + albumsType[0].replace('.json', '')),
                         currentSolution: currentSol
                     });
                 });
@@ -82,14 +84,14 @@ router.post('/generate-album', function (req, res) {
 
     var template = req.body.templateName;
     var solutionFile = req.body.solutionFile;
-    var templateType= req.body.templateType;
+    var albumType = req.body.albumType;
 
     var templates = utilities.getDirectories(templatesPath);
 
     if (templates.indexOf(template) !== -1) {
 
-        var solutionPath = solsPath + templateType.replace(".json", "") + "/" + solutionFile;
-        var python = spawn('python', [buildTemplateFile, solutionPath, templateType, template]);
+        var solutionPath = solsPath + template + "/" + albumType.replace('.json', '') + "/" + solutionFile;
+        var python = spawn('python', [buildTemplateFile, solutionPath, albumType, template]);
 
         python.stdout.on('data', function (data) {
             io.sockets.emit('uploadProgress', data.toString());
@@ -100,8 +102,7 @@ router.post('/generate-album', function (req, res) {
             console.log('stderr: ' + data.toString());
         });
 
-        python.on('close', function(code) {
-            console.log('closing code: ' + code);
+        python.on('close', function() {
             res.redirect('/templates/' + template);
         });
 
@@ -112,11 +113,12 @@ router.post('/generate-album', function (req, res) {
 
 router.post('/load-solutions', function (req, res) {
 
-    var templateType = req.body.templateType;
+    var albumType = req.body.albumType;
+    var template = req.body.templateName;
 
-    var templatesType = utilities.getFiles(solsPath + "/" + templateType.replace('.json', ''));
+    var solutions = utilities.getFiles(solsPath + template + "/" + albumType.replace('.json', ''));
 
-    res.send(templatesType);
+    res.send(solutions);
 });
 
 module.exports = router;

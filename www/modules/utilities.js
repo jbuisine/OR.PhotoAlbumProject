@@ -7,12 +7,21 @@ var path = require('path');
 
 var utilities = {
     getDirectories: function (srcpath) {
-        return fs.readdirSync(srcpath)
-                .filter(file => fs.statSync(path.join(srcpath, file)).isDirectory());
+        if(fs.existsSync(srcpath)){
+            return fs.readdirSync(srcpath)
+                    .filter(file => fs.statSync(path.join(srcpath, file)).isDirectory());
+        }else{
+            return null;
+        }
     },
     getFiles: function (srcpath) {
-        return fs.readdirSync(srcpath)
-                .filter(file => fs.statSync(path.join(srcpath, file)).isFile());
+        if(fs.existsSync(srcpath)){
+            return fs.readdirSync(srcpath)
+                    .filter(file => fs.statSync(path.join(srcpath, file)).isFile());
+        }
+        else {
+            return null;
+        }
     },
     filePathExists: function(filePath) {
         return new Promise((resolve, reject) => {

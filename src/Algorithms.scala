@@ -78,10 +78,10 @@ object Algorithms {
     * @param perturbation
     * @return the best solution
     */
-  def IteratedLocalSearch(iteration: Int, nbEvaluationHillClimber: Int, perturbation: Int, eval: (Array[Int]) => Double): Array[Int] = {
+  def IteratedLocalSearch(numberElements: Int, iteration: Int, nbEvaluationHillClimber: Int, perturbation: Int, eval: (Array[Int]) => Double): Array[Int] = {
     var random = Random
 
-    var solution = HillClimberFirstImprovement(Main.nbPhotos, nbEvaluationHillClimber, UtilityClass.generateRandomSolution(Main.nbPhotos), eval)
+    var solution = HillClimberFirstImprovement(numberElements, nbEvaluationHillClimber, UtilityClass.generateRandomSolution(Main.nbPhotos), eval)
 
     var bestResult = eval(solution)
     var bestSolution = solution.clone()
@@ -91,7 +91,7 @@ object Algorithms {
     do {
       UtilityClass.pertubationIterated(solution, perturbation, random)
 
-      val currentSolution = HillClimberFirstImprovement(Main.nbPhotos, nbEvaluationHillClimber, solution.clone(), eval)
+      val currentSolution = HillClimberFirstImprovement(numberElements, nbEvaluationHillClimber, solution.clone(), eval)
 
       val currentResult = eval(currentSolution)
 

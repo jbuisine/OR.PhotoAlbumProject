@@ -3,22 +3,29 @@
  */
 
 //Get all files of current template type
-$( "#templateType" ).change(function() {
+$( "#albumType" ).change(function() {
 
+    console.log($("#templateName").val());
     $.ajax({
         type: "POST",
         url: '/load-solutions',
         data: {
-            templateType: $("#templateType").val()
+            albumType: $("#albumType").val(),
+            templateName: $("#templateName").val()
         },
         success: loadSelectSol
     });
 });
 
-function loadSelectSol(templatesType) {
+function loadSelectSol(solutions) {
     $( "#solutionFile" ).empty();
 
-    $.each(templatesType, function( key, templateType ) {
-        $("#solutionFile").append('<option value="' + templateType + '">' + templateType + '</option>');
-    });
+    if(solutions.length > 0){
+        $.each(solutions, function( key, sol ) {
+            $("#solutionFile").append('<option value="' + sol + '">' + sol + '</option>');
+        });
+    }
+    else{
+        $("#solutionFile").append('<option> No solution found</option>');
+    }
 }

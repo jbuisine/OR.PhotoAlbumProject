@@ -1,11 +1,8 @@
-
-
-import java.io.FileReader
-import java.nio.file.Paths
-
 import scala.util.control.Breaks
 import org.json.simple.{JSONArray, JSONObject}
-import org.json.simple.parser.{JSONParser, ParseException}
+import org.json.simple.parser.{JSONParser}
+
+import scala.collection.mutable.ListBuffer
 
 /**
  * @author j.buisine
@@ -15,8 +12,7 @@ object MainWebApp {
 
   val df = new java.text.DecimalFormat("0.##")
   val pathPhoto = "./../resources/data/info-photo.json"
-  val pathAlbum = "./../resources/data/templates-type/album-6-2per3.json"
-  val nbPhotos = 55
+  var pathAlbum = "./../resources/data/albums-type/"
   val scanner = new java.util.Scanner(System.in)
 
   // Choices variables
@@ -35,7 +31,7 @@ object MainWebApp {
   val numberMultiObjectiveAlgo = 1
 
   //Objective function
-  var f: Array[(Array[Int]) => Double] = null
+  var functionsList: Array[(Array[Int]) => Double] = null
 
   val hashTypes = Array("ahashdist", "phashdist", "dhashdist")
   var hashChoice: Int = 0
@@ -49,42 +45,90 @@ object MainWebApp {
    */
   def main(args: Array[String]): Unit = {
 
-    f = Array(Modelisation.hashEval, Modelisation.hashEval, Modelisation.hashEval, Modelisation.colorsEval, Modelisation.greyAVGEval, Modelisation.commonTagEval, Modelisation.uncommonTagEval, Modelisation.nbUncommonTagEval)
+    functionsList = Array(Modelisation.hashEval, Modelisation.hashEval, Modelisation.hashEval, Modelisation.colorsEval, Modelisation.greyAVGEval, Modelisation.commonTagEval, Modelisation.uncommonTagEval, Modelisation.nbUncommonTagEval)
 
     val parser = new JSONParser()
     val data =  parser.parse(args(0).toString).asInstanceOf[JSONObject]
 
     solutionFile = data.get("solutionFile").toString
-    val directory = data.get("templateType").toString.split('.')(0)
-    var criteriasIndexes = data.get("criterias").asInstanceOf[Array[Int]]
+    pathAlbum += data.get("albumType").toString
+    val directory = data.get("albumType").toString.split('.')(0)
+    val templateSize = data.get("templateSize").toString.toInt
+    val templateName = data.get("templateName").toString
+    var criteriaIndexes:Array[Int] = data.get("criteria").asInstanceOf[JSONArray].toArray.map( x => x.toString.toInt)
+    val algorithmChoice = data.get("algorithm").toString.toInt
+    val algorithmIteration = data.get("iterationAlgorithm").toString.toInt
+    val iterationHC = data.get("iterationHC").toString.toInt
+    val numberPermutation = data.get("numberPermutation").toString.toInt
 
-    println(criteriasIndexes)
-    val hashValues = criteriasIndexes.filter(_ < 3)
+    val hashValues = criteriaIndexes.filter(_ < 3)
 
     if(hashValues.length > 0)
       hashValues.foreach( value => { Modelisation.init(pathPhoto, pathAlbum, hashTypes(value)) })
     else
       Modelisation.init(pathPhoto, pathAlbum, "")
 
-    var solution = new Array[Int](Main.nbPhotos)
+    var solutions = new ListBuffer[Array[Int]]
 
-    criteriasIndexes.length match {
+    //Get function choices
+    var functions: Array[(Array[Int]) => Double] = functionsList.zipWithIndex.filter{ case (f, index) => criteriaIndexes.contains(index) }.map(_._1)
+
+    println(functions.length)
+    functions.length match {
+      // One criteria
       case 1 => {
 
+        algorithmChoice match {
+
+          //HC
+          case 0 => {
+            solutions += Algorithms.HillClimberFirstImprovement(templateSize, algorithmIteration, null, functions(0))
+          }
+
+          //ILS
+          case 1 => {
+            solutions += Algorithms.IteratedLocalSearch(templateSize, algorithmIteration, iterationHC, numberPermutation, functions(0))
+          }
+
+          //EA
+          case 2 => {
+            //Values for evolution strategy algorithm
+            val HCGenitor = data.get("HCGenitor").toString.toInt
+            val muElement = data.get("muElement").toString.toInt
+            val lambdaElement = data.get("lambdaElement").toString.toInt
+            solutions += Algorithms.GeneticEvolutionnaryAlgorithm(muElement, lambdaElement, algorithmIteration, iterationHC, HCGenitor, numberPermutation, functions(0))
+          }
+        }
       }
 
+      // Two criteria
       case 2 => {
 
+        algorithmChoice match {
+
+          //PLS
+          case 3 => {
+            solutions = Algorithms.ParetoLocalSearch(algorithmIteration, null, functions)
+          }
+
+          //MOEA/D
+          case 4 => {
+            //MOEA/D values
+            val numberVectors = data.get("numberVectors").toString.toInt
+            val closestVectors = data.get("closestVectors").toString.toInt
+            val computedChoice = data.get("computedChoice").toString.toInt
+            solutions = Algorithms.MOEAD_Algorithm(algorithmIteration, numberVectors, closestVectors, functions, computedChoice)
+          }
+        }
       }
 
+      //Three criteria
       case 3 => {
-
+        solutions = Algorithms.ParetoLocalSearch(algorithmIteration, null, functions)
       }
     }
 
-    solution = Algorithms.IteratedLocalSearch(1000, 15000, 20, f(3))
+    solutions.foreach( sol => UtilityClass.writeSolution(templateName + "/" + directory + "/" + solutionFile, sol))
 
-    if(solutionFile.length() > 0)
-      UtilityClass.writeSolution(directory + "/" + solutionFile, solution)
   }
 }

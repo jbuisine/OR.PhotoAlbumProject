@@ -102,7 +102,7 @@ class Album:
 
 #===================================================================
 if __name__ == '__main__':
-    album_name     = "../resources/data/templates-type/"        # file name of the album information
+    album_name     = "../resources/data/albums-type/"        # file name of the album information
     photos_name    = "../resources/data/info-photo.json"        # file name of the photo information
     html_dir       = "../www/views/templates/"                        # path to html source files
     photos_dir     = "img"                         # path to images from the html directory
@@ -122,7 +122,7 @@ if __name__ == '__main__':
             album_name += sys.argv[2]
 
         if not os.path.exists(html_dir + sys.argv[3]):
-            print ("Album folder not found: " + sys.argv[3])
+            print ("Template folder not found: " + sys.argv[3])
             sys.exit()
         else:
             album = Album(album_name, photos_name)

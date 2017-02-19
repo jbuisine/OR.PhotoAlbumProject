@@ -210,7 +210,7 @@ object Main {
               println("\n------------------------------------------------------------------------------------------")
               println("(" + (i + 1) + ") ILS algorithm starts search one of the best solution... It will take few minutes")
               println("------------------------------------------------------------------------------------------\n")
-              solution = Algorithms.IteratedLocalSearch(numberIteration, numberEvaluation, numberPermutation + 1, f(0))
+              solution = Algorithms.IteratedLocalSearch(nbPhotos, numberIteration, numberEvaluation, numberPermutation + 1, f(0))
               println("\n(" + (i + 1) + ") ILS better score found -> " + f(0)(solution))
 
               if (bestResult > f(0)(solution)) {
@@ -226,7 +226,7 @@ object Main {
             println("\n------------------------------------------------------------------------------------------")
             println("ILS algorithm starts search one of the best solution... It will take few minutes")
             println("------------------------------------------------------------------------------------------\n")
-            solution = Algorithms.IteratedLocalSearch(numberIteration, numberEvaluation, numberPermutation + 1, f(0))
+            solution = Algorithms.IteratedLocalSearch(nbPhotos, numberIteration, numberEvaluation, numberPermutation + 1, f(0))
             bestSolution = solution
 
             if (evaluationFile.length > 0)

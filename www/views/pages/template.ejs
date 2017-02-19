@@ -10,18 +10,19 @@
             <form action="/generate-album" method="POST" id="generate-album" class="form-inline">
               <div class="form-group">
 
-                <input name="templateName" type="hidden" value="<%= templateName %>" />
+                <input id="templateName" name="templateName" type="hidden" value="<%= templateName %>" />
 
-                <select name="templateType" id="templateType" class="form-control">
+                <select name="albumType" id="albumType" class="form-control">
 
-                  <% templatesType.forEach(function(tempType){ %>
+                  <% albumsType.forEach(function(albumType){ %>
 
-                      <option value="<%= tempType %>"> <%= tempType %></option>
+                      <option value="<%= albumType %>"> <%= albumType %></option>
 
                   <% }); %>
 
                 </select>
 
+              <% if(locals.solutions){ %>
                 <select name="solutionFile" id="solutionFile" class="form-control">
 
                   <% solutions.forEach(function(sol){ %>
@@ -31,8 +32,17 @@
                   <% }); %>
 
                 </select>
+
               </div>
               <button type="submit" class="btn btn-primary">Generate</button>
+
+              <% } else {%>
+                 <select name="solutionFile" id="solutionFile" class="form-control" disabled="true">
+                     <option>No solution found</option>
+                 </select>
+                 </div>
+                 <button type="submit" class="btn btn-primary" disabled="true">Generate</button>
+              <% } %>
             </form>
         </div>
         <% } %>
