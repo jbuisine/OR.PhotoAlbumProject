@@ -77,6 +77,7 @@ object Main {
       hashChoice = UtilityClass.getScannerValue(hashQuestion, "hash attribute", 0, hashTypes.length)
     }
 
+    /*
     //Initialize problem modelisation
     val hashValue = if (hashChoice.toInt > 0) hashTypes(hashChoice.toInt - 1) else ""
     Modelisation.init(pathPhoto, pathAlbum, hashValue)
@@ -405,5 +406,6 @@ object Main {
         println(s"Scores saved into scores/$evaluationFile file")
       }
     }
+    */
   }
 }

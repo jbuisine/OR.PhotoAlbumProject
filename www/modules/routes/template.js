@@ -118,6 +118,14 @@ router.post('/load-solutions', function (req, res) {
 
     var solutions = utilities.getFiles(solsPath + template + "/" + albumType.replace('.json', ''));
 
+    var lineReader = require('readline').createInterface({
+      input: require('fs').createReadStream((solsPath + template + "/" + albumType.replace('.json', '') + "/" + solutions[1]))
+    });
+
+    lineReader.on('line', function (line) {
+      console.log('Line from file:', line);
+    });
+
     res.send(solutions);
 });
 

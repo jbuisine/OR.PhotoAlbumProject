@@ -1,6 +1,8 @@
+import javafx.stage.StageStyle
+
 import scala.util.control.Breaks
 import org.json.simple.{JSONArray, JSONObject}
-import org.json.simple.parser.{JSONParser}
+import org.json.simple.parser.JSONParser
 
 import scala.collection.mutable.ListBuffer
 
@@ -45,7 +47,8 @@ object MainWebApp {
    */
   def main(args: Array[String]): Unit = {
 
-    functionsList = Array(Modelisation.hashEval, Modelisation.hashEval, Modelisation.hashEval, Modelisation.colorsEval, Modelisation.greyAVGEval, Modelisation.commonTagEval, Modelisation.uncommonTagEval, Modelisation.nbUncommonTagEval)
+    criteriaChoices = Array("ahashdist", "phashdist", "dhashdist", "colors", "greyAVG", "commonTags", "uncommonTags", "nbUncommonTags")
+    functionsList = Array(Modelisation.ahashEval, Modelisation.phashEval, Modelisation.dhashEval, Modelisation.colorsEval, Modelisation.greyAVGEval, Modelisation.commonTagEval, Modelisation.uncommonTagEval, Modelisation.nbUncommonTagEval)
 
     val parser = new JSONParser()
     val data =  parser.parse(args(0).toString).asInstanceOf[JSONObject]
@@ -55,25 +58,21 @@ object MainWebApp {
     val directory = data.get("albumType").toString.split('.')(0)
     val templateSize = data.get("templateSize").toString.toInt
     val templateName = data.get("templateName").toString
-    var criteriaIndexes:Array[Int] = data.get("criteria").asInstanceOf[JSONArray].toArray.map( x => x.toString.toInt)
+    val criteriaIndexes = data.get("criteria").asInstanceOf[JSONArray].toArray.map( x => x.toString.toInt)
     val algorithmChoice = data.get("algorithm").toString.toInt
     val algorithmIteration = data.get("iterationAlgorithm").toString.toInt
     val iterationHC = data.get("iterationHC").toString.toInt
     val numberPermutation = data.get("numberPermutation").toString.toInt
 
-    val hashValues = criteriaIndexes.filter(_ < 3)
 
-    if(hashValues.length > 0)
-      hashValues.foreach( value => { Modelisation.init(pathPhoto, pathAlbum, hashTypes(value)) })
-    else
-      Modelisation.init(pathPhoto, pathAlbum, "")
+    //Initialization of context
+    Modelisation.init(pathPhoto, pathAlbum)
 
     var solutions = new ListBuffer[Array[Int]]
 
     //Get function choices
     var functions: Array[(Array[Int]) => Double] = functionsList.zipWithIndex.filter{ case (f, index) => criteriaIndexes.contains(index) }.map(_._1)
 
-    println(functions.length)
     functions.length match {
       // One criteria
       case 1 => {
@@ -128,7 +127,16 @@ object MainWebApp {
       }
     }
 
-    solutions.foreach( sol => UtilityClass.writeSolution(templateName + "/" + directory + "/" + solutionFile, sol))
+    //Writing solutions file
+
+    val filePath = templateName + "/" + directory + "/" + solutionFile
+    var headerLine = ""
+
+    criteriaIndexes.foreach( criteria => headerLine += criteriaChoices(criteria) + ",")
+    headerLine = headerLine.substring(0, headerLine.length()-1)
+
+    UtilityClass.writeHeader(filePath, headerLine)
+    solutions.foreach( sol => UtilityClass.writeSolutionAndScores(filePath, sol, functions))
 
   }
 }

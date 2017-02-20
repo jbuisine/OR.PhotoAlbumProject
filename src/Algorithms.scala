@@ -89,7 +89,7 @@ object Algorithms {
     var percentEvolution = ""
 
     do {
-      UtilityClass.pertubationIterated(solution, perturbation, random)
+      UtilityClass.perturbationIterated(solution, perturbation, random)
 
       val currentSolution = HillClimberFirstImprovement(numberElements, nbEvaluationHillClimber, solution.clone(), eval)
 
@@ -154,7 +154,7 @@ object Algorithms {
       for (j <- 0 to genitorsSolutions.length - 1) {
 
         // Do permutation
-        UtilityClass.pertubationIterated(genitorsSolutions(j), numberOfPermutations, rand)
+        UtilityClass.perturbationIterated(genitorsSolutions(j), numberOfPermutations, rand)
 
         // Make hill climber on the current solution to improve the genitor solution
         for (k <- 0 to numberOfHc - 1) {
@@ -318,7 +318,7 @@ object Algorithms {
 
         //2.1.1. Create new solution with the selected solutions
 
-        UtilityClass.pertubationIterated(firstSol, 10, random)
+        UtilityClass.perturbationIterated(firstSol, 10, random)
         //UtilityClass.pertubationIterated(secondSol, 10, random)
 
         var newSol = new Array[Int](Main.nbPhotos)

@@ -12,8 +12,12 @@ import org.json.simple.parser.{JSONParser, ParseException}
 object Modelisation {
 
   // Different hash distances between photos
-  private var photoDist: Array[Array[Double]] = _
   private var albumInvDist: Array[Array[Double]] = _
+
+  // Hash values distances
+  private var photoDistAhash: Array[Array[Double]] = _
+  private var photoDistPhash: Array[Array[Double]] = _
+  private var photoDistDhash: Array[Array[Double]] = _
 
   // Tags values distances calculates between photos
   private var photoDistancesCommonsTags: Array[Array[Double]] = _
@@ -33,12 +37,13 @@ object Modelisation {
    * Function used for init hash objective functions
    * @param pathPhoto
    * @param pathAlbum
-   * @param attribute
    */
-  def init(pathPhoto: String, pathAlbum: String, attribute: String) {
+  def init(pathPhoto: String, pathAlbum: String) {
     computeAlbumDistances(pathAlbum)
-    if(attribute != "")
-      computePhotoDistances(pathPhoto, attribute)
+
+    computePhotoAhash(pathPhoto)
+    computePhotoPhash(pathPhoto)
+    computePhotoDhash(pathPhoto)
     computePhotoTags(pathPhoto)
     computePhotoColors(pathPhoto)
     computePhotoGreyAVG(pathPhoto)
@@ -94,22 +99,77 @@ object Modelisation {
   }
 
   /**
-   * Method which loads the distance between photos
+   * Method which loads the ahash values between photos
    * @param fileName
-   * @param attribute
    */
-  private def computePhotoDistances(fileName: String, attribute: String) {
+  private def computePhotoAhash(fileName: String) {
     try {
       val reader = new FileReader(fileName)
       val parser = new JSONParser()
       val obj = parser.parse(reader)
       val array = obj.asInstanceOf[JSONArray]
-      photoDist = Array.ofDim[Double](array.size, array.size)
+      photoDistAhash = Array.ofDim[Double](array.size, array.size)
       for (i <- 0 until array.size) {
         val image = array.get(i).asInstanceOf[JSONObject]
-        val d = image.get(attribute).asInstanceOf[JSONArray]
+        val d = image.get("ahashdist").asInstanceOf[JSONArray]
         for (j <- 0 until d.size) {
-          photoDist(i)(j) = d.get(j).toString().toDouble
+          photoDistAhash(i)(j) = d.get(j).toString().toDouble
+        }
+      }
+    } catch {
+      case pe: ParseException => {
+        println("position: " + pe.getPosition)
+        println(pe)
+      }
+      case ex: FileNotFoundException => ex.printStackTrace()
+      case ex: IOException => ex.printStackTrace()
+    }
+  }
+
+  /**
+    * Method which loads the phash values between photos
+    * @param fileName
+    */
+  private def computePhotoPhash(fileName: String) {
+    try {
+      val reader = new FileReader(fileName)
+      val parser = new JSONParser()
+      val obj = parser.parse(reader)
+      val array = obj.asInstanceOf[JSONArray]
+      photoDistPhash = Array.ofDim[Double](array.size, array.size)
+      for (i <- 0 until array.size) {
+        val image = array.get(i).asInstanceOf[JSONObject]
+        val d = image.get("phashdist").asInstanceOf[JSONArray]
+        for (j <- 0 until d.size) {
+          photoDistPhash(i)(j) = d.get(j).toString().toDouble
+        }
+      }
+    } catch {
+      case pe: ParseException => {
+        println("position: " + pe.getPosition)
+        println(pe)
+      }
+      case ex: FileNotFoundException => ex.printStackTrace()
+      case ex: IOException => ex.printStackTrace()
+    }
+  }
+
+  /**
+    * Method which loads the dhash values between photos
+    * @param fileName
+    */
+  private def computePhotoDhash(fileName: String) {
+    try {
+      val reader = new FileReader(fileName)
+      val parser = new JSONParser()
+      val obj = parser.parse(reader)
+      val array = obj.asInstanceOf[JSONArray]
+      photoDistDhash = Array.ofDim[Double](array.size, array.size)
+      for (i <- 0 until array.size) {
+        val image = array.get(i).asInstanceOf[JSONObject]
+        val d = image.get("dhashdist").asInstanceOf[JSONArray]
+        for (j <- 0 until d.size) {
+          photoDistDhash(i)(j) = d.get(j).toString().toDouble
         }
       }
     } catch {
@@ -275,25 +335,51 @@ object Modelisation {
 
   /**
    * Objective function to minimize based on Quadratic Assignment Problem :
-   * - Photo hash distances
+   * - Photo ahash distances
    * - The inverse of the spatial distances on the album
-   *
-   *
-   * Function based on different tags available into JSON file :
-   * - ahashdist : average hash
-   * - phashdist : perspective hash
-   * - dhashdist : difference hash
-   *
-   * Choice parameter will be passed into init function
    *
    * @param solution
    * @return
    */
-  def hashEval(solution: Array[Int]): Double = {
+  def ahashEval(solution: Array[Int]): Double = {
     var sum: Double = 0
 
     for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length)
-      sum += photoDist(solution(i))(solution(j)) * albumInvDist(i)(j)
+      sum += photoDistAhash(solution(i))(solution(j)) * albumInvDist(i)(j)
+
+    sum
+  }
+
+  /**
+    * Objective function to minimize based on Quadratic Assignment Problem :
+    * - Photo phash distances
+    * - The inverse of the spatial distances on the album
+    *
+    * @param solution
+    * @return
+    */
+  def phashEval(solution: Array[Int]): Double = {
+    var sum: Double = 0
+
+    for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length)
+      sum += photoDistPhash(solution(i))(solution(j)) * albumInvDist(i)(j)
+
+    sum
+  }
+
+  /**
+    * Objective function to minimize based on Quadratic Assignment Problem :
+    * - Photo dhash distances
+    * - The inverse of the spatial distances on the album
+    *
+    * @param solution
+    * @return
+    */
+  def dhashEval(solution: Array[Int]): Double = {
+    var sum: Double = 0
+
+    for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length)
+      sum += photoDistDhash(solution(i))(solution(j)) * albumInvDist(i)(j)
 
     sum
   }

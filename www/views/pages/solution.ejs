@@ -1,5 +1,5 @@
 <div class="page-header">
-    <h1>Create solution</h1>
+    <h1>Create solutions</h1>
 </div>
 
 <div id="create-solution-dialog" class="modal fade" tabindex="-1" role="dialog">
@@ -25,9 +25,9 @@
         <form id="create-solution-form" enctype='application/json' class="form-horizontal">
 
             <div class="form-group">
-                <label for="solutionFile" class="col-sm-4 control-label">Solution file</label>
+                <label for="solutionFile" class="col-sm-4 control-label">Filename</label>
                 <div class="col-sm-4">
-                    <input id="solutionFile" minlength="10" type="text" class="form-control" name="solutionFile" type="hidden"/>
+                    <input id="solutionFile" minlength="6" type="text" class="form-control" name="solutionFile" type="hidden"/>
                 </div>
             </div>
 
@@ -70,12 +70,12 @@
 
                             <label class="checkbox-inline">
                                 <input type="checkbox" name="criteria[]" value="1">
-                                dhash
+                                phash
                             </label>
 
                             <label class="checkbox-inline">
                                 <input type="checkbox" name="criteria[]" value="2">
-                                phash
+                                dhash
                             </label>
 
                             <label class="checkbox-inline">
@@ -203,7 +203,7 @@
                             <label for="numberVectors">Number of vectors</label>
                         </div>
                         <div class="col-sm-4">
-                            <input type="number" min="1" max="1000" name="numberVectors" id="numberVectors" class="form-control">
+                            <input type="number" min="1" max="1000" values="1" name="numberVectors" id="numberVectors" class="form-control">
                         </div>
                     </div>
 

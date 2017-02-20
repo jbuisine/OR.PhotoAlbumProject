@@ -1,7 +1,6 @@
 import java.util.Random
 
-import scala.collection.mutable
-import scala.collection.mutable.{ArrayBuffer, ListBuffer}
+import scala.collection.mutable.ListBuffer
 import scala.util.{Failure, Success, Try}
 
 /**
@@ -85,7 +84,7 @@ object UtilityClass {
    * @param number
    * @param r
    */
-  def pertubationIterated(solution: Array[Int], number: Int, r: scala.util.Random) {
+  def perturbationIterated(solution: Array[Int], number: Int, r: scala.util.Random) {
     val nbMutations = r.nextInt(number) + 1
     for (i <- 0 until nbMutations) {
       var oldValue = 0
@@ -103,15 +102,47 @@ object UtilityClass {
    * @param filename
    * @param bestSolution
    */
-  def writeSolution(filename: String,
-    bestSolution: Array[Int]) {
+  def writeSolution(filename: String, bestSolution: Array[Int]) {
     val file = new FileClass("../resources/solutions/"+filename)
     var line = "";
     for (i <- 0 until bestSolution.length) {
       line += bestSolution(i) + " "
     }
+    file.writeLine(line, true)
+  }
+
+  /**
+    * Function which writes best solution into the solution file
+    *
+    * @param filename
+    * @param solution
+    * @param evals
+    */
+  def writeSolutionAndScores(filename: String, solution: Array[Int],  evals : Array[(Array[Int]) => Double]) {
+    val file = new FileClass("../resources/solutions/"+filename)
+    var line = "";
+
+    for (i <- 0 until solution.length) {
+      line += solution(i) + " "
+    }
+
+    (0 until evals.length).foreach( i => {
+      line += ","
+      line += evals(i)(solution)
+    })
+
     file.writeLine(line, false)
-    println(s"Solution saved into solutions/$filename")
+  }
+
+  /**
+    * Function which sets header of solutions file
+    *
+    * @param filename
+    * @param line
+    */
+  def writeHeader(filename: String, line: String): Unit ={
+    val file = new FileClass("../resources/solutions/"+filename)
+    file.writeLine(line, true)
   }
 
   /**

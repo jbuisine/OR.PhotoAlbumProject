@@ -102,13 +102,13 @@ $('#createSolution').click(function (e) {
         return;
     }
 
-    console.log(checkInputFilled());
-
     if(!checkInputFilled()){
         modal_error_content.text("Please filled all required input.");
         modal_error.modal('show');
         return;
     }
+
+    init();
 
     $.ajax({
         type: "POST",
@@ -117,6 +117,13 @@ $('#createSolution').click(function (e) {
         data: JSON.stringify(model_data)
     });
 });
+
+function init(){
+    $("#createSolution").attr('disabled', true).hide();
+    $("#criteriaChoice input, #algorithmChoice input").prop("checked", false);
+    $("#algorithmChoice input").attr("disabled", true);
+    $('#content').hide();
+}
 
 function showOrHideCriteria(nbElem) {
 
@@ -174,7 +181,7 @@ function updateContent() {
     $('#numberPermutation').hide();
     $('button[id^="createSolution"]').attr('disabled', false);
     $('#content').show('200');
-    $('#createSolutionILS').show('200');
+    $('#createSolution').show('200');
 }
 
 function generateProgressCircle(id, percent){
@@ -189,7 +196,7 @@ function generateProgressCircle(id, percent){
         content += '<hr />';
     }
 
-    content += '<div class="col-md-9" style="padding-top:10px;"><h4>' + filename + '</h4></div>';
+    content += '<div class="col-md-9" style="padding-top:15px;"><h5>' + filename + '</h5></div>';
     content += '<div class="col-md-3">';
     content += '<div id="' + id + '" class="c100 p' + percent + ' small green">';
     content += '<span>' + percent + '%</span>';
