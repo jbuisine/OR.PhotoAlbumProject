@@ -1,0 +1,267 @@
+<div class="page-header">
+    <h1>Create solutions</h1>
+</div>
+
+<div id="create-solution-dialog" class="modal fade" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header create-solution-modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Error while start running your solution generation</h4>
+      </div>
+      <div class="modal-body">
+        <p></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="row">
+
+    <div id="form-content" class="col-md-8">
+        <form id="create-solution-form" enctype='application/json' class="form-horizontal">
+
+            <div class="form-group">
+                <label for="solutionFile" class="col-sm-4 control-label">Filename</label>
+                <div class="col-sm-4">
+                    <input id="solutionFile" minlength="6" type="text" class="form-control" name="solutionFile" type="hidden"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="AlbumType" class="col-sm-4 control-label">Album type</label>
+                <div class="col-sm-4">
+                    <select name="albumType" id="albumType" class="form-control">
+
+                      <% albumsType.forEach(function(type){ %>
+                          <option value="<%= type %>"> <%= type %></option>
+                      <% }); %>
+
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="templateName" class="col-sm-4 control-label">Template name</label>
+                <div class="col-sm-4">
+                    <select name="templateName" id="templateName" class="form-control">
+
+                      <% templates.forEach(function(template){ %>
+                          <option value="<%= template %>"> <%= template %></option>
+                      <% }); %>
+
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="criteriaChoice" class="col-sm-4 control-label">Criteria choices (3 max)</label>
+
+                <div class="col-sm-8">
+                    <div  id="criteriaChoice" class="checkbox">
+                        <div>
+                            <label class="checkbox-inline">
+                                <input type="checkbox" name="criteria[]" value="0">
+                                ahash
+                            </label>
+
+                            <label class="checkbox-inline">
+                                <input type="checkbox" name="criteria[]" value="1">
+                                phash
+                            </label>
+
+                            <label class="checkbox-inline">
+                                <input type="checkbox" name="criteria[]" value="2">
+                                dhash
+                            </label>
+
+                            <label class="checkbox-inline">
+                                <input type="checkbox" name="criteria[]" value="3">
+                                colors
+                            </label>
+
+                        <div>
+                            <label class="checkbox-inline">
+                                <input type="checkbox" name="criteria[]" value="4">
+                                greyAVG
+                            </label>
+
+                            <label class="checkbox-inline">
+                                <input type="checkbox" name="criteria[]" value="5">
+                                commonTags
+                            </label>
+                        </div>
+
+                        <div>
+                            <label class="checkbox-inline">
+                                <input type="checkbox" name="criteria[]" value="6">
+                                uncommonTags
+                            </label>
+
+                            <label class="checkbox-inline">
+                                <input type="checkbox" name="criteria[]" value="7">
+                                uncommonNbTags
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <br />
+            </div>
+
+            <div class="form-group" id="algorithmChoice">
+                <label for="algorithmChoice" class="col-sm-4 control-label">Algorithm choice</label>
+                <div class="col-sm-8">
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="algorithm" id="HC" value="0">
+                            Hill climber first improvement
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="algorithm" id="ILS" value="1">
+                            Iterated local search
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="algorithm" id="EA" value="2">
+                            Evolutionary algorithm
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="algorithm" id="PLS" value="3">
+                            Pareto local search
+                        </label>
+                    </div>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" name="algorithm" id="MOEAD" value="4">
+                            MOEA/D
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div id="content">
+                <div class="form-group">
+                    <div class="col-sm-4 control-label">
+                        <label for="iterationAlgorithm">Number of algorithm iteration </label>
+                    </div>
+                    <div class="col-sm-4">
+                        <input type="number" min="1" max="100000" value="100" name="iterationAlgorithm" id="iterationAlgorithm" class="form-control">
+                    </div>
+                </div>
+
+                <div id="EAAlgorithm">
+                    <div class="form-group">
+                        <div class="col-sm-4 control-label">
+                            <label for="muElement">Number of mu element </label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="number" min="1" max="100000" value="100" name="muElement" id="muElement" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-4 control-label">
+                            <label for="lambdaElement">Number of lambda element </label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="number" min="1" max="100000" value="80" name="lambdaElement" id="lambdaElement" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-4 control-label">
+                            <label for="HCGenitor">Number of HC per genitor</label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="number" min="1" max="100000" value="100" name="HCGenitor" id="HCGenitor" class="form-control">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="HillClimber">
+                    <div class="form-group">
+                        <div class="col-sm-4 control-label">
+                            <label for="iterationHC">Number of HC iteration </label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="number" min="1" max="100000" value="1000" name="iterationHC" id="iterationHC" class="form-control">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="MOEADAlgorithm">
+                    <div class="form-group">
+                        <div class="col-sm-4 control-label">
+                            <label for="numberVectors">Number of vectors</label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="number" min="1" max="1000" values="1" name="numberVectors" id="numberVectors" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-4 control-label">
+                            <label for="closestVectors">Number of closest vectors</label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="number" min="1" max="1000" value="1" name="closestVectors" id="closestVectors" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-4 control-label">
+                            <label for="closestVectors">Computed choice</label>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="computedChoice" id="tchebivech" value="0" checked>
+                                    Tchebivech
+                                </label>
+                            </div>
+                            <div class="radio">
+                                <label>
+                                    <input type="radio" name="computedChoice" id="weightedSum" value="1">
+                                    Weighted sum
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div id="numberPermutation">
+                    <div class="form-group">
+                        <div class="col-sm-4 control-label">
+                            <label for="numberPermutation">Number of permutation </label>
+                        </div>
+                        <div class="col-sm-4">
+                            <input type="number" min="1" max="55" value="10" name="numberPermutation" id="numberPermutation" class="form-control">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-4"></div>
+                <div class="col-sm-4">
+                    <button type="submit" id="createSolution" class="btn btn-primary">Create solution</button>
+                </div>
+            </div>
+        </div>
+      </form>
+    </div>
+
+    <div id="progress-content" class="col-md-4">
+
+    </div>
+    
+</div>

@@ -10,8 +10,8 @@ import scala.util.control.Breaks
 object Main {
 
   val df = new java.text.DecimalFormat("0.##")
-  val pathPhoto = "../resources/data/info-photo.json"
-  val pathAlbum = "../resources/data/info-album-6.json"
+  val pathPhoto = "../../resources/data/info-photo.json"
+  val pathAlbum = "../../resources/data/albums-type/album-6-2per3.json"
   val nbPhotos = 55
   val scanner = new java.util.Scanner(System.in)
 
@@ -77,6 +77,7 @@ object Main {
       hashChoice = UtilityClass.getScannerValue(hashQuestion, "hash attribute", 0, hashTypes.length)
     }
 
+    /*
     //Initialize problem modelisation
     val hashValue = if (hashChoice.toInt > 0) hashTypes(hashChoice.toInt - 1) else ""
     Modelisation.init(pathPhoto, pathAlbum, hashValue)
@@ -180,7 +181,7 @@ object Main {
           println("\nHC best score found -> " + f(0)(bestSolution))
         }
         case 2 => {
-          val ilsQuestion = "This algorithm need some paramaters : " +
+          val ilsQuestion = "This algorithm need some parameters : " +
             "\n1. Number of iteration for ILS (between 1 and 100000)" +
             "\n2. Number of evaluation for all HC (between 1 and 100000)" +
             "\n3. Number of maximum elements you want to permute for each solution (between 1 and " + nbPhotos + ")" +
@@ -210,7 +211,7 @@ object Main {
               println("\n------------------------------------------------------------------------------------------")
               println("(" + (i + 1) + ") ILS algorithm starts search one of the best solution... It will take few minutes")
               println("------------------------------------------------------------------------------------------\n")
-              solution = Algorithms.IteratedLocalSearch(numberIteration, numberEvaluation, numberPermutation + 1, f(0))
+              solution = Algorithms.IteratedLocalSearch(nbPhotos, numberIteration, numberEvaluation, numberPermutation + 1, f(0))
               println("\n(" + (i + 1) + ") ILS better score found -> " + f(0)(solution))
 
               if (bestResult > f(0)(solution)) {
@@ -226,7 +227,7 @@ object Main {
             println("\n------------------------------------------------------------------------------------------")
             println("ILS algorithm starts search one of the best solution... It will take few minutes")
             println("------------------------------------------------------------------------------------------\n")
-            solution = Algorithms.IteratedLocalSearch(numberIteration, numberEvaluation, numberPermutation + 1, f(0))
+            solution = Algorithms.IteratedLocalSearch(nbPhotos, numberIteration, numberEvaluation, numberPermutation + 1, f(0))
             bestSolution = solution
 
             if (evaluationFile.length > 0)
@@ -237,7 +238,7 @@ object Main {
         }
         case 3 => {
 
-          val eaQuestion = "This algorithm need some paramaters : " +
+          val eaQuestion = "This algorithm need some parameters : " +
             "\n1. Number of mu (parents) elements (between 1 and 1000)" +
             "\n2. Number of lambda (children) elements (between 1 and 1000)" +
             "\n3. Number of iteration for EA algorithm (between 1 and 100000) " +
@@ -322,7 +323,7 @@ object Main {
       algorithmChoice.toInt match {
 
         case 1 =>
-          val plsQuestion = "PLS algorithm need some paramaters : " +
+          val plsQuestion = "PLS algorithm need some parameters : " +
             "\n1. Number of iteration (between 1 and 100000) " +
             "\n\n"
           println(plsQuestion)
@@ -344,11 +345,12 @@ object Main {
 
         case 2 =>
 
-          val plsQuestion = "MOEA/D algorithm need some paramaters : " +
+          val plsQuestion = "MOEA/D algorithm need some parameters : " +
             "\n1. Number of iteration (between 1 and 100000) " +
             "\n2. Number of vectors N (between 1 and 1000)" +
             "\n3. Number of closest vectors take in consideration for each vector (between 1 and N)" +
             "\n4. Choice of computed function (1 for Tchebivech or 2 for Weighted sum function)" +
+
             "\n\n"
           println(plsQuestion)
 
@@ -384,7 +386,7 @@ object Main {
         "\n"
       algorithmChoice = UtilityClass.getScannerValue(algorithmQuestion, "algorithm", 0, numberMultiObjectiveAlgo)
 
-      val plsQuestion = "PLS algorithm need some paramaters : " +
+      val plsQuestion = "PLS algorithm need some parameters : " +
         "\n1. Number of iteration (between 1 and 100000) " +
         "\n2. Number of solutions in return (between 1 and 1000) " +
         "\n\n"
@@ -395,12 +397,6 @@ object Main {
 
       var solutions = Algorithms.ParetoLocalSearch(numberIteration, null, f)
       println("\nNumber of solutions found : " + solutions.length + "\n")
-      /*(0 until solutions.length).foreach(sol_index => {
-
-        (0 until f.length).foreach( f_index => {
-          println("- " + criteriaChoices(f_index) + " => " + f(f_index)(solutions(sol_index)))
-        })
-      })*/
 
       if (evaluationFile.length > 0){
         (0 until solutions.length).foreach(sol_index => {
@@ -411,5 +407,6 @@ object Main {
         println(s"Scores saved into scores/$evaluationFile file")
       }
     }
+    */
   }
 }

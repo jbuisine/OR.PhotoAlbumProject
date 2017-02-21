@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <% include partials/head %>
+    </head>
+
+    <body cz-shortcut-listen="true">
+
+        <% include partials/nav %>
+
+        <!-- Page content -->
+        <div class="container custom-container">
+
+            <% if(locals.page){ %>
+               <%- include('pages/' + page) %>
+            <% } %>
+
+
+        </div>
+
+        <% include partials/footer %>
+
+        <!-- Bootstrap core JavaScript
+        ================================================== -->
+        <!-- Placed at the end of the document so the pages load faster -->
+        <script src="/bower_components/jquery/dist/jquery.min.js"></script>
+        <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+        <script src="/bower_components/jquery-serialize-object/dist/jquery.serialize-object.min.js"></script>
+        <script src="/bower_components/notify/notification.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="/main.js"></script>
+
+        <% if(locals.page == "template"){ %>
+            <script src="/template.js"></script>
+        <% } %>
+
+        <% if(locals.page == "solution"){ %>
+            <script src="/solution.js"></script>
+        <% } %>
+
+    </body>
+
+</html>

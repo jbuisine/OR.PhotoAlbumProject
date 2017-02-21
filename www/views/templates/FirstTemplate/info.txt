@@ -1,0 +1,1 @@
+./../resources/solutions/FirstTemplate/album-6-2per3/HC_ahash_1000.sol

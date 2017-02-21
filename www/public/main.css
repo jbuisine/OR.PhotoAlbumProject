@@ -1,0 +1,40 @@
+.custom-container{
+    margin-top: 30px;
+    margin-bottom: 70px;
+}
+
+.footer{
+    padding: 10px 0;
+    position: fixed;
+    text-align: center;
+    background-color: #F8F8F8;
+    border-top: solid 1px lightgrey;
+    bottom: 0;
+    width: 100%;
+    z-index: 100;
+}
+
+#navigation{
+    text-align: center;
+}
+
+#pictures{
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#pictures img{
+    border: 3px solid lightslategray;
+    margin-bottom: 5px;
+}
+
+#generate-album{
+    padding-top: 30px;
+}
+
+.create-solution-modal-header{
+    background-color: #f43558;
+    color: #ffffff;
+    border-radius: 4px 4px 0px 0px;
+}

@@ -1,0 +1,36 @@
+{
+  "name": "photoAlbumOptimization",
+  "version": "1.0.0",
+  "description": "Photo album optimization algorithms",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jbuisine/RO.PhotoAlbumProject.git"
+  },
+  "keywords": [
+    "Optimizations",
+    "Algorithms",
+    "Research",
+    "Multi-objectives",
+    "Mono-objectives"
+  ],
+  "author": "Jérôme Buisine",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jbuisine/RO.PhotoAlbumProject/issues"
+  },
+  "homepage": "https://github.com/jbuisine/RO.PhotoAlbumProject#readme",
+  "dependencies": {
+    "body-parser": "^1.16.1",
+    "dropzone": "^4.3.0",
+    "ejs": "^2.5.5",
+    "express": "^4.14.1",
+    "fs": "0.0.1-security",
+    "path": "^0.12.7",
+    "socket.io": "^1.7.2",
+    "socket.io-client": "^1.7.2"
+  }
+}

@@ -78,9 +78,10 @@ object Algorithms {
     * @param perturbation
     * @return the best solution
     */
-  def IteratedLocalSearch(iteration: Int, nbEvaluationHillClimber: Int, perturbation: Int, eval: (Array[Int]) => Double): Array[Int] = {
+  def IteratedLocalSearch(numberElements: Int, iteration: Int, nbEvaluationHillClimber: Int, perturbation: Int, eval: (Array[Int]) => Double): Array[Int] = {
     var random = Random
-    var solution = HillClimberFirstImprovement(Main.nbPhotos, nbEvaluationHillClimber, UtilityClass.generateRandomSolution(Main.nbPhotos), eval)
+
+    var solution = HillClimberFirstImprovement(numberElements, nbEvaluationHillClimber, UtilityClass.generateRandomSolution(Main.nbPhotos), eval)
 
     var bestResult = eval(solution)
     var bestSolution = solution.clone()
@@ -88,9 +89,9 @@ object Algorithms {
     var percentEvolution = ""
 
     do {
-      UtilityClass.pertubationIterated(solution, perturbation, random)
+      UtilityClass.perturbationIterated(solution, perturbation, random)
 
-      val currentSolution = HillClimberFirstImprovement(Main.nbPhotos, nbEvaluationHillClimber, solution.clone(), eval)
+      val currentSolution = HillClimberFirstImprovement(numberElements, nbEvaluationHillClimber, solution.clone(), eval)
 
       val currentResult = eval(currentSolution)
 
@@ -153,7 +154,7 @@ object Algorithms {
       for (j <- 0 to genitorsSolutions.length - 1) {
 
         // Do permutation
-        UtilityClass.pertubationIterated(genitorsSolutions(j), numberOfPermutations, rand)
+        UtilityClass.perturbationIterated(genitorsSolutions(j), numberOfPermutations, rand)
 
         // Make hill climber on the current solution to improve the genitor solution
         for (k <- 0 to numberOfHc - 1) {
@@ -253,6 +254,17 @@ object Algorithms {
     solutions
   }
 
+  /**
+    *
+    * MOEAD Algorithm implementation
+    *
+    * @param nbEval
+    * @param N
+    * @param T
+    * @param evals
+    * @param choice
+    * @return
+    */
   def MOEAD_Algorithm(nbEval: Int, N: Int, T: Int, evals : Array[(Array[Int]) => Double], choice: Int): ListBuffer[Array[Int]] = {
 
     /**
@@ -306,7 +318,7 @@ object Algorithms {
 
         //2.1.1. Create new solution with the selected solutions
 
-        UtilityClass.pertubationIterated(firstSol, 10, random)
+        UtilityClass.perturbationIterated(firstSol, 10, random)
         //UtilityClass.pertubationIterated(secondSol, 10, random)
 
         var newSol = new Array[Int](Main.nbPhotos)
