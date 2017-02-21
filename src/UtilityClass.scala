@@ -120,7 +120,7 @@ object UtilityClass {
     */
   def writeSolutionAndScores(filename: String, solution: Array[Int],  evals : Array[(Array[Int]) => Double]) {
     val file = new FileClass("../resources/solutions/"+filename)
-    var line = "";
+    var line = ""
 
     for (i <- 0 until solution.length) {
       line += solution(i) + " "
@@ -131,7 +131,7 @@ object UtilityClass {
       line += evals(i)(solution)
     })
 
-    file.writeLine(line, false)
+    file.writeLine(line, true)
   }
 
   /**
@@ -142,7 +142,8 @@ object UtilityClass {
     */
   def writeHeader(filename: String, line: String): Unit ={
     val file = new FileClass("../resources/solutions/"+filename)
-    file.writeLine(line, true)
+    println(line)
+    file.writeLine(line, false)
   }
 
   /**

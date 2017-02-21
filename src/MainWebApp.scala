@@ -1,5 +1,3 @@
-import javafx.stage.StageStyle
-
 import scala.util.control.Breaks
 import org.json.simple.{JSONArray, JSONObject}
 import org.json.simple.parser.JSONParser

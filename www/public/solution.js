@@ -12,15 +12,23 @@ $('button[id^="createSolution"]').attr('disabled', true);
 
 /* Listen on generationProgress canal to get progress of generation */
 socket.on('generationProgress' , function (data){
-
+    console.log(data);
     if(data.percent.indexOf('%') !== -1){
 
         var formattedPercent = parseInt(data.percent.split('>')[1].replace('%', ''));
 
-        var circleID = data.solFile.replace('.', '-');
+        var circleID;
+
+        circleID = data.solFile.replace('.', '-') + "-circle";
+
+        console.log(circleID);
+
         var circle = $('#'+circleID);
 
+        console.log(circle.length);
+
         if(!circle.length){
+            console.log("test");
             generateProgressCircle(circleID, formattedPercent);
             return;
         }
@@ -72,8 +80,6 @@ $('#ILS').change(function () {
 $('#PLS').change(function () {
 
     updateContent();
-
-    $('#createSolutionPLS').show('200');
 });
 
 $('#MOEAD').change(function () {
@@ -86,9 +92,10 @@ $('#MOEAD').change(function () {
 
 $('#createSolution').click(function (e) {
     e.preventDefault();
+    e.stopPropagation();
 
     var model_data = $("#create-solution-form").serializeObject();
-    var circleID = 'solution-generation-' + model_data.solutionFile.replace('.', '-');
+    var circleID = 'solution-generation-' + model_data.solutionFile.replace('.', '-').replace(' ', '') + "-circle";
 
     if($("div[id^='solution-generation']").length >= LIMIT_PROCESS){
         modal_error_content.text("You cannot run more generation currently. Please wait a moment while one of solution is generated.");
@@ -97,7 +104,7 @@ $('#createSolution').click(function (e) {
     }
 
     if($("#"+circleID).length > 0){
-        modal_error_content.text("A solution with same name is already running. Please select another name or wait the end of the generation to replace it later");
+        modal_error_content.text("A solution with same name is already running. Please select another name or wait the end of the generation to replace it later.");
         modal_error.modal('show');
         return;
     }
@@ -116,6 +123,8 @@ $('#createSolution').click(function (e) {
         contentType: 'application/json',
         data: JSON.stringify(model_data)
     });
+
+    return true;
 });
 
 function init(){
@@ -123,6 +132,7 @@ function init(){
     $("#criteriaChoice input, #algorithmChoice input").prop("checked", false);
     $("#algorithmChoice input").attr("disabled", true);
     $('#content').hide();
+    $('#solutionFile').val('');
 }
 
 function showOrHideCriteria(nbElem) {
@@ -185,10 +195,17 @@ function updateContent() {
 }
 
 function generateProgressCircle(id, percent){
+    var filename;
+    var tempID = id.replace("-circle", "");
+    if(tempID.lastIndexOf('-') !== -1){
+        var pos = tempID.lastIndexOf('-');
+        filename = tempID.substring(0,pos)+'.'+tempID.substring(pos+1);
+    }else{
+        filename = tempID;
+    }
 
-    var pos = id.lastIndexOf('-');
 
-    var filename = id.substring(0,pos)+'.'+id.substring(pos+1);
+    console.log("ILS FILENAME", filename);
 
     var content = '<div id="solution-generation-' + id + '" class="row">';
 

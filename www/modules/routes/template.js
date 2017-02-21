@@ -10,6 +10,9 @@ var router = express.Router();
 var utilities = require('./../utilities');
 const spawn = require('child_process').spawn;
 
+const readline = require('readline');
+const fs = require('fs');
+
 const templatesPath = './views/templates/';
 
 const solsPath = './../resources/solutions/';
@@ -116,17 +119,36 @@ router.post('/load-solutions', function (req, res) {
     var albumType = req.body.albumType;
     var template = req.body.templateName;
 
-    var solutions = utilities.getFiles(solsPath + template + "/" + albumType.replace('.json', ''));
-
-    var lineReader = require('readline').createInterface({
-      input: require('fs').createReadStream((solsPath + template + "/" + albumType.replace('.json', '') + "/" + solutions[1]))
-    });
-
-    lineReader.on('line', function (line) {
-      console.log('Line from file:', line);
-    });
+    var completePath = solsPath + template + "/" + albumType.replace('.json', '');
+    var solutions = utilities.getFiles(completePath);
 
     res.send(solutions);
+});
+
+router.post('/load-solution-content', function (req, res) {
+    var albumType = req.body.albumType;
+    var template = req.body.templateName;
+    var solutionFile = req.body.solutionFile;
+
+    var solutionPath = solsPath + template + "/" + albumType.replace('.json', '') + "/" + solutionFile;
+
+    var lineReader = readline.createInterface({
+        input: fs.createReadStream(solutionPath)
+    });
+
+    var contentFile = [];
+    var counter = 0;
+    lineReader.on('line', function (line) {
+
+        var data = {};
+        data.id = counter;
+        data.values = line.split(',');
+        contentFile.push(data);
+        counter++;
+
+    }).on('close', function(){
+        res.send(contentFile);
+    });
 });
 
 module.exports = router;
