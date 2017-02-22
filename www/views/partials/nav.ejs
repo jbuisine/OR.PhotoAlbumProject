@@ -35,7 +35,37 @@
         <li class="<% if(locals.page == 'solution'){ %> active <% } %>"><a href="/solution">Create solution</a></li>
         <!-- <li class="<% if(locals.page == 'about'){ %> active <% } %>"><a href="/about">About</a></li>
         <li class="<% if(locals.page == 'contact'){ %> active <% } %>"><a href="/contact">Contact</a></li> -->
+
       </ul>
+
+      <% if(locals.page != 'solution'){ %>
+        <div id="process-running">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="#">Process running <span class="badge">0</span></a>
+            </li>
+          </ul>
+        </div>
+
+      <% } %>
     </div><!--/.nav-collapse -->
   </div>
 </nav>
+
+<% if(locals.page != 'solution'){ %>
+
+  <div id="process-running-modal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header process-running-modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">Current running process</h4>
+        </div>
+        <div id="progress-content" class="modal-body">
+
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
+
+<% } %>

@@ -38,3 +38,20 @@
     color: #ffffff;
     border-radius: 4px 4px 0px 0px;
 }
+
+.process-running-modal-header{
+    background-color: #007acc;
+    color: #ffffff;
+    border-radius: 4px 4px 0px 0px;
+}
+
+.title-decoration{
+    text-decoration: underline;
+    font-weight: 200;
+}
+
+.container-text{
+    padding: 20px;
+    font-size: 16px;
+}
+

@@ -10,40 +10,6 @@ $('#content').hide();
 $('button[id^="createSolution"]').show();
 $('button[id^="createSolution"]').attr('disabled', true);
 
-/* Listen on generationProgress canal to get progress of generation */
-socket.on('generationProgress' , function (data){
-    console.log(data);
-    if(data.percent.indexOf('%') !== -1){
-
-        var formattedPercent = parseInt(data.percent.split('>')[1].replace('%', ''));
-
-        var circleID;
-
-        circleID = data.solFile.replace('.', '-') + "-circle";
-
-        console.log(circleID);
-
-        var circle = $('#'+circleID);
-
-        console.log(circle.length);
-
-        if(!circle.length){
-            console.log("test");
-            generateProgressCircle(circleID, formattedPercent);
-            return;
-        }
-
-        updateProgressCircle(circle, formattedPercent);
-
-        if(formattedPercent >= 100){
-            $('#solution-generation-' + circleID).hide('2000', function(){
-                $(this).remove();
-            });
-        }
-    }
-});
-
-
 $(document).ready(function () {
     $('#algorithmChoice input').attr('disabled', true);
 });
@@ -192,49 +158,6 @@ function updateContent() {
     $('button[id^="createSolution"]').attr('disabled', false);
     $('#content').show('200');
     $('#createSolution').show('200');
-}
-
-function generateProgressCircle(id, percent){
-    var filename;
-    var tempID = id.replace("-circle", "");
-    if(tempID.lastIndexOf('-') !== -1){
-        var pos = tempID.lastIndexOf('-');
-        filename = tempID.substring(0,pos)+'.'+tempID.substring(pos+1);
-    }else{
-        filename = tempID;
-    }
-
-
-    console.log("ILS FILENAME", filename);
-
-    var content = '<div id="solution-generation-' + id + '" class="row">';
-
-    if($('div[id^="solution-generation"]').length !== 0){
-        content += '<hr />';
-    }
-
-    content += '<div class="col-md-9" style="padding-top:15px;"><h5>' + filename + '</h5></div>';
-    content += '<div class="col-md-3">';
-    content += '<div id="' + id + '" class="c100 p' + percent + ' small green">';
-    content += '<span>' + percent + '%</span>';
-    content += '<div class="slice">';
-    content += '<div class="bar"></div>';
-    content += '<div class="fill"></div>';
-    content += '</div>';
-    content += '</div>';
-    content += '</div>';
-    content += '</div>';
-
-
-    $('#progress-content').append(content);
-    $('#solution-generation-' + id).hide().show('2000');
-
-}
-
-function updateProgressCircle(circle, percent){
-
-    circle.removeClass('p'+ percent -1).addClass('p' + percent);
-    circle.find('span').text(percent + '%');
 }
 
 function checkInputFilled(){
