@@ -137,14 +137,10 @@ router.post('/load-solution-content', function (req, res) {
     });
 
     var contentFile = [];
-    var counter = 0;
+
     lineReader.on('line', function (line) {
 
-        var data = {};
-        data.id = counter;
-        data.values = line.split(',');
-        contentFile.push(data);
-        counter++;
+        contentFile.push(line.split(','));
 
     }).on('close', function(){
         res.send(contentFile);
