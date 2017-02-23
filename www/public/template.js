@@ -104,7 +104,8 @@ function loadContentSol(data) {
             });
 
             var line1 = {
-                type:'markers',
+                type: 'scatter',
+                mode: 'markers',
                 x: xAxis,
                 y: yAxis,
                 z: zAxis,
@@ -126,7 +127,7 @@ function loadContentSol(data) {
                 autosize: true
             };
 
-            Plotly.plot('myDiv', [line1], layout);
+            Plotly.plot('graphic-representation', [line1], layout);
 
             break;
     }
