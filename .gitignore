@@ -13,9 +13,8 @@ Project.RO.2016.11.08.Scala.v2.iml
 .idea/
 
 # Node & bower files
-node_modules
-bower_components
-public/bower_components/*
+www/node_modules
+www/public/bower_components/
 
 
 
