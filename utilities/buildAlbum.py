@@ -90,7 +90,7 @@ class Album:
     @param photos_dir
     @param solution_name the order of the photo in the album
     '''
-    def create_album(self, html_dir, photos_dir, solution_name):
+    def create_album(self, html_dir, photos_dir, solution_name, line_file):
         # read the solution order
         with open(solution_name) as f:
             photosOrder = [ int(x) for x in f.readline().split() ]
@@ -126,7 +126,7 @@ if __name__ == '__main__':
             sys.exit()
         else:
             album = Album(album_name, photos_name)
-            album.create_album(html_dir + sys.argv[3], photos_dir, solution_name)
+            album.create_album(html_dir + sys.argv[3], photos_dir, solution_name, sys.argv[4])
 
             infoFile = open(html_dir + sys.argv[3] + "/info.txt", "w")
             infoFile.write(solution_name)

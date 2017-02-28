@@ -88,13 +88,14 @@ router.post('/generate-album', function (req, res) {
     var template = req.body.templateName;
     var solutionFile = req.body.solutionFile;
     var albumType = req.body.albumType;
+    var lineFile = req.body.selectSolutionsGenerate;
 
     var templates = utilities.getDirectories(templatesPath);
 
     if (templates.indexOf(template) !== -1) {
 
         var solutionPath = solsPath + template + "/" + albumType.replace('.json', '') + "/" + solutionFile;
-        var python = spawn('python', [buildTemplateFile, solutionPath, albumType, template]);
+        var python = spawn('python', [buildTemplateFile, solutionPath, albumType, template, lineFile]);
 
         python.stdout.on('data', function (data) {
             io.sockets.emit('uploadProgress', data.toString());

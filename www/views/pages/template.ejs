@@ -20,13 +20,13 @@
 
 <div class="page-header">
     <div class="row">
-        <div class="col-md-4 col-sm-12">
-            <h1><% if(locals.templateName){ %><%= templateName %> <% } %></h1>
+        <div class="col-md-12 col-sm-12">
+            <h2><% if(locals.templateName){ %><%= templateName %> <% } %></h2>
             <p style="font-size:0.9em">Generated with <b><%= currentSolution %></b></p>
         </div>
 
         <% if(locals.templateName){ %>
-        <div class="col-md-8 col-sm-12">
+        <div class="col-md-12 col-sm-12">
             <form action="/generate-album" method="POST" id="generate-album" class="form-inline">
               <div class="form-group">
 
@@ -53,7 +53,15 @@
 
                 </select>
 
+                <button id="solution-information" type="button" class="btn btn-warning"><span class="glyphicon glyphicon-stats"></span></button>
+
+                <select name="selectSolutionsGenerate" id="selectSolutionsGenerate" class="form-control">
+
+                </select>
+
               </div>
+
+
               <button type="submit" class="btn btn-primary">Generate</button>
 
               <% } else {%>

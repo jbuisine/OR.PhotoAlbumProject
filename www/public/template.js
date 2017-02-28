@@ -2,6 +2,16 @@
  * Created by jbuisine on 09/02/17.
  */
 
+
+var dataSolutionFile;
+
+$(document).ready(function(){
+
+    checkSolFiles();
+    $("#selectSolutionsGenerate").hide();
+});
+
+
 //Get all files of current template type
 $( "#albumType" ).change(function() {
 
@@ -16,7 +26,20 @@ $( "#albumType" ).change(function() {
     });
 });
 
+/**
+ * Check if it's necessary to show or hide the modal access button
+ */
+function checkSolFiles(){
+    if($("#solutionFile").children().length > 0){
+        loadSolutions();
+    }else{
+        $("#solution-information").hide();
+        $("#selectSolutionsGenerate").hide();
+    }
+}
+
 function loadSelectSol(solutions) {
+
     $( "#solutionFile" ).empty();
 
     console.log(solutions.length);
@@ -26,27 +49,41 @@ function loadSelectSol(solutions) {
         $.each(solutions, function( key, sol ) {
             $("#solutionFile").append('<option value="' + sol + '">' + sol + '</option>');
         });
+        loadSolutions();
     }
     else{
         $("#solutionFile").attr('disabled', true);
         $("#solutionFile").append('<option> No solution found</option>');
     }
+
+    checkSolFiles();
 }
 
-$("#solutionFile").change(function () {
+$("#solutionFile").change(loadSolutions);
+
+$("#solution-information").click(function(){
+
+    console.log('show solution');
+    $('#generation-info-modal').modal();
+});
+
+function loadSolutions(){
+
+    $("#solution-information").show();
     $.ajax({
         type: "POST",
         url: '/load-solution-content',
         data: {
             templateName: $("#templateName").val(),
             albumType: $("#albumType").val(),
-            solutionFile: $(this).val()
+            solutionFile: $("#solutionFile").val()
         },
         success: loadContentSol
     });
-});
+}
 
 function loadContentSol(data) {
+
     var head = data[0];
     data.splice(0, 1);
 
@@ -65,7 +102,27 @@ function loadContentSol(data) {
             break;
     }
 
-    $('#generation-info-modal').modal();
+    $('#selectSolutionsGenerate').empty();
+
+    dataSolutionFile = data;
+
+    data.forEach(function (element, index) {
+
+       var dataElement = '<option value="' + (index+1) + '">';
+
+       head.forEach(function (h, i) {
+           dataElement += h + " : " + parseFloat(element[i+1]).toFixed(2);
+
+           if(i+1 !== head.length){
+               dataElement += " - ";
+           }
+       });
+       dataElement += '</option>';
+
+        $('#selectSolutionsGenerate').append(dataElement);
+    });
+
+    $('#selectSolutionsGenerate').show();
 }
 
 /**
