@@ -1,0 +1,24 @@
+[
+  {
+    "index": 0,
+    "name": "circle-blue_green-tl.png",
+    "tags":{
+        "classes": [
+          "tl",
+          "tc",
+          "tr",
+          "bl",
+          "bc",
+          "br"
+        ],
+        "probs": [
+          1,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+    }
+  }
+]

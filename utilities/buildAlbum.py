@@ -93,7 +93,8 @@ class Album:
     def create_album(self, html_dir, photos_dir, solution_name, line_file):
         # read the solution order
         with open(solution_name) as f:
-            photosOrder = [ int(x) for x in f.readline().split() ]
+            lines = f.readlines()
+            photosOrder = [ int(x) for x in lines[int(line_file)].split(',')[0].split() ]
 
         n = 0
         for i in range(self.album["page"]):
@@ -103,7 +104,6 @@ class Album:
 #===================================================================
 if __name__ == '__main__':
     album_name     = "../resources/data/albums-type/"        # file name of the album information
-    photos_name    = "../resources/data/info-photo.json"        # file name of the photo information
     html_dir       = "../www/views/templates/"                        # path to html source files
     photos_dir     = "img"                         # path to images from the html directory
     solution_name  = "../resources/data/chronologic-order.sol"  # (default) file name of the solution which gives the assignement of the photos
@@ -125,12 +125,30 @@ if __name__ == '__main__':
             print ("Template folder not found: " + sys.argv[3])
             sys.exit()
         else:
+            photos_name    = html_dir + sys.argv[3] + "/info-photo.json"        # file name of the photo information
             album = Album(album_name, photos_name)
             album.create_album(html_dir + sys.argv[3], photos_dir, solution_name, sys.argv[4])
 
-            infoFile = open(html_dir + sys.argv[3] + "/info.txt", "w")
-            infoFile.write(solution_name)
-            infoFile.close()
+            #Write info values
+            with open(solution_name) as f:
+                lines = f.readlines()
+
+                head = lines[0].split(',')
+                values = lines[int(sys.argv[4])].split(',')
+
+                info = " ["
+
+                for (i, item) in enumerate(head):
+                    info +=  item + " : " + format(float(values[i+1]), '.2f')
+
+                    if i+1 < len(head):
+                        info += ", "
+
+                info += "] "
+
+                infoFile = open(html_dir + sys.argv[3] + "/info.txt", "w")
+                infoFile.write(solution_name + info)
+                infoFile.close()
 
 
 

@@ -11,7 +11,7 @@ import scala.collection.mutable.ListBuffer
 object MainWebApp {
 
   val df = new java.text.DecimalFormat("0.##")
-  val pathPhoto = "./../resources/data/info-photo.json"
+  val pathPhoto = "./../www/views/templates/{template}/info-photo.json"
   var pathAlbum = "./../resources/data/albums-type/"
   val scanner = new java.util.Scanner(System.in)
 
@@ -26,14 +26,10 @@ object MainWebApp {
   var solutionFile = ""
 
   val numberFunction = 9
-  val numberMonoObjectiveAlgo = 3
-  val numberTwoObjectiveAlgo = 2
-  val numberMultiObjectiveAlgo = 1
 
   //Objective function
   var functionsList: Array[(Array[Int]) => Double] = null
 
-  val hashTypes = Array("ahashdist", "phashdist", "dhashdist")
   var hashChoice: Int = 0
 
   //Sanner utility object
@@ -62,9 +58,10 @@ object MainWebApp {
     val iterationHC = data.get("iterationHC").toString.toInt
     val numberPermutation = data.get("numberPermutation").toString.toInt
 
+    val pathPhotoTemplate = pathPhoto.replace("{template}", templateName)
 
     //Initialization of context
-    Modelisation.init(pathPhoto, pathAlbum)
+    Modelisation.init(pathPhotoTemplate, pathAlbum)
 
     var solutions = new ListBuffer[Array[Int]]
 
@@ -126,7 +123,6 @@ object MainWebApp {
     }
 
     //Writing solutions file
-
     val filePath = templateName + "/" + directory + "/" + solutionFile
     var headerLine = ""
 

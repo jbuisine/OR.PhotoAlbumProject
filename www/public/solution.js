@@ -56,6 +56,22 @@ $('#MOEAD').change(function () {
     $('#numberPermutation').show('200');
 });
 
+$('#templateName').change(function(){
+
+    $.ajax({
+        type: "POST",
+        url: '/get-template-size',
+        data: {
+            templateName: $(this).val()
+        },
+        contentType: 'application/json',
+        success: function(size){
+            $('#numberPermutation input').attr('max', size);
+            $('#templateSize').val(size);
+        }
+    });
+});
+
 $('#createSolution').click(function (e) {
     e.preventDefault();
     e.stopPropagation();

@@ -244,7 +244,7 @@
                             <label for="numberPermutation">Number of permutation </label>
                         </div>
                         <div class="col-sm-4">
-                            <input type="number" min="1" max="55" value="10" name="numberPermutation" id="numberPermutation" class="form-control">
+                            <input type="number" min="1" max="<%= templateSize %>" value="10" name="numberPermutation" id="numberPermutation" class="form-control">
                         </div>
                     </div>
                 </div>
@@ -255,6 +255,7 @@
         <div class="form-group">
             <div class="col-sm-4"></div>
             <div class="col-sm-4">
+                <input type="hidden" id="templateSize" name="templateSize" value="<%= templateSize %>"/>
                 <button type="button" id="createSolution" class="btn btn-primary">Create solution</button>
             </div>
         </div>

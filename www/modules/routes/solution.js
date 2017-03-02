@@ -15,17 +15,27 @@ const albumsTypePath = './../resources/data/albums-type/';
 const classPathUtils = './../utilities/compile:./../utilities/lib/json-simple-1.1.1.jar';
 
 router.get('/solution', function (req, res) {
+
+    var templates = utilities.getDirectories(templatesPath);
+
     res.render('index', {
         page: "solution",
-        templates: utilities.getDirectories(templatesPath),
-        albumsType: utilities.getFiles(albumsTypePath)
+        templates: templates,
+        albumsType: utilities.getFiles(albumsTypePath),
+        templateSize:  utilities.getFiles(templatesPath + templates[0] + "/img").length
     });
 });
 
+router.get('/get-template-size', function(req, res){
+
+    var templateName = req.body.templateName;
+    var templateSize = utilities.getFiles(templatesPath + req.body.templateName + "/img").length;
+
+    res.contentType('application/json');
+    res.send(templateSize);
+});
 
 router.post('/create-solution', function (req, res) {
-
-    req.body.templateSize = utilities.getFiles(templatesPath + req.body.templateName + "/img").length;
 
     console.log(req.body);
 

@@ -70,6 +70,9 @@ $("#solution-information").click(function(){
 function loadSolutions(){
 
     $("#solution-information").show();
+    $('#selectSolutionsGenerate').hide('500');
+    $('#generate-solution-btn').hide('200');
+
     $.ajax({
         type: "POST",
         url: '/load-solution-content',
@@ -108,7 +111,7 @@ function loadContentSol(data) {
 
     data.forEach(function (element, index) {
 
-       var dataElement = '<option value="' + (index+1) + '">';
+       var dataElement = '<option value="' + (index+1) + '">[' + (index+1) + "] ";
 
        head.forEach(function (h, i) {
            dataElement += h + " : " + parseFloat(element[i+1]).toFixed(2);
@@ -122,7 +125,8 @@ function loadContentSol(data) {
         $('#selectSolutionsGenerate').append(dataElement);
     });
 
-    $('#selectSolutionsGenerate').show();
+    $('#selectSolutionsGenerate').show('500');
+    $('#generate-solution-btn').show('500');
 }
 
 /**
@@ -149,7 +153,7 @@ function generate2DPlot(data, head){
     };
 
     var layout = {
-        title: 'Solution file name',
+        title: $('#solutionFile').val(),
         xaxis: {
             title: head[0],
             type: 'log',
@@ -241,7 +245,7 @@ function generate3DPlot(data, head){
         },
         height: 550,
         autosize: true,
-        title: '3d point clustering'
+        title: $('#solutionFile').val()
     };
 
     Plotly.newPlot('graphic-representation', [line1], layout);
