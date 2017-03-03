@@ -13,6 +13,7 @@ object Algorithms {
   /**
     * Attribute used to saved number of evaluation
     */
+  val df = new java.text.DecimalFormat("0.##")
   var nbEvaluation: Int = 0
 
   /**
@@ -31,7 +32,7 @@ object Algorithms {
     val inner = new Breaks
 
     if (solution == null) {
-      solution = UtilityClass.generateRandomSolution(Main.nbPhotos)
+      solution = UtilityClass.generateRandomSolution(numberElements)
     }
 
     var bestResult = eval(solution)
@@ -81,7 +82,7 @@ object Algorithms {
   def IteratedLocalSearch(numberElements: Int, iteration: Int, nbEvaluationHillClimber: Int, perturbation: Int, eval: (Array[Int]) => Double): Array[Int] = {
     var random = Random
 
-    var solution = HillClimberFirstImprovement(numberElements, nbEvaluationHillClimber, UtilityClass.generateRandomSolution(Main.nbPhotos), eval)
+    var solution = HillClimberFirstImprovement(numberElements, nbEvaluationHillClimber, UtilityClass.generateRandomSolution(numberElements), eval)
 
     var bestResult = eval(solution)
     var bestSolution = solution.clone()
@@ -104,7 +105,7 @@ object Algorithms {
       i += 1
 
       val lengthText = percentEvolution.length()
-      percentEvolution = "ILS -> " + Main.df.format(i * 100.0 / iteration) + "%"
+      percentEvolution = "ILS -> " + df.format(i * 100.0 / iteration) + "%"
       UtilityClass.showEvolution(lengthText, percentEvolution)
     } while (i < iteration)
 
@@ -121,7 +122,7 @@ object Algorithms {
     * @param numberOfPermutations
     * @return best solution object found
     */
-  def GeneticEvolutionnaryAlgorithm(mu: Int, lambda: Int, iteration: Int, nbEvaluationHillClimber: Int, numberOfHc: Int, numberOfPermutations: Int, eval: (Array[Int]) => Double): Array[Int] = {
+  def GeneticEvolutionnaryAlgorithm(numberElements: Int, mu: Int, lambda: Int, iteration: Int, nbEvaluationHillClimber: Int, numberOfHc: Int, numberOfPermutations: Int, eval: (Array[Int]) => Double): Array[Int] = {
 
     var rand = Random
     var percentEvolution = ""
@@ -130,7 +131,7 @@ object Algorithms {
     var parentsSolutions = MutableList[Array[Int]]()
 
     for (i <- 0 to mu - 1) {
-      parentsSolutions += UtilityClass.generateRandomSolution(Main.nbPhotos)
+      parentsSolutions += UtilityClass.generateRandomSolution(numberElements)
     }
     //println(parentsSolutions.length)
 
@@ -181,7 +182,7 @@ object Algorithms {
       parentsSolutions = parentsSolutions.take(mu)
 
       val lengthText = percentEvolution.length()
-      percentEvolution = "EA -> " + Main.df.format(i * 100.0 / iteration) + "%"
+      percentEvolution = "EA -> " + df.format(i * 100.0 / iteration) + "%"
       UtilityClass.showEvolution(lengthText, percentEvolution)
 
     }
@@ -195,7 +196,7 @@ object Algorithms {
     * @param arr
     * @return best solution
     */
-  def ParetoLocalSearch(nbEval: Int, arr: ListBuffer[Array[Int]], evals : Array[(Array[Int]) => Double]): ListBuffer[Array[Int]] = {
+  def ParetoLocalSearch(numberElements: Int, nbEval: Int, arr: ListBuffer[Array[Int]], evals : Array[(Array[Int]) => Double]): ListBuffer[Array[Int]] = {
 
     var rand = new Random
     var percentEvolution = ""
@@ -210,12 +211,12 @@ object Algorithms {
 
     if (solutions == null) {
       solutions = new ListBuffer[Array[Int]]()
-      solutions += UtilityClass.generateRandomSolution(Main.nbPhotos)
+      solutions += UtilityClass.generateRandomSolution(numberElements)
     }
 
     while (i < nbEval) {
       //Select a non visited solution of solutions
-      var current_sol = new Array[Int](Main.nbPhotos)
+      var current_sol = new Array[Int](numberElements)
       do{
 
         val randIndex = rand.nextInt(solutions.length)
@@ -224,8 +225,8 @@ object Algorithms {
       }while(solutionsPassed.contains(current_sol))
 
       //Flypping each bit of the current solution
-      (0 until Main.nbPhotos).foreach( index => {
-        val randomValue = random.nextInt(Main.nbPhotos)
+      (0 until numberElements).foreach( index => {
+        val randomValue = random.nextInt(numberElements)
 
         val temporyValue = current_sol(index)
         current_sol(index) = current_sol(randomValue)
@@ -248,7 +249,7 @@ object Algorithms {
       solutions = UtilityClass.getNonDominatedSolutions(solutions, evals)
 
       val lengthText = percentEvolution.length()
-      percentEvolution = "PLS -> " + Main.df.format(i * 100.0 / nbEval) + "% "
+      percentEvolution = "PLS -> " + df.format(i * 100.0 / nbEval) + "% "
       UtilityClass.showEvolution(lengthText, percentEvolution)
     }
     solutions
@@ -265,7 +266,7 @@ object Algorithms {
     * @param choice
     * @return
     */
-  def MOEAD_Algorithm(nbEval: Int, N: Int, T: Int, evals : Array[(Array[Int]) => Double], choice: Int): ListBuffer[Array[Int]] = {
+  def MOEAD_Algorithm(numberElements: Int, nbEval: Int, N: Int, T: Int, evals : Array[(Array[Int]) => Double], choice: Int): ListBuffer[Array[Int]] = {
 
     /**
       * All utilities local variables
@@ -287,7 +288,7 @@ object Algorithms {
     var B = MOEADInit.getNeightborsVectors(vectors, T)
 
     //Step 1.3 : Initialize population (solution for each sub problems)
-    var population = MOEADInit.generateRandomPopulation(N)
+    var population = MOEADInit.generateRandomPopulation(numberElements, N)
     var values = MOEADInit.computeFunctionValues(population, evals)
 
     //Step 1.4 : Initialize reference point
@@ -321,10 +322,10 @@ object Algorithms {
         UtilityClass.perturbationIterated(firstSol, 10, random)
         //UtilityClass.pertubationIterated(secondSol, 10, random)
 
-        var newSol = new Array[Int](Main.nbPhotos)
+        var newSol = new Array[Int](numberElements)
 
         //Review this mutation method later
-        /*(0 until Main.nbPhotos).foreach( index => {
+        /*(0 until numberElements).foreach( index => {
           if(random.nextInt(1) == 0)
             newSol(firstSol.indexOf(index)) = index
           else
@@ -385,7 +386,7 @@ object Algorithms {
       })
 
       val lengthText = percentEvolution.length()
-      percentEvolution = "MOEA/D -> " + Main.df.format(evaluation * 100.0 / nbEval) + "% "
+      percentEvolution = "MOEA/D -> " + df.format(evaluation * 100.0 / nbEval) + "% "
       UtilityClass.showEvolution(lengthText, percentEvolution)
 
     }while(evaluation < nbEval)

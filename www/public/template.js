@@ -87,13 +87,18 @@ function loadSolutions(){
 
 function loadContentSol(data) {
 
+    $('#graphic-representation').empty();
+
     var head = data[0];
     data.splice(0, 1);
 
     switch (head.length){
 
         case 1:
-            generate2DPlot(data, head);
+            var content = '<div style="text-align: center;"><h3>' + $('#solutionFile').val() + '</h3></div>';
+            content += '<br />';
+            content += '<div><b>' + head[0] + ' : </b>' + parseFloat(data[0][1]).toFixed(2) + '</div>';
+            $('#graphic-representation').append(content);
             break;
 
         case 2 :

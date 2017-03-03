@@ -71,11 +71,11 @@ object MOEADInit {
     * @param N : Number of sub problems
     * @return random population
     */
-  def generateRandomPopulation(N: Int): Array[Array[Int]] = {
+  def generateRandomPopulation(numberElements: Int, N: Int): Array[Array[Int]] = {
 
     val population = new Array[Array[Int]](N)
     (0 until N).foreach(i => {
-        population(i)= UtilityClass.generateRandomSolution(Main.nbPhotos)
+        population(i)= UtilityClass.generateRandomSolution(numberElements)
     })
 
     population

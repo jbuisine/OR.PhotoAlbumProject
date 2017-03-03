@@ -90,7 +90,7 @@ object MainWebApp {
             val HCGenitor = data.get("HCGenitor").toString.toInt
             val muElement = data.get("muElement").toString.toInt
             val lambdaElement = data.get("lambdaElement").toString.toInt
-            solutions += Algorithms.GeneticEvolutionnaryAlgorithm(muElement, lambdaElement, algorithmIteration, iterationHC, HCGenitor, numberPermutation, functions(0))
+            solutions += Algorithms.GeneticEvolutionnaryAlgorithm(templateSize, muElement, lambdaElement, algorithmIteration, iterationHC, HCGenitor, numberPermutation, functions(0))
           }
         }
       }
@@ -102,7 +102,7 @@ object MainWebApp {
 
           //PLS
           case 3 => {
-            solutions = Algorithms.ParetoLocalSearch(algorithmIteration, null, functions)
+            solutions = Algorithms.ParetoLocalSearch(templateSize, algorithmIteration, null, functions)
           }
 
           //MOEA/D
@@ -111,14 +111,14 @@ object MainWebApp {
             val numberVectors = data.get("numberVectors").toString.toInt
             val closestVectors = data.get("closestVectors").toString.toInt
             val computedChoice = data.get("computedChoice").toString.toInt
-            solutions = Algorithms.MOEAD_Algorithm(algorithmIteration, numberVectors, closestVectors, functions, computedChoice)
+            solutions = Algorithms.MOEAD_Algorithm(templateSize, algorithmIteration, numberVectors, closestVectors, functions, computedChoice)
           }
         }
       }
 
       //Three criteria
       case 3 => {
-        solutions = Algorithms.ParetoLocalSearch(algorithmIteration, null, functions)
+        solutions = Algorithms.ParetoLocalSearch(templateSize, algorithmIteration, null, functions)
       }
     }
 
