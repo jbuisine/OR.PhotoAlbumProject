@@ -164,7 +164,7 @@ object UtilityClass {
     }
 
     file.writeLine(line, true)
-    println(s"Evaluation saved into scores/$filename")
+    println("Evaluation saved into scores " + filename)
   }
 
   /**
