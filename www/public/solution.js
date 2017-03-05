@@ -2,7 +2,6 @@
  * Created by jbuisine on 09/02/17.
  */
 
-var socket = io.connect('http://localhost:3000');
 var LIMIT_PROCESS = 4;
 var modal_error = $('#create-solution-dialog');
 var modal_error_content = modal_error.find('.modal-body p');
@@ -54,22 +53,6 @@ $('#MOEAD').change(function () {
 
     $('#MOEADAlgorithm').show('200');
     $('#numberPermutation').show('200');
-});
-
-$('#templateName').change(function(){
-
-    $.ajax({
-        type: "POST",
-        url: '/get-template-size',
-        data: {
-            templateName: $(this).val()
-        },
-        contentType: 'application/json',
-        success: function(size){
-            $('#numberPermutation input').attr('max', size);
-            $('#templateSize').val(size);
-        }
-    });
 });
 
 $('#createSolution').click(function (e) {

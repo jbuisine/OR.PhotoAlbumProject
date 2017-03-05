@@ -11,28 +11,31 @@ var utilities = require('./../utilities');
 const spawn = require('child_process').spawn;
 
 const templatesPath = './views/templates/';
-const albumsTypePath = './../resources/data/albums-type/';
+const albumsTypePath = './../resources/data/';
 const classPathUtils = './../utilities/compile:./../utilities/lib/json-simple-1.1.1.jar';
 
-router.get('/solution', function (req, res) {
+router.get('/solution/:template', function (req, res) {
 
+    var template = req.params.template;
     var templates = utilities.getDirectories(templatesPath);
 
-    res.render('index', {
-        page: "solution",
-        templates: templates,
-        albumsType: utilities.getFiles(albumsTypePath),
-        templateSize:  utilities.getFiles(templatesPath + templates[0] + "/img").length
+    utilities.filePathExists(templatesPath + template).then(function(exists) {
+        console.log(exists);
+
+        if(exists){
+            res.render('index', {
+                page: "solution",
+                templateName: template,
+                templates: templates,
+                albumsType: utilities.getFiles(albumsTypePath + template),
+                templateSize:  utilities.getFiles(templatesPath + template + "/img").length
+            });
+        }else{
+            res.redirect('/error');
+        }
     });
-});
 
-router.get('/get-template-size', function(req, res){
 
-    var templateName = req.body.templateName;
-    var templateSize = utilities.getFiles(templatesPath + req.body.templateName + "/img").length;
-
-    res.contentType('application/json');
-    res.send(templateSize);
 });
 
 router.post('/create-solution', function (req, res) {

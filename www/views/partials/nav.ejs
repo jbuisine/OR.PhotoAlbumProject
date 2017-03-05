@@ -32,8 +32,19 @@
         <% } %>
 
 
-        <li class="<% if(locals.page == 'solution'){ %> active <% } %>"><a href="/solution">Create solution</a></li>
-        <!-- <li class="<% if(locals.page == 'about'){ %> active <% } %>"><a href="/about">About</a></li>
+        <li class="dropdown <% if(locals.page == 'solution'){ %> active <% } %>">
+          <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Create solution<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+
+                 <% templates.forEach(function(template){ %>
+
+                 <li><a href="/solution/<%= template %>"> <%= template %> </a></li>
+
+                 <% }); %>
+
+        </ul>
+
+        </li><!-- <li class="<% if(locals.page == 'about'){ %> active <% } %>"><a href="/about">About</a></li>
         <li class="<% if(locals.page == 'contact'){ %> active <% } %>"><a href="/contact">Contact</a></li> -->
 
       </ul>

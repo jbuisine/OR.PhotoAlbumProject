@@ -77,4 +77,7 @@
     </div>
 </div>
 
-<%- include('../templates/' + templateName + '/page_' + idPage) %>
+
+<% if(locals.idPage) { %>
+    <%- include('../templates/' + templateName + '/page_' + idPage) %>
+<% } %>

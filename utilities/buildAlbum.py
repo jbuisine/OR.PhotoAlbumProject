@@ -103,9 +103,9 @@ class Album:
 
 #===================================================================
 if __name__ == '__main__':
-    album_name     = "../resources/data/albums-type/"        # file name of the album information
-    html_dir       = "../www/views/templates/"                        # path to html source files
-    photos_dir     = "img"                         # path to images from the html directory
+    album_name     = "../resources/data/"                       # file name of the album information
+    html_dir       = "../www/views/templates/"                  # path to html source files
+    photos_dir     = "img"                                      # path to images from the html directory
     solution_name  = "../resources/data/chronologic-order.sol"  # (default) file name of the solution which gives the assignement of the photos
 
     if len(sys.argv) > 1:
@@ -115,11 +115,12 @@ if __name__ == '__main__':
         else: 
             solution_name = sys.argv[1]
 
-        if not os.path.exists(album_name + sys.argv[2]):
+        if not os.path.exists(album_name + sys.argv[3] + "/" + sys.argv[2]):
             print ("Album type not found: " + sys.argv[2])
             sys.exit()
         else:
-            album_name += sys.argv[2]
+            album_name += sys.argv[3] + "/" +sys.argv[2]
+            print (album_name)
 
         if not os.path.exists(html_dir + sys.argv[3]):
             print ("Template folder not found: " + sys.argv[3])

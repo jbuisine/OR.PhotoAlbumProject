@@ -16,7 +16,7 @@ const fs = require('fs');
 const templatesPath = './views/templates/';
 
 const solsPath = './../resources/solutions/';
-const albumsTypePath = './../resources/data/albums-type/';
+const albumsTypePath = './../resources/data/';
 const buildTemplateFile = './../utilities/buildAlbum.py';
 
 router.get('/templates/:name', function (req, res) {
@@ -27,21 +27,37 @@ router.get('/templates/:name', function (req, res) {
 
         var templates = utilities.getDirectories(templatesPath);
 
-        var albumsType = utilities.getFiles(albumsTypePath);
-
         var template = req.params.name;
+
+        var albumsType = utilities.getFiles(albumsTypePath + template);
 
         if(templates.indexOf(req.params.name) !== -1){
 
-            res.render('index', {
-                page: "template",
-                templateName: template,
-                idPage: 0,
-                templates: utilities.getDirectories(templatesPath),
-                albumsType: albumsType,
-                solutions: utilities.getFiles(solsPath + template + "/" + albumsType[0].replace('.json', '')),
-                currentSolution: currentSol
+            utilities.filePathExists(templatesPath + template + '/page_0.ejs').then(function(exists) {
+
+               if(exists){
+                   res.render('index', {
+                       page: "template",
+                       templateName: template,
+                       idPage: 0,
+                       templates: templates,
+                       albumsType: albumsType,
+                       solutions: utilities.getFiles(solsPath + template + "/" + albumsType[0].replace('.json', '')),
+                       currentSolution: currentSol
+                   });
+               }
+               else{
+                   res.render('index', {
+                       page: "template",
+                       templateName: template,
+                       templates: utilities.getDirectories(templatesPath),
+                       albumsType: albumsType,
+                       solutions: utilities.getFiles(solsPath + template + "/" + albumsType[0].replace('.json', '')),
+                       currentSolution: currentSol
+                   });
+               }
             });
+
         }else{
             res.redirect('error');
         }
@@ -62,7 +78,7 @@ router.get('/templates/:name/:id', function (req, res) {
                 utilities.readFileContent(templatesPath + template + "/info.txt").then(function(dataFile) {
 
                     var currentSol = dataFile.substr(dataFile.lastIndexOf("/") + 1);
-                    var albumsType = utilities.getFiles(albumsTypePath);
+                    var albumsType = utilities.getFiles(albumsTypePath + template);
                     res.render('index', {
                         page: "template",
                         templateName: template,

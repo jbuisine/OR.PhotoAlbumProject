@@ -1,0 +1,2 @@
+./../resources/solutions/TestTemplate/album-6-2per3/ILS_commonTags [commonTags
+ : 21.33] 

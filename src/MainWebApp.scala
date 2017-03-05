@@ -12,7 +12,7 @@ object MainWebApp {
 
   val df = new java.text.DecimalFormat("0.##")
   val pathPhoto = "./../www/views/templates/{template}/info-photo.json"
-  var pathAlbum = "./../resources/data/albums-type/"
+  var pathAlbum = "./../resources/data/"
   val scanner = new java.util.Scanner(System.in)
 
   // Choices variables
@@ -47,16 +47,21 @@ object MainWebApp {
     val parser = new JSONParser()
     val data =  parser.parse(args(0).toString).asInstanceOf[JSONObject]
 
-    solutionFile = data.get("solutionFile").toString
-    pathAlbum += data.get("albumType").toString
+
+    val templateName = data.get("templateName").toString
     val directory = data.get("albumType").toString.split('.')(0)
     val templateSize = data.get("templateSize").toString.toInt
-    val templateName = data.get("templateName").toString
     val criteriaIndexes = data.get("criteria").asInstanceOf[JSONArray].toArray.map( x => x.toString.toInt)
     val algorithmChoice = data.get("algorithm").toString.toInt
     val algorithmIteration = data.get("iterationAlgorithm").toString.toInt
     val iterationHC = data.get("iterationHC").toString.toInt
     val numberPermutation = data.get("numberPermutation").toString.toInt
+
+    solutionFile = data.get("solutionFile").toString
+
+    //Create path of album type
+    pathAlbum += templateName + "/"
+    pathAlbum += data.get("albumType").toString
 
     val pathPhotoTemplate = pathPhoto.replace("{template}", templateName)
 

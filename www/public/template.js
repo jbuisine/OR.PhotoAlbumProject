@@ -30,7 +30,7 @@ $( "#albumType" ).change(function() {
  * Check if it's necessary to show or hide the modal access button
  */
 function checkSolFiles(){
-    if($("#solutionFile").children().length > 0){
+    if($("#solutionFile").children().length > 0 && $("#solutionFile").children().first().text() !== "No solution found"){
         loadSolutions();
     }else{
         $("#solution-information").hide();
@@ -53,7 +53,7 @@ function loadSelectSol(solutions) {
     }
     else{
         $("#solutionFile").attr('disabled', true);
-        $("#solutionFile").append('<option> No solution found</option>');
+        $("#solutionFile").append('<option>No solution found</option>');
     }
 
     checkSolFiles();
