@@ -36,15 +36,7 @@ router.get('/templates/:name', function (req, res) {
             utilities.filePathExists(templatesPath + template + '/page_0.ejs').then(function(exists) {
 
                if(exists){
-                   res.render('index', {
-                       page: "template",
-                       templateName: template,
-                       idPage: 0,
-                       templates: templates,
-                       albumsType: albumsType,
-                       solutions: utilities.getFiles(solsPath + template + "/" + albumsType[0].replace('.json', '')),
-                       currentSolution: currentSol
-                   });
+                   res.redirect("/templates/"+template + "/0");
                }
                else{
                    res.render('index', {

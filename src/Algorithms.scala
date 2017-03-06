@@ -200,6 +200,7 @@ object Algorithms {
 
     var rand = new Random
     var percentEvolution = ""
+    var numberEval = nbEval
 
     var solutions = arr
     var solutionsPassed = new ListBuffer[Array[Int]]
@@ -207,14 +208,24 @@ object Algorithms {
     var i = 0
 
     val random = Random
-    val inner = new Breaks
 
     if (solutions == null) {
       solutions = new ListBuffer[Array[Int]]()
       solutions += UtilityClass.generateRandomSolution(numberElements)
     }
 
-    while (i < nbEval) {
+    val maxEval = numberElements*numberElements
+
+    //If user want to explore all solutions
+    if(numberEval == 0)
+      numberEval = maxEval
+
+    //If numberEval if higher that all number of solutions to explore
+    if(numberEval > maxEval)
+      numberEval = maxEval
+
+
+    while (i < numberEval) {
       //Select a non visited solution of solutions
       var current_sol = new Array[Int](numberElements)
       do{
@@ -249,7 +260,7 @@ object Algorithms {
       solutions = UtilityClass.getNonDominatedSolutions(solutions, evals)
 
       val lengthText = percentEvolution.length()
-      percentEvolution = "PLS -> " + df.format(i * 100.0 / nbEval) + "% "
+      percentEvolution = "PLS -> " + df.format(i * 100.0 / numberEval) + "% "
       UtilityClass.showEvolution(lengthText, percentEvolution)
     }
     solutions

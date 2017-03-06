@@ -1,2 +1,2 @@
-./../resources/solutions/FirstTemplate/album-6-2per3/PLS_ahash_colors_commonTags.sol [ahashdist : 15.97, colors : 18374.78, commonTags
- : 1068.05] 
+./../resources/solutions/FirstTemplate/album-6-2per3/PLS_ahash_colors_commonTags.sol [ahashdist : 18.89, colors : 21461.02, commonTags
+ : 938.46] 
