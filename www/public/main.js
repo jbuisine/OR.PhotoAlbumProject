@@ -1,8 +1,9 @@
 /**
  * Created by jbuisine on 08/02/17.
  */
-var socket = io.connect('http://localhost:3000');
-
+var socket_local = io.connect('http://localhost:3000');
+var socket_intern = io.connect('http://192.168.1.199:3000');
+var socket_extern = io.connect('http://mypiputer.ddns.net:3000');
 
 $(document).ready(function () {
 
@@ -19,7 +20,21 @@ $(document).ready(function () {
 });
 
 /* Listen on generationFinished canal to get information of finished generation */
-socket.on('generationFinished' , function (data){
+socket_local.on('generationFinished', genrationFinished);
+socket_intern.on('generationFinished', genrationFinished);
+socket_extern.on('generationFinished', genrationFinished);
+
+/* Listen on generationProgress canal to get progress of generation and update information into DOM elements */
+socket_local.on('generationProgress', generationProgress);
+socket_intern.on('generationProgress', generationProgress);
+socket_extern.on('generationProgress', generationProgress);
+
+/**
+ * Function which used for show notification when generation is finished
+ *
+ * @param data
+ */
+function genrationFinished(data){
 
     if(Notification.permission !== 'granted'){
         Notification.requestPermission();
@@ -29,10 +44,14 @@ socket.on('generationFinished' , function (data){
         body: data.solFile,
         icon : "/images/generation-finished.png"
     });
-});
+}
 
-/* Listen on generationProgress canal to get progress of generation and update information into DOM elements */
-socket.on('generationProgress' , function (data){
+/**
+ * Function which is used for update information when data are sent on socket port
+ *
+ * @param data
+ */
+function generationProgress(data){
 
     if(data.percent.indexOf('%') !== -1){
 
@@ -60,7 +79,7 @@ socket.on('generationProgress' , function (data){
 
     console.log($('div[id^="solution-generation"]').length);
     $('#process-running span').text($('div[id^="solution-generation"]').length);
-});
+}
 
 
 /**
@@ -80,6 +99,7 @@ function removeProcessInformation(elem){
     $('#process-running span').text(nbProcess);
 
 }
+
 /**
  * Function which generate a new information div of an running process
  *
@@ -113,8 +133,7 @@ function generateProgressCircle(id, percent){
     content += '</div>';
     content += '</div>';
     content += '</div>';
-
-
+    
     $('#progress-content').append(content);
     $('#solution-generation-' + id).hide().show('2000');
 }
