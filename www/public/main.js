@@ -29,21 +29,27 @@ socket_local.on('generationProgress', generationProgress);
 socket_intern.on('generationProgress', generationProgress);
 socket_extern.on('generationProgress', generationProgress);
 
+
+$('button[id^="link_"]').on("click", function () {
+   var action_url = $(this).attr("data-link");
+
+    $.ajax({
+        type: "POST",
+        url: action_url,
+        success: function (data) {
+            generateNotification("Application information", data);
+        }
+    });
+
+});
+
 /**
  * Function which used for show notification when generation is finished
  *
  * @param data
  */
 function genrationFinished(data){
-
-    if(Notification.permission !== 'granted'){
-        Notification.requestPermission();
-    }
-
-    n = new Notification( "Generation finished", {
-        body: data.solFile,
-        icon : "/images/generation-finished.png"
-    });
+    generateNotification("Generation finished", data.solFile);
 }
 
 /**
@@ -133,7 +139,7 @@ function generateProgressCircle(id, percent){
     content += '</div>';
     content += '</div>';
     content += '</div>';
-    
+
     $('#progress-content').append(content);
     $('#solution-generation-' + id).hide().show('2000');
 }
@@ -147,4 +153,20 @@ function generateProgressCircle(id, percent){
 function updateProgressCircle(circle, percent){
     circle.removeClass('p'+ percent -1).addClass('p' + percent);
     circle.find('span').text(percent + '%');
+}
+
+/**
+ * Function which used for send notification
+ * @param title
+ * @param content
+ */
+function generateNotification(title, content){
+    if(Notification.permission !== 'granted'){
+        Notification.requestPermission();
+    }
+
+    n = new Notification( title, {
+        body: content,
+        icon : "/images/generation-finished.png"
+    });
 }

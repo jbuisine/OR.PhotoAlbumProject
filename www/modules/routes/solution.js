@@ -20,7 +20,6 @@ router.get('/solution/:template', function (req, res) {
     var templates = utilities.getDirectories(templatesPath);
 
     utilities.filePathExists(templatesPath + template).then(function(exists) {
-        console.log(exists);
 
         if(exists){
             res.render('index', {
