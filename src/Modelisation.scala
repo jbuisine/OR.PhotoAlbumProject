@@ -225,13 +225,14 @@ object Modelisation {
 
             if (photoTagsName(i)(l) != photoTagsName(j)(k)){
               uncommonSum += math.abs(photoTagsValue(i)(l) - photoTagsValue(j)(k))
-              
+
               //Penality result cause of different tag
-              commonSum += 0.2
+              commonSum += 0.3
             }
             else {
-              //Increase result cause of same tag
-              uncommonSum -= 0.2
+              //Benefit result cause of same tag
+              uncommonSum -= 0.3
+
               commonSum -= math.abs(photoTagsValue(i)(l) - photoTagsValue(j)(k))
               nbCommonTag += 1
             }
@@ -241,6 +242,8 @@ object Modelisation {
 
           if (nbCommonTag > 0)
             photoDistancesCommonsTags(i)(j) = commonSum / nbCommonTag
+          else
+            photoDistancesCommonsTags(i)(j) = nbTags
         }
       }
     } catch {

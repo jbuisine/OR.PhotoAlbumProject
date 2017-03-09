@@ -1,2 +1,2 @@
-./../resources/solutions/TestTemplate/album-6-2per3/ILS_colors.sol [colors
- : 6590.45] 
+./../resources/solutions/TestTemplate/album-6-2per3/PLS_greyAVG_commonTags_500.sol [greyAVG : 0.00, commonTags
+ : 94.87] 
