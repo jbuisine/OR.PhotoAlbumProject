@@ -2,7 +2,7 @@
 
 ### Synopsis
 
-The aim of the project is to generate photo album automatically with some criteria. Multiple criteria can be used for that, with some algorithms shown during courses.
+The aim of the project is to generate photo album automatically based on criteria. Optimization is implemented with some algorithms shown during courses.
 
 Algorithms used for mono-objective :
 - Hill Climber First Improvement
@@ -15,6 +15,8 @@ Algorithms used for multi-objective :
 
 The project is mainly developed with Scala language to get benefit of functional paradigm.
 
+A node.js web application is developed to let the application more attractive and useful.
+
 ### Description
 
 -------------------
@@ -22,18 +24,25 @@ The project is mainly developed with Scala language to get benefit of functional
 * Date        : 8/11/2015
 
 -------------------
-Files list :
-- utilities/buildAlbum.py               : code python permettant de créer les pages web avec l'album à partir d'un fichier de solution
-- utilities/buildGraph.R                : code R qui permet de générer le front de pareto pour un fichier score
-- utilities/run.sh                      : script bash permettant l'exécution du programme
-- albums/album-*/html                   : dossier pour recevoir les pages web d'un album
-- albums/album-*/html/img/\*.jpg        : les 55 photos au format jpg de l'album photo
-- albums/album-*/html/styleAlbum.css    : feuille de style associée aux pages web de l'album
-- resources/data  : information sur les 55 photos au format json
-- resources/docs		                : dossier comprenant les différents scores enregistrés afin de les comparer
-- resources/scores		            : l'une des meilleures solution trouvée pour chaque fonction objectif
-- resources/solutions
-- src                                   : dossier du code scala donnant un exemple de lecture des données et de fonction d'évaluation. Il comprendra également l'ensemble des nouvelles fonctions d'évaluation développées.
+
+## Files list description :
+
+**Scala code**
+- src/*                                 : Scala files with optimisation algorithms.    
+
+**Web application**
+- www/*                                 : Web node.js application with bower modules.
+- www/views/templates/*                 : Templates with photos and pages generated.
+
+**Utilities**
+- utilities/lib/*                       : Libraries added to classpath when compiling scala code. 
+- buildAlbum.py                         : Python script which generates ejs pages of a Template.
+- buildGraph.R                          : Script which can be used to generate 2D & 3D plot.
+
+**Resources**               
+- resources/data                        : JSON files which described a template disposition.
+- resources/solutions                   : Solutions generated for a specific Template and disposition.
+- resources/docs		                : Documentation of the project.
 
 -------------------
 
@@ -45,6 +54,8 @@ First of all, to compile et run scala, you need the java JDK 1.8 and [download] 
 You also need to install [node.js] (https://nodejs.org/en/) and later install bower package :
 
 **If you have Linux or MacOS, you can do it with package manager on your terminal**
+
+
 #Installation & run
 
 Build and run application :
@@ -53,7 +64,7 @@ Build and run application :
 ./run.sh build
 ```
 
-Just run application : 
+Just run application (Only if already build): 
 
 ```
 ./run.sh
