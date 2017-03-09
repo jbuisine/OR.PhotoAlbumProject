@@ -2,126 +2,61 @@
 
 ### Synopsis
 
-Le but du projet est de permettre la création automatique d'un album photo. Pour cela, plusieurs critères ont été évalué dans le but d'être optimisé. Il faut donc au travers d'algorithmes de recherche locale notamment ceux vus en cours, obtenir une solution proche d'un rendu d'une solution optimale.
+The aim of the project is to generate photo album automatically with some criteria. Multiple criteria can be used for that, with some algorithms shown during courses.
 
-Deux algorithmes sont pour le moment utilisé :
-- Hill Climber First Improvement permettant l'exploitation d'une solution.
-- Iterated Local Search qui permettra d'explorer de nouveaux optimaux locaux obtenus par le biais du Hill Climber.
+Algorithms used for mono-objective :
+- Hill Climber First Improvement
+- Iterated Local Search
+- Evolutionary Algorithm
 
-Le projet sera développé en Scala dans le but de profiter du paradigme de programmation fonctionnelle proposé par ce langage. Il comprendra des problèmes mono et multi-objectives.
+Algorithms used for multi-objective :
+- Pareto Local Search
+- Multi Objective Evolutionary Algorithm with Decomposition (MOEA/D)
 
-L'algorithme Pareto local search sera utilisé pour les problèmes multi-objectives.
+The project is mainly developed with Scala language to get benefit of functional paradigm.
 
 ### Description
 
 -------------------
-* Description : Projet de création d'album photo automatique par optimisation
-* Auteur      : [S. Verel] (http://www-lisic.univ-littoral.fr/~verel/)
+* Author      : [S. Verel] (http://www-lisic.univ-littoral.fr/~verel/)
 * Date        : 8/11/2015
 
-
 -------------------
-Liste des fichiers :
-- [resources/docs/prj1-ro.pdf] (https://github.com/jbuisine/M1.I2L.TD.RO.2016-11-09/blob/master/resources/docs/prj1-ro.pdf)             : fichier comprennant la description plus détaillée du projet
-- [resources/docs/CompteRenduProjetRO.pdf] (https://github.com/jbuisine/M1.I2L.TD.RO.2016-11-09/blob/master/resources/docs/CompteRenduProjetRO.pdf) : fichier comprennant le compte rendu du projet suite à l'analyse des perfomances
+Files list :
 - utilities/buildAlbum.py               : code python permettant de créer les pages web avec l'album à partir d'un fichier de solution
 - utilities/buildGraph.R                : code R qui permet de générer le front de pareto pour un fichier score
 - utilities/run.sh                      : script bash permettant l'exécution du programme
 - albums/album-*/html                   : dossier pour recevoir les pages web d'un album
 - albums/album-*/html/img/\*.jpg        : les 55 photos au format jpg de l'album photo
 - albums/album-*/html/styleAlbum.css    : feuille de style associée aux pages web de l'album
-- resources/data/info-photo.json        : information sur les 55 photos au format json
-- resources/data/info-album.json        : information sur les 9 pages de l'album
-- resources/data/chronologic-order.sol  : fichier contenant une solution de disposition des photos de l'album (par ordre chronologique)
-- resources/scores		                : dossier comprenant les différents scores enregistrés afin de les comparer
-- resources/solutions		            : l'une des meilleures solution trouvée pour chaque fonction objectif
+- resources/data  : information sur les 55 photos au format json
+- resources/docs		                : dossier comprenant les différents scores enregistrés afin de les comparer
+- resources/scores		            : l'une des meilleures solution trouvée pour chaque fonction objectif
+- resources/solutions
 - src                                   : dossier du code scala donnant un exemple de lecture des données et de fonction d'évaluation. Il comprendra également l'ensemble des nouvelles fonctions d'évaluation développées.
 
-
 -------------------
-Création des pages :
+
+
+##Required
+
+First of all, to compile et run scala, you need the java JDK 1.8 and [download] (https://www.scala-lang.org/download/install.html) scala library.
+
+You also need to install [node.js] (https://nodejs.org/en/) and later install bower package :
+
+**If you have Linux or MacOS, you can do it with package manager on your terminal**
+#Installation & run
+
+Build and run application :
 
 ```
-python buildAlbum.py fichier.sol
-```
-où fichier.sol est le fichier contenant une solution de disposition
-
-```
-python buildAlbum.py
-```
-utilise par défaut le fichier ../resources/data/chronologic-order.sol
-
-
-### Installation avec Eclipse
-
-Il s'agit d'un projet Eclipse, pour cela il vous suffit de cloner le Repository au sein d'Eclipse et d'importer le projet.
-
-Il faudra ensuite installer le plugin **Scala** IDE disponible dans le marketplace et configurer le projet :
-
-
-```
-Properties > Java Build Path > Libraries > Add library > JRE System Library
+./run.sh build
 ```
 
-Mettre en place la library Scala :
+Just run application : 
 
 ```
-Properties > Java Build Path > Libraries > Add library > Scala Library Container
-```
-
-Ajout du jar permettant la lecture de fichier JSON :
-
-```
-Properties > Java Build Path > Libraries > Add external jar > ./resources/lib/json-simple-1.1.1.jar
-```
-
-Pour lancer l'application, il suffira d'exécuter le fichier **Main.scala** en tant que Scala Application.
-
-### Command Line
-
-Dans un premier temps, afin de pouvoir compiler et exécuter du code scala, il vous faudra le [télécharger] (https://www.scala-lang.org/download/install.html) et l'installer.
-
-Création du dossier 'compile' qui comprendra le code binaire compilé et évitera les conflits des fichiers compilés au sein du dossier bin par l'IDE Eclipse :
-
-```
-mkdir ./resources/compile
-```
-
-Pour lancer l'application en ligne de commande il suffit dans un premier temps de compiler le code :
-
-```
-scalac -d compile -cp lib/json-simple-1.1.1.jar -sourcepath ../src ../src/*.scala
-```
-
-Puis de l'éxécuter via la commande scala :
-
-```
-scala -cp compile:lib/json-simple-1.1.1.jar Main
-```
-
-### Script BASH
-
-Il est aussi possible d'exécuter le code via le script __run.sh__ de la façon suivante :
-
-```
-sh utilities/run.sh
-```
-En ajoutant le paramètre 'build' on compile et exécute le code :
-
-```
-sh utilities/run.sh build
-```
-
-En ajoutant un nom de fichier on exécute le code et sauvegarde la solution trouvée (Le fichier est sauvegardé dans le dossier solutions) :
-
-```
-sh utilities/run.sh fichier.sol
-```
-
-En ajoutant les paramètres 'build' & un nom de fichier on compile, exécute le code et sauvegarde la solution :
-
-```
-sh utilities/run.sh build fichier.sol
+./run.sh
 ```
 
 ### Contributors

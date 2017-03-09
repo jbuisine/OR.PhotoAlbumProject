@@ -26,4 +26,8 @@ else
 fi
 
 # Run node js application
-node app.js
+if lsof -Pi :3000 -sTCP:LISTEN -t >/dev/null ; then
+    echo "running"
+else
+    node app.js
+fi
