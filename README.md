@@ -53,7 +53,7 @@ First of all, to compile et run scala, you need the java JDK 1.8 and [download] 
 
 You also need to install [node.js] (https://nodejs.org/en/) and later install bower package :
 
-**If you have Linux or MacOS, you can do it with package manager on your terminal**
+**If you have Linux or MacOS, you can do it with your favorite package manager on your terminal**
 
 
 ## Installation & run
