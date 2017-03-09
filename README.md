@@ -1,6 +1,6 @@
 # RO : Photo album project
 
-### Synopsis
+## Synopsis
 
 The aim of the project is to generate photo album automatically based on criteria. Optimization is implemented with some algorithms shown during courses.
 
@@ -17,7 +17,7 @@ The project is mainly developed with Scala language to get benefit of functional
 
 A node.js web application is developed to let the application more attractive and useful.
 
-### Description
+## Description
 
 -------------------
 * Author      : [S. Verel] (http://www-lisic.univ-littoral.fr/~verel/)
@@ -25,7 +25,7 @@ A node.js web application is developed to let the application more attractive an
 
 -------------------
 
-## Files list description :
+### Files list description :
 
 **Scala code**
 - src/*                                 : Scala files with optimisation algorithms.    
@@ -47,7 +47,7 @@ A node.js web application is developed to let the application more attractive an
 -------------------
 
 
-##Required
+## Required
 
 First of all, to compile et run scala, you need the java JDK 1.8 and [download] (https://www.scala-lang.org/download/install.html) scala library.
 
@@ -56,7 +56,7 @@ You also need to install [node.js] (https://nodejs.org/en/) and later install bo
 **If you have Linux or MacOS, you can do it with package manager on your terminal**
 
 
-#Installation & run
+## Installation & run
 
 Build and run application :
 
@@ -70,6 +70,6 @@ Just run application (Only if already build):
 ./run.sh
 ```
 
-### Contributors
+## Contributors
 
 * [jbuisine] (https://github.com/jbuisine)
