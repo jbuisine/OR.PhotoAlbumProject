@@ -57,7 +57,7 @@ You also need to install [node.js] (https://nodejs.org/en/) and later install bo
 npm install -g bower
 ```
 
-**If you have Linux or MacOS, you can do it with package manager on your terminal**
+**If you have Linux or MacOS, you can do it with your favorite package manager on your terminal**
 
 
 ## Installation & run
