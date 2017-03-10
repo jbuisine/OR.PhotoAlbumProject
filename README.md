@@ -74,6 +74,12 @@ Just run application (Only if already build):
 ./run.sh
 ```
 
+If you want to install application into a server, add a cron task (sudo crontab -e): 
+
+```
+@reboot cd /home/{user}/{directory}/{to}/{project} && ./run.sh build &
+```
+
 ## Contributors
 
 * [jbuisine] (https://github.com/jbuisine)

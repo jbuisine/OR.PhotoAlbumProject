@@ -42,13 +42,13 @@ router.post("/restart_server", function (req, res) {
 
     restart_cmd.on('close', function() {
         res.contentType('text/html');
-        res.send("Server will restart");
+        res.send("Server will restart in approximately 1 minute. It will compile and download new dependencies. ");
     });
 });
 
 router.post("/compile_scala", function (req, res) {
 
-    var compile_cmd = spawn('scalac', ['-d', './../utilities/compile', '-cp', './../utilities/lib/json-simple-1.1.1.jar', './../src/*.scala']);
+    var compile_cmd = spawn('scalac', ['-d', './../utilities/compile', '-cp', './../utilities/lib/json-simple-1.1.1.jar', '/../src/*']);
 
     compile_cmd.stdout.on('data', function (data) {
        console.log(data.toString());
@@ -60,7 +60,7 @@ router.post("/compile_scala", function (req, res) {
 
     compile_cmd.on('close', function() {
         res.contentType('text/html');
-        res.send("Finished to compile scala code");
+        res.send("Finished to compile scala code.");
     });
 });
 
