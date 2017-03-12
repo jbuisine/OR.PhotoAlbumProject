@@ -379,8 +379,6 @@ object Algorithms {
           }
         })
 
-        //Increment number of evaluation
-        evaluation += 1
 
         /**
           * 2.5 Update of EP : Update non dominated solutions
@@ -395,6 +393,9 @@ object Algorithms {
         nonDominatedSolutions = UtilityClass.getNonDominatedSolutions(nonDominatedSolutions, evals)
 
       })
+
+      //Increment number of evaluation
+      evaluation += 1
 
       val lengthText = percentEvolution.length()
       percentEvolution = "MOEA/D -> " + df.format(evaluation * 100.0 / nbEval) + "% "
