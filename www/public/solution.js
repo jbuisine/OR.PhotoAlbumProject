@@ -56,6 +56,14 @@ $('#MOEAD').change(function () {
     $('#numberPermutation').show('200');
 });
 
+$('#TPLS').change(function () {
+
+    updateContent();
+    $('#iteration-more-info').show();
+    $('#MOEADAlgorithm').show('200');
+    $('#numberPermutation').show('200');
+});
+
 $('#createSolution').click(function (e) {
     e.preventDefault();
     e.stopPropagation();
@@ -114,12 +122,15 @@ function showOrHideCriteria(nbElem) {
         //Multiple objectives shown
         $('#PLS').attr('disabled',false);
         $('#MOEAD').attr('disabled',false);
+        $('#TPLS').attr('disabled',false);
+
     }else if(nbElem > 2 && nbElem <= 3){
         //Hidden option
         $('#HC').attr('disabled',true);
         $('#ILS').attr('disabled',true);
         $('#EA').attr('disabled',true);
         $('#MOEAD').attr('disabled',true);
+        $('#TPLS').attr('disabled',true);
 
         //Three objectives
         $('#PLS').attr('disabled',false);
@@ -135,6 +146,7 @@ function showOrHideCriteria(nbElem) {
         //Multiple objectives hidden
         $('#PLS').attr('disabled',true);
         $('#MOEAD').attr('disabled',true);
+        $('#TPLS').attr('disabled',true);
     }else {
         $('#algorithmChoice input').attr('disabled', true);
     }

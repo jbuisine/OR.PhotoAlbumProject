@@ -118,6 +118,15 @@ object MainWebApp {
             val computedChoice = data.get("computedChoice").toString.toInt
             solutions = Algorithms.MOEAD_Algorithm(templateSize, algorithmIteration, numberVectors, closestVectors, functions, computedChoice)
           }
+
+          case 5 => {
+            //MOEA/D values
+            val numberVectors = data.get("numberVectors").toString.toInt
+            val closestVectors = data.get("closestVectors").toString.toInt
+            val computedChoice = data.get("computedChoice").toString.toInt
+
+            solutions = Algorithms.TPLS_Algorithm(templateSize, algorithmIteration, numberVectors, closestVectors, functions, computedChoice)
+          }
         }
       }
 

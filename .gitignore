@@ -15,7 +15,7 @@ Project.RO.2016.11.08.Scala.v2.iml
 # Node & bower files
 www/node_modules
 www/public/bower_components/
-
+*/npm-debug.log
 
 
 

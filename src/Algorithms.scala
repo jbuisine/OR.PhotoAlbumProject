@@ -18,6 +18,7 @@ object Algorithms {
 
   /**
     * HillClimber First improvement method used to get best local solution
+    *
     * @param numberElements
     * @param nbEval
     * @param arr
@@ -52,7 +53,7 @@ object Algorithms {
 
           result = eval(solution)
           i += 1
-          nbEvaluation+=1
+          nbEvaluation += 1
 
           if (result < bestResult) {
 
@@ -192,16 +193,17 @@ object Algorithms {
 
   /**
     * Method which used method implement pareto local search and find non determinist solution
+    *
     * @param nbEval
     * @param arr
     * @return best solution
     */
-  def ParetoLocalSearch(numberElements: Int, nbEval: Int, arr: ListBuffer[Array[Int]], evals : Array[(Array[Int]) => Double]): ListBuffer[Array[Int]] = {
+  def ParetoLocalSearch(numberElements: Int, nbEval: Int, arr: ListBuffer[Array[Int]], evals: Array[(Array[Int]) => Double]): ListBuffer[Array[Int]] = {
 
     var rand = new Random
     var percentEvolution = ""
     var numberEval = nbEval
-
+    var maxEval = 0
     var solutions = arr
     var solutionsPassed = new ListBuffer[Array[Int]]
     var index = 0
@@ -212,31 +214,37 @@ object Algorithms {
     if (solutions == null) {
       solutions = new ListBuffer[Array[Int]]()
       solutions += UtilityClass.generateRandomSolution(numberElements)
+
+      maxEval = numberElements * numberElements
+    }else{
+      maxEval = (numberElements * numberElements) - solutions.length
+
+      //Update solutions passed
+      solutionsPassed ++ solutions
     }
 
-    val maxEval = numberElements*numberElements
 
     //If user want to explore all solutions
-    if(numberEval == 0)
+    if (numberEval == 0)
       numberEval = maxEval
 
     //If numberEval if higher that all number of solutions to explore
-    if(numberEval > maxEval)
+    if (numberEval > maxEval)
       numberEval = maxEval
 
 
     while (i < numberEval) {
       //Select a non visited solution of solutions
       var current_sol = new Array[Int](numberElements)
-      do{
+      do {
 
         val randIndex = rand.nextInt(solutions.length)
         current_sol = solutions(randIndex)
 
-      }while(solutionsPassed.contains(current_sol))
+      } while (solutionsPassed.contains(current_sol))
 
       //Flypping each bit of the current solution
-      (0 until numberElements).foreach( index => {
+      (0 until numberElements).foreach(index => {
         val randomValue = random.nextInt(numberElements)
 
         val temporyValue = current_sol(index)
@@ -251,7 +259,7 @@ object Algorithms {
       })
 
       i += 1
-      nbEvaluation+=1
+      nbEvaluation += 1
 
       //Flag solution as visited
       solutionsPassed += current_sol
@@ -277,7 +285,7 @@ object Algorithms {
     * @param choice
     * @return
     */
-  def MOEAD_Algorithm(numberElements: Int, nbEval: Int, N: Int, T: Int, evals : Array[(Array[Int]) => Double], choice: Int): ListBuffer[Array[Int]] = {
+  def MOEAD_Algorithm(numberElements: Int, nbEval: Int, N: Int, T: Int, evals: Array[(Array[Int]) => Double], choice: Int): ListBuffer[Array[Int]] = {
 
     /**
       * All utilities local variables
@@ -310,15 +318,15 @@ object Algorithms {
     /**
       * 2. Update
       */
-    do{
+    do {
 
 
-      (0 until N).foreach( i => {
+      (0 until N).foreach(i => {
 
         /**
           *  2.1 Reproduction : Select randomly two solutions to create new solution y
           *
-          *  For the moment we just permute randomly values of solution selected to create new solution
+          * For the moment we just permute randomly values of solution selected to create new solution
           */
 
         //2.1.1 : Getting random index of closest vectors and retrieve solution associated
@@ -354,7 +362,7 @@ object Algorithms {
           * 2.3 Update z : reference point
           */
         //Setting new reference point if exists
-        (0 until evals.length).foreach( index => {
+        (0 until evals.length).foreach(index => {
           z(index) = math.min(z(index), evals(index)(newSol))
         })
 
@@ -363,7 +371,7 @@ object Algorithms {
           */
 
         //For each solution into the population check if new solution is better
-        (0 until B(i).length).foreach( index => {
+        (0 until B(i).length).foreach(index => {
           val neighborIndex = B(i)(index)
 
           //Getting Tchebivech function result for the new solution and current solution
@@ -373,7 +381,7 @@ object Algorithms {
           //If better update population and values
           if (gY < gNeighbor) {
             population(neighborIndex) = newSol
-            (0 until evals.length).foreach( current => {
+            (0 until evals.length).foreach(current => {
               values(neighborIndex)(current) = evals(current)(population(neighborIndex))
             })
           }
@@ -401,8 +409,26 @@ object Algorithms {
       percentEvolution = "MOEA/D -> " + df.format(evaluation * 100.0 / nbEval) + "% "
       UtilityClass.showEvolution(lengthText, percentEvolution)
 
-    }while(evaluation < nbEval)
+    } while (evaluation < nbEval)
 
     nonDominatedSolutions
+  }
+
+  /**
+    *
+    * TP-LS Algorithm implementation
+    *
+    * @param nbEval
+    * @param N
+    * @param T
+    * @param evals
+    * @param choice
+    * @return
+    */
+  def TPLS_Algorithm(numberElements: Int, nbEval: Int, N: Int, T: Int, evals: Array[(Array[Int]) => Double], choice: Int): ListBuffer[Array[Int]] = {
+
+    var solutions = MOEAD_Algorithm(numberElements, nbEval, N, T, evals, choice)
+
+    ParetoLocalSearch(numberElements, 0, solutions, evals)
   }
 }
