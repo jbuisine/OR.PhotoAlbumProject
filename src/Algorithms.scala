@@ -215,9 +215,9 @@ object Algorithms {
       solutions = new ListBuffer[Array[Int]]()
       solutions += UtilityClass.generateRandomSolution(numberElements)
 
-      maxEval = numberElements * numberElements
+      maxEval = (numberElements * (numberElements-1))/2
     }else{
-      maxEval = (numberElements * numberElements) - solutions.length
+      maxEval = (numberElements * (numberElements-1))/2 - solutions.length
 
       //Update solutions passed
       solutionsPassed ++ solutions
@@ -319,7 +319,6 @@ object Algorithms {
       * 2. Update
       */
     do {
-
 
       (0 until N).foreach(i => {
 

@@ -64,6 +64,17 @@ $('#TPLS').change(function () {
     $('#numberPermutation').show('200');
 });
 
+$('#numberVectors').change(function () {
+    var value = parseInt($(this).val());
+
+    $('#closestVectors').attr('max', value);
+
+    if(parseInt($('#closestVectors').val()) > value){
+        $('#closestVectors').attr('value', Math.max(parseInt(value/10), 1)  );
+    }
+
+});
+
 $('#createSolution').click(function (e) {
     e.preventDefault();
     e.stopPropagation();

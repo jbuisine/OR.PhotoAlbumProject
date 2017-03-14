@@ -56,9 +56,13 @@ object MOEADInit {
     //Return variable which just return the closest vectors for each vectors
     val closests = new Array[Array[Int]](N)
 
+
     (0 until closests.length).foreach( index => {
-      //Get the T indices sorted
-      closests(index) = distances(index).toSeq.sortBy(_._2).unzip._1.slice(0, T).toArray
+      //Get the T closest of current lambda vector
+      val beginIndex = math.max(0, math.min(N-T, index-(T/2)))
+      val endIndex = math.min(N, math.max(T,index+(T/2)))
+
+      closests(index) = distances(index).toSeq.sortBy(_._2).unzip._1.slice(beginIndex, endIndex).toArray
     })
 
     closests

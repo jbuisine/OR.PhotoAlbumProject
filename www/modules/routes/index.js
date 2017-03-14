@@ -48,7 +48,7 @@ router.post("/restart_server", function (req, res) {
 
 router.post("/compile_scala", function (req, res) {
 
-    var compile_cmd = spawn('bash', ['../run.sh','compile']);
+    var compile_cmd = spawn('bash', ['./../run.sh','compile']);
 
     compile_cmd.stdout.on('data', function (data) {
        console.log(data.toString());

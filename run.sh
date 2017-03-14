@@ -23,14 +23,14 @@ if [ "$1" == "build" ]; then
     npm install && bower install
 
 elif [ "$1" == "compile" ]; then
-    scalac -d ../utilities/compile -cp ../utilities/lib/json-simple-1.1.1.jar -sourcepath src ../src/*.scala
+    scalac -d ./../utilities/compile -cp ./../utilities/lib/json-simple-1.1.1.jar -sourcepath src ./../src/*.scala
 else
     cd www/
 fi
 
 # Run node js application
 if lsof -Pi :3000 -sTCP:LISTEN -t >/dev/null ; then
-    echo "running"
+    echo "Application running"
 else
     node app.js
 fi
