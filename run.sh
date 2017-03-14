@@ -21,6 +21,9 @@ if [ "$1" == "build" ]; then
     echo "-----------------------------------------------------------------------------"
 
     npm install && bower install
+
+elif [ "$1" == "compile" ]; then
+    scalac -d ../utilities/compile -cp ../utilities/lib/json-simple-1.1.1.jar -sourcepath src ../src/*.scala
 else
     cd www/
 fi
