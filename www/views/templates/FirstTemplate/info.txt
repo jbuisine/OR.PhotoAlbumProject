@@ -1,2 +1,2 @@
-./../resources/solutions/FirstTemplate/album-6-2per3/PLS_greyAVG_commonTags_colors.sol [colors : 19418.38, greyAVG : 1611.33, commonTags
- : 982.46] 
+./../resources/solutions/FirstTemplate/album-6-2per3/PLS_greyAVG_commonTags.sol [greyAVG : 550.67, commonTags
+ : 1572.76] 
