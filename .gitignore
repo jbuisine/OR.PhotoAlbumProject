@@ -17,5 +17,7 @@ www/node_modules
 www/public/bower_components/
 */npm-debug.log
 
-
+#Others
+taglist.pkl
+source_photo.dat
 

@@ -17,7 +17,9 @@ const templatesPath = './views/templates/';
 
 const solsPath = './../resources/solutions/';
 const albumsTypePath = './../resources/data/';
-const buildTemplateFile = './../utilities/buildAlbum.py';
+const buildTemplateFile = './../utilities/buildAlbum.py';;
+const buildTagPath = './../utilities/tag-clarifai.py';;
+const buildInfoPath = './../utilities/extractInfo.py';
 
 router.get('/templates/:name', function (req, res) {
 
@@ -153,6 +155,23 @@ router.post('/load-solution-content', function (req, res) {
 
     }).on('close', function(){
         res.send(contentFile);
+    });
+});
+
+
+router.post('/generation-info-photo', function (req, res) {
+
+    var template = req.body.templateName;
+
+    var buildTag = spawn('python', [buildTagPath, templatesPath + template]);
+
+    buildTag.on('close', function() {
+
+        var buildInfoFile = spawn('python', [buildInfoPath, templatesPath + template]);
+
+        buildInfoFile.on('close', function() {
+            res.redirect('/templates/' + template);
+        });
     });
 });
 
