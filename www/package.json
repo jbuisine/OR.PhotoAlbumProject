@@ -25,7 +25,6 @@
   "homepage": "https://github.com/jbuisine/RO.PhotoAlbumProject#readme",
   "dependencies": {
     "body-parser": "^1.16.1",
-    "dropzone": "^4.3.0",
     "ejs": "^2.5.5",
     "express": "^4.14.1",
     "fs": "0.0.1-security",

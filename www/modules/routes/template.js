@@ -158,6 +158,13 @@ router.post('/load-solution-content', function (req, res) {
     });
 });
 
+// Routes associated to the creation of template
+router.get('/create-template', function(req, res){
+  res.render('index', {
+      page: "create-template",
+      templates: utilities.getDirectories(templatesPath)
+  });
+});
 
 router.post('/generation-info-photo', function (req, res) {
 
