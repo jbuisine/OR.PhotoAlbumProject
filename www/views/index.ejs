@@ -30,14 +30,18 @@
         <script src="/bower_components/plotlyjs/plotly.js"></script>
         <script src="/socket.io/socket.io.js"></script>
         <script src="/bower_components/dropzone/dist/min/dropzone.min.js"></script>
-        <script src="/main.js"></script>
+        <script src="/js/main.js"></script>
 
         <% if(locals.page == "template"){ %>
-            <script src="/template.js"></script>
+            <script src="/js/template.js"></script>
         <% } %>
 
         <% if(locals.page == "solution"){ %>
-            <script src="/solution.js"></script>
+            <script src="/js/solution.js"></script>
+        <% } %>
+
+        <% if(locals.page == "create-template"){ %>
+            <script src="/js/create-template.js"></script>
         <% } %>
 
     </body>

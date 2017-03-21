@@ -62,3 +62,9 @@
     padding-right: 10%;
 }
 
+#file-template{
+    margin-top: 100px;
+    min-height: 200px;
+    border: dashed #6097ff 3px;
+    border-radius: 10px;
+}

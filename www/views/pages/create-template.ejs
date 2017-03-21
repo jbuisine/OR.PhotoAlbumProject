@@ -4,7 +4,24 @@
             <h2>Creation of template</h2>
         </div>
 
-        <form action="/file-upload" class="dropzone" id="template-dropzone"></form>
+        <div>
 
+            <form action="/template-save-photo"
+                  class="dropzone"
+                  id="file-template"></form>
+
+
+            <div id="template-preview" style="display: none;">
+                <div class="dz-preview dz-file-preview">
+                    <div class="dz-details">
+                        <div class="dz-filename"><span data-dz-name></span></div>
+                        <div class="dz-size" data-dz-size></div>
+                        <img data-dz-thumbnail />
+                    </div>
+                    <div class="dz-progress"><span class="dz-upload" data-dz-uploadprogress></span></div>
+                    <div class="dz-success-mark"><span>✔</span></div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>

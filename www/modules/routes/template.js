@@ -166,6 +166,17 @@ router.get('/create-template', function(req, res){
   });
 });
 
+
+router.post('/template-save-photo', function (req, res) {
+    fs.readFile(req.files.photo.path, function (err, data) {
+        //var newPath = __dirname + "/uploads/uploadedFileName";
+        //fs.writeFile(newPath, data, function (err) {
+            res.status = 200;
+            res.send();
+        //});
+    });
+});
+
 router.post('/generation-info-photo', function (req, res) {
 
     var template = req.body.templateName;
