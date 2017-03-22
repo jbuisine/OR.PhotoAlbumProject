@@ -1,2 +1,2 @@
-./../resources/solutions/FirstTemplate/album-6-2per3/PLS_greyAVG_commonTags.sol [greyAVG : 550.67, commonTags
- : 1572.76] 
+./../resources/solutions/FirstTemplate/album-6-2per3/MOEAD_test.sol [colors : 24240.31, commonTags
+ : 1549.56] 

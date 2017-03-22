@@ -62,9 +62,17 @@
     padding-right: 10%;
 }
 
-#file-template{
+#form-templateName{
     margin-top: 100px;
+}
+
+#form-templateName input{
+    max-width: 300px;
+}
+
+#fileUpload{
+    margin-top: 20px;
     min-height: 200px;
-    border: dashed #6097ff 3px;
+    border: dashed #cca137 3px;
     border-radius: 10px;
 }

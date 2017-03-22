@@ -167,14 +167,22 @@ router.get('/create-template', function(req, res){
 });
 
 
-router.post('/template-save-photo', function (req, res) {
-    fs.readFile(req.files.photo.path, function (err, data) {
+router.post('/template-save-image', function (req, res) {
+
+
+    console.log(req);
+    console.log(req.files);
+    console.log(req.file);
+    console.log(req.photo);
+    /*fs.readFile(req.files.photo.path, function (err, data) {
         //var newPath = __dirname + "/uploads/uploadedFileName";
         //fs.writeFile(newPath, data, function (err) {
             res.status = 200;
             res.send();
         //});
-    });
+    });*/
+    res.status(200);
+    res.send();
 });
 
 router.post('/generation-info-photo', function (req, res) {
