@@ -38,6 +38,7 @@ $(document).ready(function() {
     $("form#fileUpload").dropzone({
         //previewTemplate: document.querySelector('#preview-template').innerHTML,
         acceptedFiles: ".jpg",
+        paramName: "photo",
         init: function() {
             this.on("success", function(file) {
                 console.log("success done");

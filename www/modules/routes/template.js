@@ -9,9 +9,13 @@ var express = require('express');
 var router = express.Router();
 var utilities = require('./../utilities');
 const spawn = require('child_process').spawn;
+var path = require('path')
+
 
 const readline = require('readline');
-const fs = require('fs');
+const fs = require('fs-extra');
+const multer  = require('multer');
+//const upload = multer({dist: 'uploads/'});
 
 const templatesPath = './views/templates/';
 
@@ -169,20 +173,36 @@ router.get('/create-template', function(req, res){
 
 router.post('/template-save-image', function (req, res) {
 
+    var filename = "rIMG_1940";
 
-    console.log(req);
-    console.log(req.files);
-    console.log(req.file);
-    console.log(req.photo);
-    /*fs.readFile(req.files.photo.path, function (err, data) {
-        //var newPath = __dirname + "/uploads/uploadedFileName";
-        //fs.writeFile(newPath, data, function (err) {
-            res.status = 200;
-            res.send();
-        //});
-    });*/
-    res.status(200);
-    res.send();
+    var storage = multer.diskStorage({
+        destination: function (req, file, cb) {
+            var templateName = req.body.templateName;
+            var pathFolder = templatesPath + templateName + "/img";
+            var files = utilities.getFiles(pathFolder);
+            fs.mkdirsSync(pathFolder);
+
+            if(files)
+                console.log(files.slice(-1));
+
+            cb(null, pathFolder);
+        },
+        filename: function (req, file, cb) {
+
+            //cb(null, filename + ".jpg")
+        }
+    });
+
+    var upload = multer({ storage: storage }).single('photo');
+
+    upload(req, res, function (err) {
+        if(err)
+            res.status(406);
+        else
+            res.status(200);
+
+        res.send();
+    })
 });
 
 router.post('/generation-info-photo', function (req, res) {
