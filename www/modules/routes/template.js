@@ -173,23 +173,25 @@ router.get('/create-template', function(req, res){
 
 router.post('/template-save-image', function (req, res) {
 
-    var filename = "rIMG_1940";
+    var filename = "rIMG_1940.jpg";
 
     var storage = multer.diskStorage({
         destination: function (req, file, cb) {
             var templateName = req.body.templateName;
             var pathFolder = templatesPath + templateName + "/img";
             var files = utilities.getFiles(pathFolder);
-            fs.mkdirsSync(pathFolder);
 
-            if(files)
-                console.log(files.slice(-1));
+            if(files){
+                var number = files[files.length-1].replace( /^\D+/g, '').replace('.jpg','');
+                filename = 'rIMG_' + (parseInt(number)+1) + '.jpg';
+            }else{
+                fs.mkdirsSync(pathFolder);
+            }
 
             cb(null, pathFolder);
         },
         filename: function (req, file, cb) {
-
-            //cb(null, filename + ".jpg")
+            cb(null, filename)
         }
     });
 
