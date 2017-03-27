@@ -27,48 +27,58 @@ const buildInfoPath = './../utilities/extractInfo.py';
 
 router.get('/templates/:name', function (req, res) {
 
-    utilities.readFileContent(templatesPath + req.params.name + "/info.txt").then(function(dataFile){
+    var template = req.params.name;
 
-        var currentSol = dataFile.substr(dataFile.lastIndexOf("/") + 1);
+    utilities.filePathExists(templatesPath + template + '/info.txt').then(function (exists) {
 
-        var templates = utilities.getDirectories(templatesPath);
+        if(exists){
+            utilities.readFileContent(templatesPath + template + "/info.txt").then(function (dataFile) {
 
-        var template = req.params.name;
+                var currentSol = dataFile.substr(dataFile.lastIndexOf("/") + 1);
 
-        var albumsType = utilities.getFiles(albumsTypePath + template);
+                var templates = utilities.getDirectories(templatesPath);
 
-        if(templates.indexOf(req.params.name) !== -1){
+                var albumsType = utilities.getFiles(albumsTypePath + template);
 
-            utilities.filePathExists(templatesPath + template + '/page_0.ejs').then(function(exists) {
+                if (templates.indexOf(template) !== -1) {
 
-               if(exists){
-                   res.redirect("/templates/"+template + "/0");
-               }
-               else{
-                   res.render('index', {
-                       page: "template",
-                       templateName: template,
-                       templates: utilities.getDirectories(templatesPath),
-                       albumsType: albumsType,
-                       solutions: utilities.getFiles(solsPath + template + "/" + albumsType[0].replace('.json', '')),
-                       currentSolution: currentSol
-                   });
-               }
+                    utilities.filePathExists(templatesPath + template + '/page_0.ejs').then(function (exists) {
+
+                        if (exists) {
+                            res.redirect("/templates/" + template + "/0");
+                        }
+                        else {
+                            res.render('index', {
+                                page: "template",
+                                templateName: template,
+                                templates: utilities.getDirectories(templatesPath),
+                                albumsType: albumsType,
+                                solutions: utilities.getFiles(solsPath + template + "/" + albumsType[0].replace('.json', '')),
+                                currentSolution: currentSol
+                            });
+                        }
+                    });
+
+                } else {
+                    res.redirect('error');
+                }
             });
-
         }else{
-            res.redirect('error');
+
+            console.log("go to generate");
+            generateInfoFiles(template, res);
         }
     });
+
 });
 
 router.get('/templates/:name/:id', function (req, res) {
 
     var templates = utilities.getDirectories(templatesPath);
-
     var template = req.params.name;
     var id = req.params.id;
-    if(templates.indexOf(req.params.name) !== -1){
+
+    if(templates.indexOf(template) !== -1){
 
         utilities.filePathExists(templatesPath + template + '/page_' + id + '.ejs').then(function(exists) {
 
@@ -164,10 +174,10 @@ router.post('/load-solution-content', function (req, res) {
 
 // Routes associated to the creation of template
 router.get('/create-template', function(req, res){
-  res.render('index', {
-      page: "create-template",
-      templates: utilities.getDirectories(templatesPath)
-  });
+    res.render('index', {
+        page: "create-template",
+        templates: utilities.getDirectories(templatesPath)
+    });
 });
 
 
@@ -182,8 +192,10 @@ router.post('/template-save-image', function (req, res) {
             var files = utilities.getFiles(pathFolder);
 
             if(files){
-                var number = files[files.length-1].replace( /^\D+/g, '').replace('.jpg','');
-                filename = 'rIMG_' + (parseInt(number)+1) + '.jpg';
+                if(files.length > 0){
+                    var number = files[files.length-1].replace( /^\D+/g, '').replace('.jpg','');
+                    filename = 'rIMG_' + (parseInt(number)+1) + '.jpg';
+                }
             }else{
                 fs.mkdirsSync(pathFolder);
             }
@@ -197,6 +209,7 @@ router.post('/template-save-image', function (req, res) {
 
     var upload = multer({ storage: storage }).single('photo');
 
+    //Upload file and update info about photo
     upload(req, res, function (err) {
         if(err)
             res.status(406);
@@ -204,23 +217,45 @@ router.post('/template-save-image', function (req, res) {
             res.status(200);
 
         res.send();
+
     })
 });
 
-router.post('/generation-info-photo', function (req, res) {
+function generateInfoFiles(template, res) {
 
-    var template = req.body.templateName;
+    var fileInfoPath = templatesPath + template + '/info.txt';
+    var buffer = new Buffer("No information about solution used for generation\n");
 
     var buildTag = spawn('python', [buildTagPath, templatesPath + template]);
 
+    console.log("inside");
     buildTag.on('close', function() {
 
         var buildInfoFile = spawn('python', [buildInfoPath, templatesPath + template]);
 
+        console.log("build tag");
+
         buildInfoFile.on('close', function() {
-            res.redirect('/templates/' + template);
+
+            console.log("tag");
+
+            utilities.filePathExists(fileInfoPath).then(function (exists){
+                if(!exists){
+                    fs.open(fileInfoPath, 'w', function(err, fd) {
+                        if (err) {
+                            throw 'error opening file: ' + err;
+                        }
+
+                        fs.write(fd, buffer, 0, buffer.length, null, function(err) {
+                            if (err) throw 'error writing file: ' + err;
+
+                            res.redirect('/templates/'+template);
+                        });
+                    });
+                }
+            });
         });
     });
-});
+}
 
 module.exports = router;
