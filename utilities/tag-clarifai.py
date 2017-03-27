@@ -53,7 +53,7 @@ def main(argv):
         save_obj(path, resp, "taglist")
 
     else:
-        print "No path found"
+        print("No path found")
         sys.exit()
 
 

@@ -12,6 +12,7 @@ import pickle
 def index_list(path):
     l = []
     for filename in os.listdir(path):
+        print(filename)
         if filename.lower().endswith('.jpg'):
             l.append(int(filename.split('.')[0].split('_')[1]))
     return l
@@ -19,7 +20,8 @@ def index_list(path):
 def open_images(path, ids):
     l = [ ]
     for i in ids:
-        print i
+        print("here")
+        print(i)
         im = Image.open(os.path.join(path, "rIMG_%d.jpg" % i))
         # hash of the image
         l.append({'id': i, 'image': im, 'ahash': imagehash.average_hash(im), 'phash': imagehash.phash(im), 'dhash': imagehash.dhash(im)})
@@ -34,7 +36,7 @@ def infos(images, tagfilename, scorefilename):
     for image in images:
         d = info(i, images)
 
-        elem = filter(lambda e: e['id'] == image['id'], tags)
+        elem = list(filter(lambda e: e['id'] == image['id'], tags))
         d['tags'] = { 'classes':elem[0]['classes'], 'probs': elem[0]['probs']}
         #elem = filter(lambda e: e['id'] == image['id'], scores)
         #d['score'] = elem[0]['score']
@@ -48,7 +50,8 @@ def info(i, images):
     d = {}
 
     id = images[i]['id']
-    print id
+    print("here")
+    print(id)
 
     # basic information
     name = "rIMG_%d.jpg" % id
@@ -155,5 +158,5 @@ if __name__ == '__main__':
         with open(fileoutname, "w") as f:
             f.write(jsoninfo)
     else:
-        print "No path found"
+        print("No path found")
         sys.exit(0)
