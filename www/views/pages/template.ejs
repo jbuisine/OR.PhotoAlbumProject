@@ -32,16 +32,21 @@
 
                 <input id="templateName" name="templateName" type="hidden" value="<%= templateName %>" />
 
-                <select name="albumType" id="albumType" class="form-control">
+                  <% if(locals.albumsType){ %>
+                  <select name="albumType" id="albumType" class="form-control">
 
-                  <% albumsType.forEach(function(albumType){ %>
+                      <% albumsType.forEach(function(albumType){ %>
 
                       <option value="<%= albumType %>"> <%= albumType %></option>
 
-                  <% }); %>
+                      <% }); %>
 
-                </select>
-
+                  </select>
+                  <% } else { %>
+                  <select name="albumType" id="albumType" class="form-control" disabled="true">
+                      <option>No album type found</option>
+                  </select>
+                  <% } %>
               <% if(locals.solutions){ %>
                 <select name="solutionFile" id="solutionFile" class="form-control">
 

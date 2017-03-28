@@ -29,18 +29,25 @@ router.get('/templates/:name', function (req, res) {
 
     var template = req.params.name;
 
-    utilities.filePathExists(templatesPath + template + '/info.txt').then(function (exists) {
+    var templates = utilities.getDirectories(templatesPath);
 
-        if(exists){
-            utilities.readFileContent(templatesPath + template + "/info.txt").then(function (dataFile) {
+    if (templates.indexOf(template) !== -1) {
 
-                var currentSol = dataFile.substr(dataFile.lastIndexOf("/") + 1);
+        utilities.filePathExists(templatesPath + template + '/info.txt').then(function (exists) {
 
-                var templates = utilities.getDirectories(templatesPath);
+            if(exists){
+                utilities.readFileContent(templatesPath + template + "/info.txt").then(function (dataFile) {
 
-                var albumsType = utilities.getFiles(albumsTypePath + template);
+                    console.log(dataFile);
 
-                if (templates.indexOf(template) !== -1) {
+                    var currentSol = "";
+
+                    if(dataFile.indexOf("/") !== -1)
+                        currentSol = dataFile.substr(dataFile.lastIndexOf("/") + 1);
+                    else
+                        currentSol = dataFile;
+
+                    var albumsType = utilities.getFiles(albumsTypePath + template);
 
                     utilities.filePathExists(templatesPath + template + '/page_0.ejs').then(function (exists) {
 
@@ -48,27 +55,35 @@ router.get('/templates/:name', function (req, res) {
                             res.redirect("/templates/" + template + "/0");
                         }
                         else {
-                            res.render('index', {
-                                page: "template",
-                                templateName: template,
-                                templates: utilities.getDirectories(templatesPath),
-                                albumsType: albumsType,
-                                solutions: utilities.getFiles(solsPath + template + "/" + albumsType[0].replace('.json', '')),
-                                currentSolution: currentSol
-                            });
+                            if(albumsType){
+                                res.render('index', {
+                                    page: "template",
+                                    templateName: template,
+                                    templates: utilities.getDirectories(templatesPath),
+                                    albumsType: albumsType,
+                                    solutions: utilities.getFiles(solsPath + template + "/" + albumsType[0].replace('.json', '')),
+                                    currentSolution: currentSol
+                                });
+                            }else{
+                                res.render('index', {
+                                    page: "template",
+                                    templateName: template,
+                                    templates: utilities.getDirectories(templatesPath),
+                                    currentSolution: currentSol
+                                });
+                            }
                         }
                     });
 
-                } else {
-                    res.redirect('error');
-                }
-            });
-        }else{
-
-            console.log("go to generate");
-            generateInfoFiles(template, res);
-        }
-    });
+                });
+            }else{
+                console.log("go to generate");
+                generateInfoFiles(template, res);
+            }
+        });
+    } else {
+        res.redirect('/error');
+    }
 
 });
 
@@ -100,7 +115,8 @@ router.get('/templates/:name/:id', function (req, res) {
             } else{
                 res.redirect("/templates/"+template);
             }
-        }).catch(function(e) { throw e; });
+        }).catch(function(e) { console.log("Here");
+        throw e; });
 
     }else{
         res.redirect('/error');
@@ -221,41 +237,61 @@ router.post('/template-save-image', function (req, res) {
     })
 });
 
+router.post('/generate-template-file', function (req, res) {
+
+    var template = req.body.templateName;
+
+    var buildTag = spawn('python', [buildTagPath, templatesPath + template]);
+
+    buildTag.stdout.on('data', function (data) {
+        console.log('stdout: ' + data.toString());
+    });
+
+    buildTag.stderr.on('data', function (data) {
+        console.log('stderr: ' + data.toString());
+    });
+
+    buildTag.on('close', function() {
+
+        var buildInfoFile = spawn('python', [buildInfoPath, templatesPath + template]);
+
+        buildInfoFile.stdout.on('data', function (data) {
+            console.log('stdout: ' + data.toString());
+        });
+
+        buildInfoFile.stderr.on('data', function (data) {
+            console.log('stderr: ' + data.toString());
+        });
+
+        buildInfoFile.on('close', function() {
+
+            //Emit socket
+            io.sockets.emit('templateGeneration', template);
+        });
+    });
+});
+
 function generateInfoFiles(template, res) {
 
     var fileInfoPath = templatesPath + template + '/info.txt';
     var buffer = new Buffer("No information about solution used for generation\n");
 
-    var buildTag = spawn('python', [buildTagPath, templatesPath + template]);
-
-    console.log("inside");
-    buildTag.on('close', function() {
-
-        var buildInfoFile = spawn('python', [buildInfoPath, templatesPath + template]);
-
-        console.log("build tag");
-
-        buildInfoFile.on('close', function() {
-
-            console.log("tag");
-
-            utilities.filePathExists(fileInfoPath).then(function (exists){
-                if(!exists){
-                    fs.open(fileInfoPath, 'w', function(err, fd) {
-                        if (err) {
-                            throw 'error opening file: ' + err;
-                        }
-
-                        fs.write(fd, buffer, 0, buffer.length, null, function(err) {
-                            if (err) throw 'error writing file: ' + err;
-
-                            res.redirect('/templates/'+template);
-                        });
-                    });
+    utilities.filePathExists(fileInfoPath).then(function (exists){
+        if(!exists){
+            fs.open(fileInfoPath, 'w', function(err, fd) {
+                if (err) {
+                    throw 'error opening file: ' + err;
                 }
+
+                fs.write(fd, buffer, 0, buffer.length, null, function(err) {
+                    if (err) throw 'error writing file: ' + err;
+
+                    res.redirect('/templates/'+template);
+                });
             });
-        });
+        }
     });
 }
+
 
 module.exports = router;

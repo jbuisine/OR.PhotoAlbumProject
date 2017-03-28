@@ -1,5 +1,10 @@
 Dropzone.autoDiscover = false;
 
+
+var formTemplateName = $('#form-templateName');
+var buttonValidate   = $('.template-name-validate');
+var buttonShow   = $('.template-show');
+
 $(document).ready(function() {
 
     var errorColor = "#e0552f";
@@ -14,10 +19,7 @@ $(document).ready(function() {
         paramName: "photo",
         init: function() {
             this.on("success", function(file) {
-                console.log("success done");
-            });
-            this.on("addedfile", function(file) {
-                console.log("added");
+                buttonShow.css('visibility', 'visible');
             });
         },
         dictDefaultMessage: "Drop your image file here"
@@ -26,8 +28,6 @@ $(document).ready(function() {
     //Only put class selector later with BEM methodology
     var inputUploadFile  = $('.dz-hidden-input');
     var iconStatus       = $('#inputIconStatus');
-    var formTemplateName = $('#form-templateName');
-    var buttonValidate   = $('.template-name-validate');
     var navTemplateName  = $('nav li.template-name');
 
     //Set property disabled by default for button and dropzone
@@ -77,4 +77,19 @@ $(document).ready(function() {
         formTemplateName.find('input').prop('disabled', true);
         $(this).prop('disabled', true);
     }
+
+    //Redirect to template created
+    buttonShow.click(function (e) {
+        e.stopImmediatePropagation();
+        window.location.href = "/templates/"+formTemplateName.find('input').val();
+    });
+
+    //Throw build for generate template required json file
+    window.onbeforeunload = function () {
+        $.ajax({
+            method: "POST",
+            url: "/generate-template-file",
+            data: { templateName: formTemplateName.find('input').val() }
+        });
+    };
 });

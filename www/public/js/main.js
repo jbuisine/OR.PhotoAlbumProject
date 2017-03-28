@@ -29,6 +29,17 @@ socket_local.on('generationProgress', generationProgress);
 //socket_intern.on('generationProgress', generationProgress);
 //socket_extern.on('generationProgress', generationProgress);
 
+/* Listen on generationFile canal to get information about generation finished for a template */
+socket_local.on('templateGeneration', function (templateName) {
+    generateNotification("Template generation file finished, you can now use this template !", templateName);
+});
+//socket_intern.on('templateGeneration', function (templateName) {
+//    generateNotification("Template generation finished", templateName);
+//});
+//socket_extern.on('templateGeneration', function (templateName) {
+//    generateNotification("Template generation finished", templateName);
+//});
+
 
 $('button[id^="link_"]').on("click", function () {
    var action_url = $(this).attr("data-link");

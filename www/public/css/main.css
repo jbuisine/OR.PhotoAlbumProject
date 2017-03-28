@@ -76,3 +76,8 @@
     border: dashed #cca137 3px;
     border-radius: 10px;
 }
+
+.template-show{
+    float: right;
+    visibility: hidden;
+}
