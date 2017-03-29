@@ -98,3 +98,4 @@ If you want to install application into a server, add a cron task (sudo crontab 
 ## Contributors
 
 * [jbuisine](https://github.com/jbuisine)
+* [geoffreyp](https://github.com/geoffreyp)
