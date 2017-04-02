@@ -17,6 +17,13 @@ $(document).ready(function() {
     formFileUpload.dropzone({
         acceptedFiles: ".jpg",
         paramName: "photo",
+        accept: function(file, done) {
+            if (formTemplateName.find("input").val() < 6) {
+                done('No template name defined');
+            }else{
+                done();
+            }
+        },
         init: function() {
             this.on("success", function(file) {
                 buttonShow.css('visibility', 'visible');
@@ -80,16 +87,23 @@ $(document).ready(function() {
 
     //Redirect to template created
     buttonShow.click(function (e) {
-        e.stopImmediatePropagation();
+        e.stopPropagation();
         window.location.href = "/templates/"+formTemplateName.find('input').val();
     });
 
+
     //Throw build for generate template required json file
-    window.onbeforeunload = function () {
-        $.ajax({
-            method: "POST",
-            url: "/generate-template-file",
-            data: { templateName: formTemplateName.find('input').val() }
-        });
+    window.unload = function () {
+        var modal_id = "#modal-template-information";
+
+        $(modal_id).modal();
+        console.log("TEST");
+        setTimeout(function () {
+            $.ajax({
+                method: "POST",
+                url: "/generate-template-file",
+                data: {templateName: formTemplateName.find('input').val()}
+            });
+        }, 5000);
     };
 });

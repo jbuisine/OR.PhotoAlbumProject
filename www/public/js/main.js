@@ -70,9 +70,9 @@ function genrationFinished(data){
  */
 function generationProgress(data){
 
-    if(data.percent.indexOf('%') !== -1){
+    if(data.percent){
 
-        var formattedPercent = parseInt(data.percent.split('>')[1].replace('%', ''));
+        var formattedPercent = data.percent;
 
         var circleID;
 

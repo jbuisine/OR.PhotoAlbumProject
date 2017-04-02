@@ -42,9 +42,20 @@ router.post('/create-solution', function (req, res) {
     console.log(req.body);
 
     var solutionScript = spawn('scala', ['-cp', classPathUtils, 'MainWebApp', JSON.stringify(req.body)]);
+    var percent = 0;
 
     solutionScript.stdout.on('data', function (data) {
-        io.sockets.emit('generationProgress', { solFile: req.body.solutionFile, percent: data.toString() });
+
+        //Send only if data contains % and only if percent changed
+        if(data.toString().indexOf('%') !== -1) {
+            var formattedPercent = parseInt(data.toString().split('>')[1].replace('%', ''));
+            console.log(formattedPercent.toString());
+
+            if(percent != formattedPercent){
+                percent = formattedPercent;
+                io.sockets.emit('generationProgress', {solFile: req.body.solutionFile, percent: formattedPercent.toString()});
+            }
+        }
         console.log('stdout: ' + data.toString());
     });
 
