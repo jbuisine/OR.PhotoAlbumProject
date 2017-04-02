@@ -177,6 +177,6 @@ function generateNotification(title, content){
 
     n = new Notification( title, {
         body: content,
-        icon : "/images/generation-finished.png"
+        icon : "/img/generation-finished.png"
     });
 }

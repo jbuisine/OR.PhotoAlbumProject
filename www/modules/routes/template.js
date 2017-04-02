@@ -188,12 +188,22 @@ router.post('/load-solution-content', function (req, res) {
     });
 });
 
-// Routes associated to the creation of template
-router.get('/create-template', function(req, res){
+// Routes associated to the managing of templates
+router.get('/manage-templates', function(req, res){
     res.render('index', {
-        page: "create-template",
+        page: "manage-templates",
         templates: utilities.getDirectories(templatesPath)
     });
+});
+
+router.post('/create-template', function (req, res) {
+    var dir = templatesPath + req.body.templateName;
+    console.log("DIR ", dir);
+    if (!fs.existsSync(dir)){
+        fs.mkdirSync(dir);
+    }
+    res.status('200');
+    res.send('success');
 });
 
 

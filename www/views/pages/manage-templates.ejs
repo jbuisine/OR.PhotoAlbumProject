@@ -1,0 +1,68 @@
+<div class="page-header">
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <h2>Manage your templates</h2>
+        </div>
+
+        <div class="container">
+            <br />
+            <h4><u>Create new template</u></h4>
+
+            <form id="form-templateName" class="form-inline">
+                <div class="form-group has-warning has-feedback">
+                    <label class="control-label" for="templateName">Template name : </label>
+                    <input id="templateName" type="text" name="templateName" class="form-control" placeholder=""/>
+                    <span id="inputIconStatus" class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true"></span>
+                    <span id="inputSuccess2Status" class="sr-only">(success)</span>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-primary template-name-validate">Add</button>
+                </div>
+            </form>
+
+            <br />
+            <h4><u>Manage template</u></h4>
+
+            <% if(locals.templates){ %>
+            <table class="table table-condensed">
+                <thead>
+                    <th>#</th>
+                    <th>Template name</th>
+                    <th>Actions</th>
+                </thead>
+                <tbody>
+                <% templates.forEach(function(template, index){ %>
+
+                <tr>
+                    <td><%= (index+1) %></td>
+                    <td><%= template %></td>
+                    <td>
+                        <button data-id-template="<%= template %>" class="btn btn-warning build-template">
+                            <span class="glyphicon glyphicon-play-circle"></span>
+                        </button>
+                        <button data-id-template="<%= template %>" class="btn btn-primary manage-template">
+                            <span class="glyphicon glyphicon-cog"></span>
+                        </button>
+                        <button data-id-template="<%= template %>" class="btn btn-danger delete-template">
+                            <span class="glyphicon glyphicon-remove"></span>
+                        </button>
+                    </td>
+                </tr>
+
+                <% }); %>
+                </tbody>
+            </table>
+            <% } %>
+
+            <br />
+            <h4><u>No template selected</u></h4>
+            <form disabled="true" action="/template-save-image" class="dropzone needsclick dz-clickable" id="fileUpload" enctype="multipart/form-data">
+                <input type="hidden" name="templateName" />
+                <div class="dz-message needsclick">
+                    Please fill a correct template name & drop files here or click to upload.<br>
+                    <span class="note needsclick">Each photo will be directly update</span>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

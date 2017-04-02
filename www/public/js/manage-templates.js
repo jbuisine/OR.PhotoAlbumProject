@@ -3,7 +3,7 @@ Dropzone.autoDiscover = false;
 
 var formTemplateName = $('#form-templateName');
 var buttonValidate   = $('.template-name-validate');
-var buttonShow   = $('.template-show');
+var buttonBuild   = $('.build-template');
 
 $(document).ready(function() {
 
@@ -26,7 +26,7 @@ $(document).ready(function() {
         },
         init: function() {
             this.on("success", function(file) {
-                buttonShow.css('visibility', 'visible');
+                buttonBuild.css('visibility', 'visible');
             });
         },
         dictDefaultMessage: "Drop your image file here"
@@ -37,8 +37,7 @@ $(document).ready(function() {
     var iconStatus       = $('#inputIconStatus');
     var navTemplateName  = $('nav li.template-name');
 
-    //Set property disabled by default for button and dropzone
-    inputUploadFile.prop('disabled',true);
+    //Set property disabled by default for button
     buttonValidate.prop('disabled', true);
 
     formTemplateName.find('input').on('change paste keyup', function (){
@@ -52,7 +51,6 @@ $(document).ready(function() {
             if(name.trim() == $(this).text().trim()){
                 formTemplateName.find('.form-group').first().removeClass("has-success").addClass("has-error");
                 buttonValidate.prop('disabled', true);
-                inputUploadFile.prop('disabled',true);
                 iconStatus.removeClass("glyphicon-ok").addClass("glyphicon-remove");
                 checkExists = true;
                 return;
@@ -63,7 +61,6 @@ $(document).ready(function() {
             return;
 
         if(name.length >= 6){
-            formFileUpload.find("input[type='hidden']").prop("value", name);
             buttonValidate.prop('disabled', false);
             formTemplateName.find('.form-group').first().removeClass("has-error").addClass("has-success");
             iconStatus.removeClass("glyphicon-remove").addClass("glyphicon-ok");
@@ -74,36 +71,55 @@ $(document).ready(function() {
         }
     });
 
-    buttonValidate.click(activateUpload);
+    //Hide upload component by default
+    $('.dropzone').hide();
+
+    buttonValidate.click(createTemplate);
 
     //Function which used for activate the uploading files
     function activateUpload() {
-        console.log('inside');
+        navTemplateName.parent().append('<li><a href="/templates/'+formTemplateName.find('input').val()+'"></a></li>')
         formFileUpload.css('border-color', acceptColor);
         inputUploadFile.prop("disabled", false);
         formTemplateName.find('input').prop('disabled', true);
         $(this).prop('disabled', true);
     }
 
-    //Redirect to template created
-    buttonShow.click(function (e) {
-        e.stopPropagation();
-        window.location.href = "/templates/"+formTemplateName.find('input').val();
+    function createTemplate() {
+        var templateName = formTemplateName.find('input').val();
+        console.log(templateName);
+        $.ajax({
+            url: "/create-template",
+            method: "POST",
+            data: {
+                templateName: templateName
+            },
+            success:function () {
+                location.reload();
+            }
+        });
+
+    }
+
+    //Build template json info file
+    buttonBuild.click(function (e) {
+
+        var templateName = $(this).attr('data-id-template');
+
+        //Send request
+        $.ajax({
+            url: "/generate-template-file",
+            method: "POST",
+            data: {templateName: templateName}
+        });
+
+        if(Notification.permission !== 'granted'){
+            Notification.requestPermission();
+        }
+
+        n = new Notification(templateName + " generation file", {
+            body: "You template may be unavailable for a moment. You will be notify when it's finished.",
+            icon : "/img/template-file-finished.png"
+        });
     });
-
-
-    //Throw build for generate template required json file
-    window.unload = function () {
-        var modal_id = "#modal-template-information";
-
-        $(modal_id).modal();
-        console.log("TEST");
-        setTimeout(function () {
-            $.ajax({
-                method: "POST",
-                url: "/generate-template-file",
-                data: {templateName: formTemplateName.find('input').val()}
-            });
-        }, 5000);
-    };
 });
