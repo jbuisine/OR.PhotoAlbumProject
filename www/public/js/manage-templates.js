@@ -4,16 +4,25 @@ Dropzone.autoDiscover       = false;
 var formTemplateName        = $('#form-templateName');
 var buttonValidate          = $('.template-name-validate');
 var buttonBuild             = $('.build-template');
-var buttonManage            = $('.manage-template');
 var buttonRemove            = $('.remove-template');
+
+var navTemplatePage         = $('.nav-template-management');
+
+var homeLink                = navTemplatePage.find('li[data-page="home"]');
+var manageLink              = navTemplatePage.find('li[data-page="manage"]');
+var uploadLink              = navTemplatePage.find('li[data-page="add"]');
 var selectedTemplate        = $('select[name="templateSelected"]');
+
+/* Different container */
+var homeContainer           = $('.home-description-container');
+var uploadContainer         = $('.images-uploaded-container');
 var manageContainer         = $('.manage-template-container');
-var uploadedImagesContainer = $('.template-images-uploaded');
+
+
+uploadContainer.hide();
+manageContainer.hide();
 
 $(document).ready(function() {
-
-    var errorColor = "#e0552f";
-    var acceptColor = "#67b276";
 
     //Define form file upload to init dropzone
     var formFileUpload   = $('#fileUpload');
@@ -38,14 +47,12 @@ $(document).ready(function() {
     });
 
     //Only put class selector later with BEM methodology
-    var inputUploadFile  = $('.dz-hidden-input');
     var iconStatus       = $('#inputIconStatus');
     var navTemplateName  = $('nav li.template-name');
 
-    //Set property disabled by default for button
+    //Set property disabled by default for buttons & links
     buttonValidate.prop('disabled', true);
     buttonBuild.prop('disabled', true);
-    buttonManage.prop('disabled', true);
     buttonRemove.prop('disabled', true);
 
     formTemplateName.find('input').on('change paste keyup', function (){
@@ -82,13 +89,6 @@ $(document).ready(function() {
     //Hide upload component by default
     buttonValidate.click(createTemplate);
 
-    //Gridly initialisation
-    $('.gridly').gridly({
-        base: 60, // px
-        gutter: 20, // px
-        columns: 12
-    });
-
     //Build template json info file
     buttonBuild.click(function (e) {
 
@@ -117,46 +117,52 @@ $(document).ready(function() {
     selectedTemplate.change(function(){
        if($(this).val() == "no"){
            buttonBuild.prop('disabled', true);
-           buttonManage.prop('disabled', true);
            buttonRemove.prop('disabled', true);
+           initNavTemplate();
        } else {
            buttonBuild.prop('disabled', false);
-           buttonManage.prop('disabled', false);
            buttonRemove.prop('disabled', false);
+           uploadLink.removeClass('disabled');
+           manageLink.removeClass('disabled');
+           displayPhoto($(this));
        }
     });
 
-    buttonManage.click(function (e) {
+    navTemplatePage.find('li[data-page="manage"]').click(function (e) {
         e.preventDefault();
 
-        var templateName = selectedTemplate.val();
-
-        //Remove all icons upload and load images already added
-        $.ajax({
-            url: "template-images-info",
-            method: "POST",
-            data: {templateName: templateName},
-            success: function (data) {
-                console.log(data);
-
-                manageContainer.show();
-                uploadedImagesContainer.empty();
-                $.each(data, function(img){
-                   uploadedImagesContainer.append('<div class="brick small"><img src="/'+templateName+'/img/rIMG_1978.jpg" alt="Image ' + templateName + '"/></div>');
-                });
-            }
-        });
+        displayPhoto(elem);
     });
-});
 
-//Function which used for activate the uploading files
-function activateUpload() {
-    navTemplateName.parent().append('<li><a href="/templates/'+formTemplateName.find('input').val()+'"></a></li>')
-    formFileUpload.css('border-color', acceptColor);
-    inputUploadFile.prop("disabled", false);
-    formTemplateName.find('input').prop('disabled', true);
-    $(this).prop('disabled', true);
-}
+    navTemplatePage.find('li').click(function (e) {
+        e.preventDefault();
+
+        if($(this).hasClass('disabled'))
+            return false;
+
+        var linkData = $(this).attr('data-page');
+
+        //By default hide all pages
+        homeContainer.hide();
+        uploadContainer.hide();
+        manageContainer.hide();
+
+        navTemplatePage.find('li').removeClass('active');
+        $(this).addClass('active');
+
+        switch(linkData) {
+            case "home":
+                homeContainer.show('500');
+                break;
+            case "add":
+                uploadContainer.show('500');
+                break;
+            case "manage":
+                manageContainer.show('500');
+                break;
+        }
+    })
+});
 
 function createTemplate() {
     var templateName = selectedTemplate.val();
@@ -169,6 +175,84 @@ function createTemplate() {
         },
         success:function () {
             location.reload();
+        }
+    });
+}
+
+function initNavTemplate() {
+    navTemplatePage.find('li').removeClass('active');
+    uploadLink.addClass('disabled');
+    manageLink.addClass('disabled');
+    homeLink.addClass('active');
+    uploadContainer.hide();
+    manageContainer.hide();
+    homeContainer.show('1000');
+}
+
+function displayPhoto(elem) {
+    if(elem.hasClass('disabled'))
+        return false;
+    var templateName = selectedTemplate.val();
+
+    //Remove all icons upload and load images already added
+    $.ajax({
+        url: "template-images-info",
+        method: "POST",
+        data: {templateName: templateName},
+        success: function (data) {
+
+            homeContainer.hide();
+            uploadContainer.hide();
+            manageContainer.empty();
+            manageContainer.show();
+
+            navTemplatePage.find('li').removeClass('active');
+            navTemplatePage.find('li[data-page="manage"]').addClass('active');
+
+            $.each(data, function(index, img){
+
+                //Gridly initialisation
+                $('.gridly').gridly({
+                    base: 60, // px
+                    gutter: 20, // px
+                    columns: 14
+                });
+
+                manageContainer.append('<div class="brick small">' +
+                    '<img src="/'+templateName+'/img/'+img+'" alt="Image ' + templateName + '"/>' +
+                    '<a href="#" data-id-image="'+img+'" class="image-delete-btn">' +
+                    '<span class="glyphicon glyphicon-trash"></span>' +
+                    '</a>' +
+                    '<span class="image-info-icon">' + (index+1) +
+                    '</span>' +
+                    '</div>');
+            });
+
+            //Set brick well placed
+            $('.gridly').gridly('layout');
+
+            //Generate event for delete image to bind with DOM elements added
+            $('.image-delete-btn').click(function (e) {
+                e.stopPropagation();
+
+                var photoName = $(this).attr('data-id-image');
+                var templateName = selectedTemplate.val();
+                var brick = $(this).parent();
+                $.ajax({
+                    url: "/template-remove-image",
+                    method: "POST",
+                    data:{
+                        templateName: templateName,
+                        photoName: photoName
+                    },
+                    success:function(){
+                        //Remove selected item and resize
+                        brick.remove();
+                        $('.gridly').gridly('layout');
+                    }
+                })
+
+            })
         }
     });
 }

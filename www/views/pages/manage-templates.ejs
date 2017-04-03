@@ -41,11 +41,6 @@
                             </button>
                         </div>
                         <div class="form-group">
-                            <button class="btn btn-primary manage-template">
-                                <span class="glyphicon glyphicon-cog"></span>
-                            </button>
-                        </div>
-                        <div class="form-group">
                             <button class="btn btn-danger remove-template">
                                 <span class="glyphicon glyphicon-remove"></span>
                             </button>
@@ -56,9 +51,22 @@
 
 
             <br />
-            <div class="manage-template-container">
-                <h4><u>Manage template</u></h4>
 
+            <!-- Nav added to add panel for each part of managing template-->
+            <ul class="nav-template-management nav nav-tabs">
+                <li class="active" data-page="home" role="presentation"><a href="#">Home</a></li>
+                <li class="disabled" data-page="add" role="presentation"><a href="#">Add images</a></li>
+                <li class="disabled" data-page="manage" role="presentation"><a href="#">Manage images</a></li>
+            </ul>
+
+            <div class="home-description-container">
+                <div class="jumbotron ">
+                    <h3>Home page of managing template</h3>
+                    <p>Here a description later</p>
+                </div>
+            </div>
+
+            <div class="images-uploaded-container">
                 <form disabled="true" action="/template-save-image" class="dropzone needsclick dz-clickable" id="fileUpload" enctype="multipart/form-data">
                     <input type="hidden" name="templateName" />
                     <div class="dz-message needsclick">
@@ -66,10 +74,9 @@
                         <span class="note needsclick">Each photo will be directly update</span>
                     </div>
                 </form>
+            </div>
 
-                <div class="template-images-uploaded gridly">
-
-                </div>
+            <div class="manage-template-container gridly">
 
             </div>
         </div>

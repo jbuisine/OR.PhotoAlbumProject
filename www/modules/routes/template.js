@@ -294,10 +294,19 @@ router.post('/template-images-info', function (req, res) {
 
        } else {
            res.status(406);
-           res.send();
+           res.send("error");
        }
     });
 
+});
+
+router.post('/template-remove-image', function (req, res) {
+    var templateName    = req.body.templateName;
+    var photoName       = req.body.photoName;
+
+    fs.unlink(templatesPath + templateName + "/img/" + photoName);
+    res.status(200);
+    res.send("success");
 });
 
 function generateInfoFiles(template, res) {
