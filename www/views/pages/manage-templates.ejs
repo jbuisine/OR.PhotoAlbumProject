@@ -8,61 +8,70 @@
             <br />
             <h4><u>Create new template</u></h4>
 
-            <form id="form-templateName" class="form-inline">
-                <div class="form-group has-warning has-feedback">
-                    <label class="control-label" for="templateName">Template name : </label>
-                    <input id="templateName" type="text" name="templateName" class="form-control" placeholder=""/>
-                    <span id="inputIconStatus" class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true"></span>
-                    <span id="inputSuccess2Status" class="sr-only">(success)</span>
+            <div class="row">
+                <div class="col-md-6">
+                    <form id="form-templateName" class="form-inline">
+                        <div class="form-group has-warning has-feedback">
+                            <label class="control-label" for="templateName">Template name : </label>
+                            <input id="templateName" type="text" name="templateName" class="form-control" placeholder=""/>
+                            <span id="inputIconStatus" class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true"></span>
+                            <span id="inputSuccess2Status" class="sr-only">(success)</span>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-primary template-name-validate">Add</button>
+                        </div>
+
+                    </form>
                 </div>
-                <div class="form-group">
-                    <button class="btn btn-primary template-name-validate">Add</button>
+                <div class="col-md-6">
+                    <form id="form-select-template" class="form-inline">
+                        <div class="form-group">
+                            <select class="form-control" name="templateSelected">
+                                <option value="no">No template</option>
+                                <% if(locals.templates){ %>
+                                    <% templates.forEach(function(template){ %>
+                                        <option value="<%= template %>"><%= template %></option>
+                                    <% }); %>
+                                <% }%>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-warning build-template">
+                                <span class="glyphicon glyphicon-play-circle"></span>
+                            </button>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-primary manage-template">
+                                <span class="glyphicon glyphicon-cog"></span>
+                            </button>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-danger remove-template">
+                                <span class="glyphicon glyphicon-remove"></span>
+                            </button>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
+
 
             <br />
-            <h4><u>Manage template</u></h4>
+            <div class="manage-template-container">
+                <h4><u>Manage template</u></h4>
 
-            <% if(locals.templates){ %>
-            <table class="table table-condensed">
-                <thead>
-                    <th>#</th>
-                    <th>Template name</th>
-                    <th>Actions</th>
-                </thead>
-                <tbody>
-                <% templates.forEach(function(template, index){ %>
+                <form disabled="true" action="/template-save-image" class="dropzone needsclick dz-clickable" id="fileUpload" enctype="multipart/form-data">
+                    <input type="hidden" name="templateName" />
+                    <div class="dz-message needsclick">
+                        Please fill a correct template name & drop files here or click to upload.<br>
+                        <span class="note needsclick">Each photo will be directly update</span>
+                    </div>
+                </form>
 
-                <tr>
-                    <td><%= (index+1) %></td>
-                    <td><%= template %></td>
-                    <td>
-                        <button data-id-template="<%= template %>" class="btn btn-warning build-template">
-                            <span class="glyphicon glyphicon-play-circle"></span>
-                        </button>
-                        <button data-id-template="<%= template %>" class="btn btn-primary manage-template">
-                            <span class="glyphicon glyphicon-cog"></span>
-                        </button>
-                        <button data-id-template="<%= template %>" class="btn btn-danger delete-template">
-                            <span class="glyphicon glyphicon-remove"></span>
-                        </button>
-                    </td>
-                </tr>
+                <div class="template-images-uploaded gridly">
 
-                <% }); %>
-                </tbody>
-            </table>
-            <% } %>
-
-            <br />
-            <h4><u>No template selected</u></h4>
-            <form disabled="true" action="/template-save-image" class="dropzone needsclick dz-clickable" id="fileUpload" enctype="multipart/form-data">
-                <input type="hidden" name="templateName" />
-                <div class="dz-message needsclick">
-                    Please fill a correct template name & drop files here or click to upload.<br>
-                    <span class="note needsclick">Each photo will be directly update</span>
                 </div>
-            </form>
+
+            </div>
         </div>
     </div>
 </div>

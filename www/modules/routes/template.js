@@ -281,6 +281,25 @@ router.post('/generate-template-file', function (req, res) {
     });
 });
 
+router.post('/template-images-info', function (req, res) {
+    var templateName    = req.body.templateName;
+    var pathTemplateImg = templatesPath + templateName + "/img";
+
+    //Return images of template if it has at least one
+    utilities.filePathExists(pathTemplateImg).then(function (exists) {
+       if(exists){
+           res.header("application/json");
+           res.status(200);
+           res.send(utilities.getFiles(pathTemplateImg));
+
+       } else {
+           res.status(406);
+           res.send();
+       }
+    });
+
+});
+
 function generateInfoFiles(template, res) {
 
     var fileInfoPath = templatesPath + template + '/info.txt';

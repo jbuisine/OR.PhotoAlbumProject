@@ -1,9 +1,14 @@
-Dropzone.autoDiscover = false;
+Dropzone.autoDiscover       = false;
 
 
-var formTemplateName = $('#form-templateName');
-var buttonValidate   = $('.template-name-validate');
-var buttonBuild   = $('.build-template');
+var formTemplateName        = $('#form-templateName');
+var buttonValidate          = $('.template-name-validate');
+var buttonBuild             = $('.build-template');
+var buttonManage            = $('.manage-template');
+var buttonRemove            = $('.remove-template');
+var selectedTemplate        = $('select[name="templateSelected"]');
+var manageContainer         = $('.manage-template-container');
+var uploadedImagesContainer = $('.template-images-uploaded');
 
 $(document).ready(function() {
 
@@ -39,6 +44,9 @@ $(document).ready(function() {
 
     //Set property disabled by default for button
     buttonValidate.prop('disabled', true);
+    buttonBuild.prop('disabled', true);
+    buttonManage.prop('disabled', true);
+    buttonRemove.prop('disabled', true);
 
     formTemplateName.find('input').on('change paste keyup', function (){
         var name = $(this).val();
@@ -72,54 +80,95 @@ $(document).ready(function() {
     });
 
     //Hide upload component by default
-    $('.dropzone').hide();
-
     buttonValidate.click(createTemplate);
 
-    //Function which used for activate the uploading files
-    function activateUpload() {
-        navTemplateName.parent().append('<li><a href="/templates/'+formTemplateName.find('input').val()+'"></a></li>')
-        formFileUpload.css('border-color', acceptColor);
-        inputUploadFile.prop("disabled", false);
-        formTemplateName.find('input').prop('disabled', true);
-        $(this).prop('disabled', true);
-    }
-
-    function createTemplate() {
-        var templateName = formTemplateName.find('input').val();
-        console.log(templateName);
-        $.ajax({
-            url: "/create-template",
-            method: "POST",
-            data: {
-                templateName: templateName
-            },
-            success:function () {
-                location.reload();
-            }
-        });
-
-    }
+    //Gridly initialisation
+    $('.gridly').gridly({
+        base: 60, // px
+        gutter: 20, // px
+        columns: 12
+    });
 
     //Build template json info file
     buttonBuild.click(function (e) {
 
-        var templateName = $(this).attr('data-id-template');
+        var templateName = selectedTemplate.val();
 
-        //Send request
-        $.ajax({
-            url: "/generate-template-file",
-            method: "POST",
-            data: {templateName: templateName}
-        });
+        //Ensure that template name exists
+        if(templateName != "no"){
+            //Send request
+            $.ajax({
+                url: "/generate-template-file",
+                method: "POST",
+                data: {templateName: templateName}
+            });
 
-        if(Notification.permission !== 'granted'){
-            Notification.requestPermission();
+            if(Notification.permission !== 'granted'){
+                Notification.requestPermission();
+            }
+
+            n = new Notification(templateName + " generation file", {
+                body: "You template may be unavailable for a moment. You will be notify when it's finished.",
+                icon : "/img/template-file-finished.png"
+            });
         }
+    });
 
-        n = new Notification(templateName + " generation file", {
-            body: "You template may be unavailable for a moment. You will be notify when it's finished.",
-            icon : "/img/template-file-finished.png"
+    selectedTemplate.change(function(){
+       if($(this).val() == "no"){
+           buttonBuild.prop('disabled', true);
+           buttonManage.prop('disabled', true);
+           buttonRemove.prop('disabled', true);
+       } else {
+           buttonBuild.prop('disabled', false);
+           buttonManage.prop('disabled', false);
+           buttonRemove.prop('disabled', false);
+       }
+    });
+
+    buttonManage.click(function (e) {
+        e.preventDefault();
+
+        var templateName = selectedTemplate.val();
+
+        //Remove all icons upload and load images already added
+        $.ajax({
+            url: "template-images-info",
+            method: "POST",
+            data: {templateName: templateName},
+            success: function (data) {
+                console.log(data);
+
+                manageContainer.show();
+                uploadedImagesContainer.empty();
+                $.each(data, function(img){
+                   uploadedImagesContainer.append('<div class="brick small"><img src="/'+templateName+'/img/rIMG_1978.jpg" alt="Image ' + templateName + '"/></div>');
+                });
+            }
         });
     });
 });
+
+//Function which used for activate the uploading files
+function activateUpload() {
+    navTemplateName.parent().append('<li><a href="/templates/'+formTemplateName.find('input').val()+'"></a></li>')
+    formFileUpload.css('border-color', acceptColor);
+    inputUploadFile.prop("disabled", false);
+    formTemplateName.find('input').prop('disabled', true);
+    $(this).prop('disabled', true);
+}
+
+function createTemplate() {
+    var templateName = selectedTemplate.val();
+    console.log(templateName);
+    $.ajax({
+        url: "/create-template",
+        method: "POST",
+        data: {
+            templateName: templateName
+        },
+        success:function () {
+            location.reload();
+        }
+    });
+}
