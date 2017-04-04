@@ -20,7 +20,7 @@ A node.js web application is developed to let the application more attractive an
 ## Description
 
 -------------------
-* Author      : [S. Verel] (http://www-lisic.univ-littoral.fr/~verel/)
+* Author      : [S. Verel](http://www-lisic.univ-littoral.fr/~verel/)
 * Date        : 8/11/2015
 
 -------------------
