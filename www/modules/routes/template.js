@@ -11,11 +11,10 @@ var utilities = require('./../utilities');
 const spawn = require('child_process').spawn;
 var path = require('path')
 
-
 const readline = require('readline');
 const fs = require('fs-extra');
+const rmdir = require('rimraf');
 const multer  = require('multer');
-//const upload = multer({dist: 'uploads/'});
 
 const templatesPath = './views/templates/';
 
@@ -197,10 +196,10 @@ router.get('/manage-templates', function(req, res){
 });
 
 router.post('/create-template', function (req, res) {
-    var dir = templatesPath + req.body.templateName;
+    var dir = templatesPath + req.body.templateName + "/img";
     console.log("DIR ", dir);
     if (!fs.existsSync(dir)){
-        fs.mkdirSync(dir);
+        fs.mkdirsSync(dir);
     }
     res.status('200');
     res.send('success');
@@ -213,6 +212,7 @@ router.post('/template-save-image', function (req, res) {
 
     var storage = multer.diskStorage({
         destination: function (req, file, cb) {
+
             var templateName = req.body.templateName;
             var pathFolder = templatesPath + templateName + "/img";
             var files = utilities.getFiles(pathFolder);
@@ -307,6 +307,21 @@ router.post('/template-remove-image', function (req, res) {
     fs.unlink(templatesPath + templateName + "/img/" + photoName);
     res.status(200);
     res.send("success");
+});
+
+router.post('/template-remove', function (req, res) {
+    var templateName    = req.body.templateName;
+
+    rmdir(templatesPath + templateName, function (error) {
+        if(error){
+            res.status(406);
+            res.send("error");
+        }else{
+            res.status(200);
+            res.send("success");
+        }
+
+    });
 });
 
 function generateInfoFiles(template, res) {

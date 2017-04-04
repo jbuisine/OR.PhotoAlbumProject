@@ -32,7 +32,8 @@ $(document).ready(function() {
         acceptedFiles: ".jpg",
         paramName: "photo",
         accept: function(file, done) {
-            if (formTemplateName.find("input").val() < 6) {
+            console.log(selectedTemplate.val())
+            if (selectedTemplate.val() == "no") {
                 done('No template name defined');
             }else{
                 done();
@@ -42,7 +43,11 @@ $(document).ready(function() {
             this.on("success", function(file) {
                 buttonBuild.css('visibility', 'visible');
             });
+            this.on("sending", function(file, xhr, data) {
+                data.append("templateName", selectedTemplate.val());
+            });
         },
+
         dictDefaultMessage: "Drop your image file here"
     });
 
@@ -115,6 +120,7 @@ $(document).ready(function() {
     });
 
     selectedTemplate.change(function(){
+
        if($(this).val() == "no"){
            buttonBuild.prop('disabled', true);
            buttonRemove.prop('disabled', true);
@@ -131,7 +137,7 @@ $(document).ready(function() {
     navTemplatePage.find('li[data-page="manage"]').click(function (e) {
         e.preventDefault();
 
-        displayPhoto(elem);
+        displayPhoto($(this));
     });
 
     navTemplatePage.find('li').click(function (e) {
@@ -161,12 +167,27 @@ $(document).ready(function() {
                 manageContainer.show('500');
                 break;
         }
-    })
+    });
+
+    buttonRemove.click(function (e) {
+        var templateName = selectedTemplate.val();
+
+        $.ajax({
+            url: "/template-remove",
+            method: "POST",
+            data: {
+                templateName: templateName
+            },
+            success: function () {
+                location.reload();
+            }
+        })
+    });
 });
 
 function createTemplate() {
-    var templateName = selectedTemplate.val();
-    console.log(templateName);
+    var templateName = formTemplateName.find('input').val();
+
     $.ajax({
         url: "/create-template",
         method: "POST",
@@ -228,8 +249,32 @@ function displayPhoto(elem) {
                     '</div>');
             });
 
-            //Set brick well placed
-            $('.gridly').gridly('layout');
+            if(data.length === 0){
+                manageContainer.append("<div class='jumbotron'><p>No photo found !</p></div>")
+            }
+            else{
+                $.each(data, function(index, img){
+
+                    //Gridly initialisation
+                    $('.gridly').gridly({
+                        base: 60, // px
+                        gutter: 20, // px
+                        columns: 14
+                    });
+
+                    manageContainer.append('<div class="brick small">' +
+                        '<img src="/'+templateName+'/img/'+img+'" alt="Image ' + templateName + '"/>' +
+                        '<a href="#" data-id-image="'+img+'" class="image-delete-btn">' +
+                        '<span class="glyphicon glyphicon-trash"></span>' +
+                        '</a>' +
+                        '<span class="image-info-icon">' + (index+1) +
+                        '</span>' +
+                        '</div>');
+                });
+
+                //Set brick well placed
+                $('.gridly').gridly('layout');
+            }
 
             //Generate event for delete image to bind with DOM elements added
             $('.image-delete-btn').click(function (e) {
@@ -256,3 +301,4 @@ function displayPhoto(elem) {
         }
     });
 }
+

@@ -36,11 +36,11 @@ def infos(images, tagfilename, scorefilename):
     for image in images:
         d = info(i, images)
 
-        elem = list(filter(lambda e: e['id'] == image['id'], tags))
+        elem = filter(lambda e: e['id'] == image['id'], tags)
         d['tags'] = { 'classes':elem[0]['classes'], 'probs': elem[0]['probs']}
         #elem = filter(lambda e: e['id'] == image['id'], scores)
         #d['score'] = elem[0]['score']
-        
+
         list_info.append(d)
         i += 1
 
@@ -50,8 +50,6 @@ def info(i, images):
     d = {}
 
     id = images[i]['id']
-    print("here")
-    print(id)
 
     # basic information
     name = "rIMG_%d.jpg" % id
@@ -63,6 +61,7 @@ def info(i, images):
     # from exif
     im = images[i]['image']
     exif_data = im._getexif()
+
     exif = {
         PIL.ExifTags.TAGS[k]: v
         for k, v in im._getexif().items()
