@@ -51,7 +51,7 @@ A node.js web application is developed to let the application more attractive an
 
 First of all, to compile et run scala, you need the java JDK 1.8 and [download] (https://www.scala-lang.org/download/install.html) scala library.
 
-You also need to install [node.js] (https://nodejs.org/en/) and later install bower package :
+You need to install [node.js] (https://nodejs.org/en/) and later install bower package :
 
 ```
 npm install -g bower
@@ -60,7 +60,7 @@ npm install -g bower
 **If you have Linux or MacOS, you can do it with your favorite package manager on your terminal**
 
 
-To use Clarifai API, you need to install it and export your tokens :
+To use Clarifai API, you need to install it (With pyton 2.7) and export your tokens :
 
 ```
 pip install clarifai==2.0.20
@@ -68,12 +68,16 @@ export CLARIFAI_APP_ID=<an_application_id_from_your_account>
 export CLARIFAI_APP_SECRET=<an_application_secret_from_your_account>
 ```
 
-And if you do not already have it :
+If you do not already have it :
 
 ```
 pip install imagehash
 ```
 
+You also need the GraphicsMagick package (Here with yum) :
+```
+yum install GraphicsMagick
+```
 
 ## Installation & run
 
@@ -97,5 +101,5 @@ If you want to install application into a server, add a cron task (sudo crontab 
 
 ## Contributors
 
-* [jbuisine](https://github.com/jbuisine)
 * [geoffreyp](https://github.com/geoffreyp)
+* [jbuisine](https://github.com/jbuisine)
