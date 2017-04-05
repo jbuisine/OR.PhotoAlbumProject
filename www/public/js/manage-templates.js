@@ -230,25 +230,6 @@ function displayPhoto(elem) {
             navTemplatePage.find('li').removeClass('active');
             navTemplatePage.find('li[data-page="manage"]').addClass('active');
 
-            $.each(data, function(index, img){
-
-                //Gridly initialisation
-                $('.gridly').gridly({
-                    base: 60, // px
-                    gutter: 20, // px
-                    columns: 14
-                });
-
-                manageContainer.append('<div class="brick small">' +
-                    '<img src="/'+templateName+'/img/'+img+'" alt="Image ' + templateName + '"/>' +
-                    '<a href="#" data-id-image="'+img+'" class="image-delete-btn">' +
-                    '<span class="glyphicon glyphicon-trash"></span>' +
-                    '</a>' +
-                    '<span class="image-info-icon">' + (index+1) +
-                    '</span>' +
-                    '</div>');
-            });
-
             if(data.length === 0){
                 manageContainer.append("<div class='jumbotron'><p>No photo found !</p></div>")
             }
@@ -283,6 +264,8 @@ function displayPhoto(elem) {
                 var photoName = $(this).attr('data-id-image');
                 var templateName = selectedTemplate.val();
                 var brick = $(this).parent();
+
+                $(this).prop('disabled', true);
                 $.ajax({
                     url: "/template-remove-image",
                     method: "POST",

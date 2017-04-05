@@ -9,7 +9,8 @@ var express = require('express');
 var router = express.Router();
 var utilities = require('./../utilities');
 const spawn = require('child_process').spawn;
-var path = require('path')
+var path = require('path');
+var gm   = require('gm');
 
 const readline = require('readline');
 const fs = require('fs-extra');
@@ -209,12 +210,13 @@ router.post('/create-template', function (req, res) {
 router.post('/template-save-image', function (req, res) {
 
     var filename = "rIMG_1940.jpg";
+    var pathFolder;
 
     var storage = multer.diskStorage({
         destination: function (req, file, cb) {
 
             var templateName = req.body.templateName;
-            var pathFolder = templatesPath + templateName + "/img";
+            pathFolder = templatesPath + templateName + "/img";
             var files = utilities.getFiles(pathFolder);
 
             if(files){
@@ -237,13 +239,26 @@ router.post('/template-save-image', function (req, res) {
 
     //Upload file and update info about photo
     upload(req, res, function (err) {
-        if(err)
+        if (err){
             res.status(406);
-        else
-            res.status(200);
+            res.send("Error while uploading your file");
+        }
+        else{
+            gm(pathFolder + "/" + filename)
+                .resize(250, 168)
+                .write(pathFolder + "/" + filename, function (err) {
+                    if (!err) {
+                        res.status(200);
+                        res.send("File has been     uploaded with success");
+                    }
+                    else{
+                        throw err;
+                        res.status(406);
+                        res.send("Error occurs when attempting to resize your photo");
+                    }
+                });
 
-        res.send();
-
+        }
     })
 });
 
@@ -261,6 +276,8 @@ router.post('/generate-template-file', function (req, res) {
         console.log('stderr: ' + data.toString());
     });
 
+    console.log("In generation ", template);
+
     buildTag.on('close', function() {
 
         var buildInfoFile = spawn('python', [buildInfoPath, templatesPath + template]);
@@ -274,9 +291,11 @@ router.post('/generate-template-file', function (req, res) {
         });
 
         buildInfoFile.on('close', function() {
-
             //Emit socket
             io.sockets.emit('templateGeneration', template);
+
+            res.status(200);
+            res.send("success");
         });
     });
 });
@@ -303,10 +322,15 @@ router.post('/template-images-info', function (req, res) {
 router.post('/template-remove-image', function (req, res) {
     var templateName    = req.body.templateName;
     var photoName       = req.body.photoName;
+    var pathPhoto       = templatesPath + templateName + "/img/" + photoName;
 
-    fs.unlink(templatesPath + templateName + "/img/" + photoName);
-    res.status(200);
-    res.send("success");
+    utilities.filePathExists(pathPhoto).then(function (exists) {
+        if(exists)
+            fs.unlink(templatesPath + templateName + "/img/" + photoName);
+        res.status(200);
+        res.send("success");
+    });
+
 });
 
 router.post('/template-remove', function (req, res) {
