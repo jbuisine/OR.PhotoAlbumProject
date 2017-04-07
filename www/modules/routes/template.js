@@ -300,8 +300,8 @@ router.post('/generate-template-file', function (req, res) {
     });
 });
 
-router.post('/template-images-info', function (req, res) {
-    var templateName    = req.body.templateName;
+router.get('/template-images-info/:name', function (req, res) {
+    var templateName = req.params.name;
     var pathTemplateImg = templatesPath + templateName + "/img";
 
     //Return images of template if it has at least one
@@ -333,8 +333,9 @@ router.post('/template-remove-image', function (req, res) {
 
 });
 
-router.post('/template-remove', function (req, res) {
-    var templateName    = req.body.templateName;
+router.delete('/template-remove/:name', function (req, res) {
+    
+    var templateName = req.params.name;
 
     rmdir(templatesPath + templateName, function (error) {
         if(error){

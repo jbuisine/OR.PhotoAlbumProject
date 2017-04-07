@@ -28,6 +28,8 @@
     "notify": "^0.0.1",
     "plotlyjs": "plotly#^1.18.1",
     "dropzone": "^4.3.0",
-    "gridly": "^1.2.9"
+    "gridly": "^1.2.9",
+    "angular": "^1.6.4",
+    "angular-route": "^1.6.4"
   }
 }

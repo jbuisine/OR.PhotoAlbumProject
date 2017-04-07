@@ -1,6 +1,5 @@
 Dropzone.autoDiscover       = false;
 
-
 var formTemplateName        = $('#form-templateName');
 var buttonValidate          = $('.template-name-validate');
 var buttonBuild             = $('.build-template');
@@ -253,6 +252,13 @@ function displayPhoto(elem) {
                         '</div>');
                 });
 
+                if(data.length % 2 === 0){
+                    buttonBuild.prop('disabled', false);
+                    buttonBuild.prop('title', '');
+                }else{
+                    buttonBuild.prop('disabled', true);
+                    buttonBuild.prop('title', 'You don\'t have a correct number of photo to build your template');
+                }
                 //Set brick well placed
                 $('.gridly').gridly('layout');
             }
