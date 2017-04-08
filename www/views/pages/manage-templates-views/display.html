@@ -1,3 +1,10 @@
 <div class="manage-template-container gridly">
 
+    <div ng-repeat="(photoIndex, photo) in manageCtrl.photoTemplate" class="brick small">
+    <img src="/{{manageCtrl.selectedTemplate}}/img/{{photo}}" alt="Image   templateName  "/>
+    <a href="#" data-id-image="img" class="image-delete-btn">
+        <span class="glyphicon glyphicon-trash"></span>
+        </a>
+    <span class="image-info-icon">{{photoIndex+1}}</span>
+    </div>
 </div>

@@ -49,9 +49,9 @@ A node.js web application is developed to let the application more attractive an
 
 ## Prerequisites
 
-First of all, to compile et run scala, you need the java JDK 1.8 and [download] (https://www.scala-lang.org/download/install.html) scala library.
+First of all, to compile et run scala, you need the java JDK 1.8 and [download](https://www.scala-lang.org/download/install.html) scala library.
 
-You need to install [node.js] (https://nodejs.org/en/) and later install bower package :
+You need to install [node.js](https://nodejs.org/en/) and later install bower package :
 
 ```
 npm install -g bower

@@ -59,7 +59,7 @@ $(document).ready(function() {
     buttonBuild.prop('disabled', true);
     buttonRemove.prop('disabled', true);
 
-    formTemplateName.find('input').on('change paste keyup', function (){
+    /*formTemplateName.find('input').on('change paste keyup', function (){
         var name = $(this).val();
         formTemplateName.find('.form-group').first().removeClass("has-warning");
         iconStatus.removeClass("glyphicon-warning-sign");
@@ -88,7 +88,7 @@ $(document).ready(function() {
             formTemplateName.find('.form-group').first().removeClass("has-success").addClass("has-error");
             iconStatus.removeClass("glyphicon-ok").addClass("glyphicon-remove");
         }
-    });
+    });*/
 
     //Hide upload component by default
     buttonValidate.click(createTemplate);

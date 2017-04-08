@@ -18,6 +18,7 @@ const rmdir = require('rimraf');
 const multer  = require('multer');
 
 const templatesPath = './views/templates/';
+const templatesManagePartialsPath = './views/pages/manage-templates-views/';
 
 const solsPath = './../resources/solutions/';
 const albumsTypePath = './../resources/data/';
@@ -346,6 +347,16 @@ router.delete('/template-remove/:name', function (req, res) {
             res.send("success");
         }
 
+    });
+});
+
+router.get('/manage-display/:page', function (req, res) {
+
+    var page = req.params.page;
+
+    fs.readFile(templatesManagePartialsPath + page, function (err, html) {
+        res.status(200);
+        res.send(html)
     });
 });
 

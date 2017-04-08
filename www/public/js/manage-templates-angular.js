@@ -45,27 +45,29 @@ app.service('ManageTemplate', ['ManageServiceURL' , '$http', function (manageURL
     return manageTemplate;
 }]);
 
-app.controller('MainController', ['$scope', '$timeout', '$http', 'ManageTemplate', function ($scope, $timeout, $http, manageService, address) {
+app.controller('MainController', ['$scope', '$timeout', '$http', '$location', 'ManageTemplate', function ($scope, $timeout, $http, $location, manageService) {
 
     var manageCtrl              = this;
 
-    manageCtrl.photoTemplate    = [];
     manageCtrl.templateName     = "";
     manageCtrl.selectedTemplate = "no";
+    manageCtrl.photoTemplate    = [];
 
-    /**
-     * Method which load books available into database
-     */
-    /*getDataApi.getBooks().then(function(data) {
-        $timeout(function(){
-            manageCtrl.books = data;
-            manageCtrl.dataLoad = true;
-        },2000);
-    });*/
+    manageCtrl.addTemplate = function () {
+        manageService.createTemplate(manageCtrl.templateName).then(function () {
+           Location.reload();
+        });
+    };
+
+
 
     manageCtrl.loadPhoto = function () {
         manageService.displayTemplate(manageCtrl.selectedTemplate).then(function (data) {
-            console.log(data);
+            manageCtrl.photoTemplate = data;
+            $location.path('/display');
+            $timeout(function () {
+                $('.gridly').gridly('layout');
+            }, 1000);
         });
     };
 }]);
@@ -78,23 +80,18 @@ app.controller('UploadController', ['$scope', '$timeout', '$http', 'ManageTempla
 
 }]);
 
-app.controller('DisplayController', ['$scope', '$timeout', '$http', 'ManageTemplate', function ($scope, $timeout, $http, manageService, address) {
-
-}]);
-
 app.config(function($routeProvider) {
 
     $routeProvider
         .when("/", {
-            templateUrl : "./../../views/pages/manage-templates-views/home.html"
+            templateUrl : "/manage-display/home.html"
         })
         .when("/upload", {
             controller  : 'UploadController',
-            templateUrl : "./www/pages/manage-templates-views/upload.htm"
+            templateUrl : "/manage-display/upload.html"
         })
         .when("/display", {
-            controller  : 'DisplayController',
-            templateUrl : "./www/pages/manage-templates-views/display.htm"
+            templateUrl : "/manage-display/display.html"
         })
         .otherwise({ redirectTo: '/' });
 });

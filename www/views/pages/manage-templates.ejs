@@ -11,14 +11,14 @@
             <div class="row">
                 <div class="col-md-6">
                     <form id="form-templateName" class="form-inline">
-                        <div class="form-group has-warning has-feedback">
+                        <div ng-class="manageCtrl.templateName.length < 6 ? 'has-error' : 'has-success'" class="form-group has-feedback">
                             <label class="control-label" for="templateName">Template name : </label>
-                            <input id="templateName" type="text" name="templateName" class="form-control" placeholder=""/>
-                            <span id="inputIconStatus" class="glyphicon glyphicon-warning-sign form-control-feedback" aria-hidden="true"></span>
-                            <span id="inputSuccess2Status" class="sr-only">(success)</span>
+                            <input ng-model="manageCtrl.templateName" id="templateName" type="text" name="templateName" class="form-control" placeholder=""/>
+                            <span ng-class="manageCtrl.templateName.length < 6 ? 'glyphicon-remove' : 'glyphicon-ok'" id="inputIconStatus" class="glyphicon glyphicon-remove form-control-feedback" aria-hidden="true"></span>
+                            <span ng-show="manageCtrl.templateName.length >= 6" id="inputSuccess2Status" class="sr-only">(success)</span>
                         </div>
                         <div class="form-group">
-                            <button class="btn btn-primary template-name-validate">Add</button>
+                            <button ng-disabled="manageCtrl.templateName.length < 6" ng-click="manageCtrl.addTemplate()" class="btn btn-primary template-name-validate">Add</button>
                         </div>
 
                     </form>
@@ -56,7 +56,7 @@
             <ul class="nav-template-management nav nav-tabs">
                 <li class="active" data-page="home" role="presentation"><a href="#">Home</a></li>
                 <li class="disabled" data-page="add" role="presentation"><a href="#">Add images</a></li>
-                <li class="disabled" data-page="manage" role="presentation"><a href="#">Manage images</a></li>
+                <li ng-click="manageCtrl.loadPhoto()" class="disabled" data-page="manage" role="presentation"><a href="#">Manage images</a></li>
             </ul>
 
             <div ng-controller="HomeController" ng-view></div>
