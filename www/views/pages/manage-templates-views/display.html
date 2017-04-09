@@ -1,4 +1,9 @@
-<div class="manage-template-container gridly">
+
+<div ng-show="!manageCtrl.photoLoaded" class="loading-display-photo">
+    <img src="img/loading-circle.svg">
+</div>
+
+<div ng-show="manageCtrl.photoLoaded" class="manage-template-container gridly">
 
     <div ng-repeat="(photoIndex, photo) in manageCtrl.photoTemplate" class="brick small">
     <img src="/{{manageCtrl.selectedTemplate}}/img/{{photo}}" alt="Image   templateName  "/>
