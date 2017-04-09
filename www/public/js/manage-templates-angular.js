@@ -6,10 +6,11 @@ var app = angular.module('photoAlbum.manage', ['photoAlbum']);
 
 app.service('ManageServiceURL', ['serverURL', function(serverURL) {
     return {
-        CREATE_URL  : serverURL + "create-template/",
-        GENERATE_URL: serverURL + "generate-template-file/",
-        REMOVE_URL  : serverURL + "template-remove/",
-        DISPLAY_URL : serverURL + "template-images-info/"
+        CREATE_URL           : serverURL + "create-template/",
+        GENERATE_URL         : serverURL + "generate-template-file/",
+        REMOVE_TEMPLATE_URL  : serverURL + "template-remove/",
+        DISPLAY_URL          : serverURL + "template-images-info/",
+        REMOVE_PHOTO_URL     : serverURL + "template-remove-image/"
     }
 }]);
 
@@ -30,14 +31,19 @@ app.service('ManageTemplate', ['ManageServiceURL' , '$http', function (manageURL
     };
 
     manageTemplate.removeTemplate = function (name) {
-        return $http.delete(manageURL.REMOVE_URL + name).then(function(res){
+        return $http.delete(manageURL.REMOVE_TEMPLATE_URL + name).then(function(res){
             return res.data;
         });
     };
 
     manageTemplate.displayTemplate = function (name) {
-        console.log(manageURL.DISPLAY_URL + name);
         return $http.get(manageURL.DISPLAY_URL + name).then(function(res){
+            return res.data;
+        });
+    };
+
+    manageTemplate.removePhotoTemplate = function (name, photo) {
+        return $http.delete(manageURL.REMOVE_PHOTO_URL + name + "/" + photo).then(function(res){
             return res.data;
         });
     };
@@ -45,14 +51,17 @@ app.service('ManageTemplate', ['ManageServiceURL' , '$http', function (manageURL
     return manageTemplate;
 }]);
 
-app.controller('MainController', ['$scope', '$timeout', '$http', '$location', 'ManageTemplate', function ($scope, $timeout, $http, $location, manageService) {
+app.controller('MainController', ['$scope', '$timeout', '$route', '$location', 'ManageTemplate', function ($scope, $timeout, $route, $location, manageService) {
 
     var manageCtrl              = this;
+
+    manageCtrl.route            = $route;
 
     manageCtrl.templateName     = "";
     manageCtrl.selectedTemplate = "no";
     manageCtrl.photoTemplate    = [];
     manageCtrl.photoLoaded      = false;
+    manageCtrl.activeLiNav      = "home";
 
     manageCtrl.init = function () {
         //Redirect to home if page is reload
@@ -62,6 +71,10 @@ app.controller('MainController', ['$scope', '$timeout', '$http', '$location', 'M
     };
 
     manageCtrl.init();
+
+    manageCtrl.changeView = function (pathView) {
+        $location.path(pathView);
+    };
 
     manageCtrl.addTemplate = function () {
         manageService.createTemplate(manageCtrl.templateName).then(function () {
@@ -79,9 +92,8 @@ app.controller('MainController', ['$scope', '$timeout', '$http', '$location', 'M
 
             $timeout(function () {
                 //Need to set layout two times to have correct display
-                var gridDiv = $('.gridly');
-                gridDiv.gridly('layout');
-                gridDiv.gridly('layout');
+                $('.gridly').gridly('layout');
+                $('.gridly').gridly('layout');
             }, 1000);
         });
     };
@@ -90,28 +102,48 @@ app.controller('MainController', ['$scope', '$timeout', '$http', '$location', 'M
         manageService.removeTemplate(manageCtrl.selectedTemplate).then(function () {
             location.reload();
         });
-    }
-}]);
+    };
 
-app.controller('HomeController', ['$scope', '$timeout', '$http', 'ManageTemplate', function ($scope, $timeout, $http, manageService, address) {
+    manageCtrl.buildTemplate = function () {
 
-}]);
+        if(manageCtrl.selectedTemplate !== "no") {
+            //Send request and notification if request was a success
+            manageService.buildTemplate(manageCtrl.selectedTemplate).then(function () {
+                if (Notification.permission !== 'granted') {
+                    Notification.requestPermission();
+                }
 
-app.controller('UploadController', ['$scope', '$timeout', '$http', 'ManageTemplate', function ($scope, $timeout, $http, manageService, address) {
+                new Notification(manageCtrl.selectedTemplate + " generation file", {
+                    body: "You template may be unavailable for a moment. You will be notify when it's finished.",
+                    icon: "/img/template-file-finished.png"
+                });
+            });
+        }
+    };
 
+    manageCtrl.removePhoto = function (photo) {
+        manageService.removePhotoTemplate(manageCtrl.selectedTemplate, photo).then(function () {
+            var brick = $('a[data-id-photo="'+photo+'"]').parent();
+            brick.remove();
+            $('.gridly').gridly('layout');
+        });
+    };
 }]);
 
 app.config(function($routeProvider) {
 
     $routeProvider
         .when("/", {
-            templateUrl : "/manage-display/home.html"
+            templateUrl : "/manage-display/home.html",
+            activeLiNav : "home"
         })
         .when("/upload", {
-            templateUrl : "/manage-display/upload.html"
+            templateUrl : "/manage-display/upload.html",
+            activeLiNav : "upload"
         })
         .when("/display", {
-            templateUrl : "/manage-display/display.html"
+            templateUrl : "/manage-display/display.html",
+            activeLiNav : "display"
         })
         .otherwise({ redirectTo: '/' });
 });

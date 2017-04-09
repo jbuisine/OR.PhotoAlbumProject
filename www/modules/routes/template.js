@@ -320,9 +320,9 @@ router.get('/template-images-info/:name', function (req, res) {
 
 });
 
-router.post('/template-remove-image', function (req, res) {
-    var templateName    = req.body.templateName;
-    var photoName       = req.body.photoName;
+router.delete('/template-remove-image/:name/:photo', function (req, res) {
+    var templateName    = req.params.name;
+    var photoName       = req.params.photo;
     var pathPhoto       = templatesPath + templateName + "/img/" + photoName;
 
     utilities.filePathExists(pathPhoto).then(function (exists) {
@@ -331,7 +331,6 @@ router.post('/template-remove-image', function (req, res) {
         res.status(200);
         res.send("success");
     });
-
 });
 
 router.delete('/template-remove/:name', function (req, res) {
@@ -346,7 +345,6 @@ router.delete('/template-remove/:name', function (req, res) {
             res.status(200);
             res.send("success");
         }
-
     });
 });
 

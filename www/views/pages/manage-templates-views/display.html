@@ -3,13 +3,17 @@
     <img src="img/loading-circle.svg">
 </div>
 
+<div ng-show="manageCtrl.photoTemplate.length <= 0">
+    <p>No photo found for <i>"{{ manageCtrl.selectedTemplate}}"</i> template.</p>
+</div>
+
 <div ng-show="manageCtrl.photoLoaded" class="manage-template-container gridly">
 
     <div ng-repeat="(photoIndex, photo) in manageCtrl.photoTemplate" class="brick small">
-    <img src="/{{manageCtrl.selectedTemplate}}/img/{{photo}}" alt="Image   templateName  "/>
-    <a href="#" data-id-image="img" class="image-delete-btn">
-        <span class="glyphicon glyphicon-trash"></span>
+        <img src="/{{manageCtrl.selectedTemplate}}/img/{{photo}}" alt="Image templateName"/>
+        <a ng-click="manageCtrl.removePhoto(photo); $event.stopPropagation();" href data-id-photo="{{photo}}" class="image-delete-btn">
+            <span class="glyphicon glyphicon-trash"></span>
         </a>
-    <span class="image-info-icon">{{photoIndex+1}}</span>
+        <span class="image-info-icon">{{photoIndex+1}}</span>
     </div>
 </div>

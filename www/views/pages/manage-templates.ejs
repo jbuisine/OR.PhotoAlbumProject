@@ -36,7 +36,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <button class="btn btn-warning build-template">
+                            <button ng-click="manageCtrl.buildTemplate()" class="btn btn-warning build-template">
                                 <span class="glyphicon glyphicon-play-circle"></span>
                             </button>
                         </div>
@@ -51,15 +51,14 @@
 
 
             <br />
-
             <!-- Nav added to add panel for each part of managing template-->
             <ul class="nav-template-management nav nav-tabs">
-                <li class="active" data-page="home" role="presentation"><a href="#">Home</a></li>
-                <li class="disabled" data-page="add" role="presentation"><a href="#">Add images</a></li>
-                <li ng-click="manageCtrl.loadPhoto()" class="disabled" data-page="manage" role="presentation"><a href="#">Manage images</a></li>
+                <li ng-click="manageCtrl.changeView('/');" ng-class="{'active' : manageCtrl.route.current.activeLiNav === 'home'}" data-page="home" role="presentation"><a href>Home</a></li>
+                <li ng-click="manageCtrl.changeView('/upload');" ng-class="{'active' : manageCtrl.route.current.activeLiNav === 'upload', 'disabled' : manageCtrl.selectedTemplate === 'no'}"><a href>Add images</a></li>
+                <li ng-click="manageCtrl.changeView('/display'); manageCtrl.loadPhoto();" ng-class="{'active' : manageCtrl.route.current.activeLiNav === 'display', 'disabled' : manageCtrl.selectedTemplate === 'no'}" role="presentation"><a href>Manage images</a></li>
             </ul>
 
-            <div ng-controller="HomeController" ng-view></div>
+            <div ng-view></div>
         </div>
     </div>
 </div>
