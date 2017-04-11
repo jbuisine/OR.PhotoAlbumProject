@@ -14,7 +14,7 @@ app.service('ManageServiceURL', ['serverURL', function(serverURL) {
     }
 }]);
 
-app.service('ManageTemplate', ['ManageServiceURL' , '$http', function (manageURL, $http) {
+app.service('ManageTemplateApi', ['ManageServiceURL' , '$http', function (manageURL, $http) {
 
     var manageTemplate = this;
 
@@ -51,7 +51,24 @@ app.service('ManageTemplate', ['ManageServiceURL' , '$http', function (manageURL
     return manageTemplate;
 }]);
 
-app.controller('MainController', ['$scope', '$timeout', '$route', '$location', 'ManageTemplate', function ($scope, $timeout, $route, $location, manageService) {
+app.service('ManageTemplateInfo', function () {
+   
+    manageTempInfo = this;
+
+    var templateSelected = undefined;
+    
+    manageTempInfo.setSelectedTemplate = function (val) {
+        templateSelected = val;
+    };
+
+    manageTempInfo.getSelectedTemplate = function() {
+        return templateSelected;
+    }
+
+    return manageTempInfo;
+});
+
+app.controller('MainController', ['$scope', '$timeout', '$route', '$location', 'ManageTemplateApi', 'ManageTemplateInfo', function ($scope, $timeout, $route, $location, manageService, manageTemplateInfo) {
 
     var manageCtrl              = this;
 
@@ -73,7 +90,8 @@ app.controller('MainController', ['$scope', '$timeout', '$route', '$location', '
     manageCtrl.init();
 
     manageCtrl.changeView = function (pathView) {
-        $location.path(pathView);
+        if(manageCtrl.selectedTemplate !== 'no')
+            $location.path(pathView);
     };
 
     manageCtrl.addTemplate = function () {
@@ -83,6 +101,9 @@ app.controller('MainController', ['$scope', '$timeout', '$route', '$location', '
     };
 
     manageCtrl.loadPhoto = function () {
+
+        manageTemplateInfo.setSelectedTemplate(manageCtrl.selectedTemplate);
+
         manageCtrl.photoLoaded = false;
         manageService.displayTemplate(manageCtrl.selectedTemplate).then(function (data) {
             manageCtrl.photoTemplate = data;
@@ -130,6 +151,44 @@ app.controller('MainController', ['$scope', '$timeout', '$route', '$location', '
     };
 }]);
 
+app.controller('UploadController', ['$scope', 'ManageTemplateInfo', function ($scope, manageTemplateInfo) {
+
+    var uploadCtrl = this;
+
+    uploadCtrl.selectedTemplate = manageTemplateInfo.getSelectedTemplate();
+
+    uploadCtrl.initUploadForm = function () {
+
+        //Define form file upload to init dropzone
+        var formFileUpload   = $('#fileUpload');
+        //Initialize drop zone
+        formFileUpload.dropzone({
+            acceptedFiles: ".jpg",
+            paramName: "photo",
+            accept: function(file, done) {
+
+                if (uploadCtrl.selectedTemplate == "no") {
+                    done('No template name defined');
+                }else{
+                    done();
+                }
+            },
+            init: function() {
+                this.on("success", function(file) {
+                    buttonBuild.css('visibility', 'visible');
+                });
+                this.on("sending", function(file, xhr, data) {
+                    data.append("templateName", uploadCtrl.selectedTemplate);
+                });
+            },
+
+            dictDefaultMessage: "Drop your image file here"
+        });
+    };
+
+    uploadCtrl.initUploadForm();
+}]);
+
 app.config(function($routeProvider) {
 
     $routeProvider
@@ -139,7 +198,8 @@ app.config(function($routeProvider) {
         })
         .when("/upload", {
             templateUrl : "/manage-display/upload.html",
-            activeLiNav : "upload"
+            activeLiNav : "upload",
+            controller: "UploadController"
         })
         .when("/display", {
             templateUrl : "/manage-display/display.html",
