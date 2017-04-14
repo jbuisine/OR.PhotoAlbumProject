@@ -55,6 +55,7 @@
             <ul class="nav-template-management nav nav-tabs">
                 <li ng-click="manageCtrl.changeView('/');" ng-class="{'active' : manageCtrl.route.current.activeLiNav === 'home'}" data-page="home" role="presentation"><a href>Home</a></li>
                 <li ng-click="manageCtrl.changeView('/upload');" ng-class="{'active' : manageCtrl.route.current.activeLiNav === 'upload', 'disabled' : manageCtrl.selectedTemplate === 'no'}"><a href>Add images</a></li>
+                <li ng-click="manageCtrl.changeView('/disposition');" ng-class="{'active' : manageCtrl.route.current.activeLiNav === 'disposition', 'disabled' : manageCtrl.selectedTemplate === 'no'}" role="presentation"><a href>Add disposition</a></li>
                 <li ng-click="manageCtrl.changeView('/display'); manageCtrl.loadPhoto();" ng-class="{'active' : manageCtrl.route.current.activeLiNav === 'display', 'disabled' : manageCtrl.selectedTemplate === 'no'}" role="presentation"><a href>Manage images</a></li>
             </ul>
 

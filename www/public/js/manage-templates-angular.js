@@ -92,6 +92,8 @@ app.controller('MainController', ['$scope', '$timeout', '$route', '$location', '
     manageCtrl.changeView = function (pathView) {
         if(manageCtrl.selectedTemplate !== 'no')
             $location.path(pathView);
+        else
+            $location.path('/');
     };
 
     manageCtrl.addTemplate = function () {
@@ -104,19 +106,26 @@ app.controller('MainController', ['$scope', '$timeout', '$route', '$location', '
 
         manageTemplateInfo.setSelectedTemplate(manageCtrl.selectedTemplate);
 
-        manageCtrl.photoLoaded = false;
-        manageService.displayTemplate(manageCtrl.selectedTemplate).then(function (data) {
-            manageCtrl.photoTemplate = data;
-            manageCtrl.photoLoaded = true;
+        if(manageCtrl.selectedTemplate !== 'no')
+        {
+            manageCtrl.photoLoaded = false;
+            manageService.displayTemplate(manageCtrl.selectedTemplate).then(function (data) {
+                manageCtrl.photoTemplate = data;
+                manageCtrl.photoLoaded = true;
 
-            $location.path('/display');
+                $location.path('/display');
 
-            $timeout(function () {
-                //Need to set layout two times to have correct display
-                $('.gridly').gridly('layout');
-                $('.gridly').gridly('layout');
-            }, 1000);
-        });
+                $timeout(function () {
+                    //Need to set layout two times to have correct display
+                    $('.gridly').gridly('layout');
+                    $('.gridly').gridly('layout');
+                }, 1000);
+
+            });
+        }
+        else{
+            $location.path('/');
+        }
     };
 
     manageCtrl.removeTemplate = function () {
@@ -204,6 +213,10 @@ app.config(function($routeProvider) {
         .when("/display", {
             templateUrl : "/manage-display/display.html",
             activeLiNav : "display"
+        })
+        .when("/disposition", {
+            templateUrl : "/manage-display/disposition.html",
+            activeLiNav : "disposition"
         })
         .otherwise({ redirectTo: '/' });
 });
