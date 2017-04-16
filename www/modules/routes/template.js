@@ -358,6 +358,19 @@ router.get('/manage-display/:page', function (req, res) {
     });
 });
 
+/**
+ * Return number of photo for a template selected
+ */
+router.get('/number-photo/:template', function (req, res) {
+    var template = req.params.template;
+
+    utilities.getFiles(templatesPath + template).then(function (files) {
+       res.status(200);
+       res.header('application/json');
+       res.send(files.length);
+    });
+});
+
 function generateInfoFiles(template, res) {
 
     var fileInfoPath = templatesPath + template + '/info.txt';
