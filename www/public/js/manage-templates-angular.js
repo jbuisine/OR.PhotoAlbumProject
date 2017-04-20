@@ -6,15 +6,16 @@ var app = angular.module('photoAlbum.manage', ['photoAlbum']);
 
 app.service('ManageServiceURL', ['serverURL', function(serverURL) {
     return {
-        CREATE_URL           : serverURL + "create-template/",
-        GENERATE_URL         : serverURL + "generate-template-file/",
-        REMOVE_TEMPLATE_URL  : serverURL + "template-remove/",
-        DISPLAY_URL          : serverURL + "template-images-info/",
-        REMOVE_PHOTO_URL     : serverURL + "template-remove-image/"
+        CREATE_URL                : serverURL + "create-template/",
+        GENERATE_URL              : serverURL + "generate-template-file/",
+        REMOVE_TEMPLATE_URL       : serverURL + "template-remove/",
+        DISPLAY_URL               : serverURL + "template-images-info/",
+        REMOVE_PHOTO_URL          : serverURL + "template-remove-image/",
+        GET_NUMBER_PHOTO_TEMPLATE : serverURL + "template-number-photo/"
     }
 }]);
 
-app.service('ManageTemplateApi', ['ManageServiceURL' , '$http', function (manageURL, $http) {
+app.service('ManageTemplateService', ['ManageServiceURL' , '$http', function (manageURL, $http) {
 
     var manageTemplate = this;
 
@@ -48,10 +49,19 @@ app.service('ManageTemplateApi', ['ManageServiceURL' , '$http', function (manage
         });
     };
 
+    manageTemplate.getNbPhotoTemplate = function (name) {
+      return $http.get(manageURL.GET_NUMBER_PHOTO_TEMPLATE + name).then(function (res) {
+          return res.data;
+      })
+    };
+
     return manageTemplate;
 }]);
 
-app.service('ManageTemplateInfo', function () {
+/**
+ * Factory used for getting current template selected
+ */
+app.factory('ManageTemplateInfo', function () {
    
     manageTempInfo = this;
 
@@ -63,12 +73,12 @@ app.service('ManageTemplateInfo', function () {
 
     manageTempInfo.getSelectedTemplate = function() {
         return templateSelected;
-    }
+    };
 
     return manageTempInfo;
 });
 
-app.controller('MainController', ['$scope', '$timeout', '$route', '$location', 'ManageTemplateApi', 'ManageTemplateInfo', function ($scope, $timeout, $route, $location, manageService, manageTemplateInfo) {
+app.controller('MainController', ['$scope', '$timeout', '$route', '$location', 'ManageTemplateService', 'ManageTemplateInfo', function ($scope, $timeout, $route, $location, manageService, manageTemplateInfo) {
 
     var manageCtrl              = this;
 
@@ -198,7 +208,11 @@ app.controller('UploadController', ['$scope', 'ManageTemplateInfo', function ($s
     uploadCtrl.initUploadForm();
 }]);
 
-app.config(function($routeProvider) {
+app.controller('DispositionController', ['$scope', 'ManageTemplateService', 'ManageTemplateInfo', function ($scope, manageService, manageTemplateInfo) {
+
+}]);
+
+app.config(function($routeProvider, $locationProvider) {
 
     $routeProvider
         .when("/", {
@@ -216,7 +230,10 @@ app.config(function($routeProvider) {
         })
         .when("/disposition", {
             templateUrl : "/manage-display/disposition.html",
-            activeLiNav : "disposition"
+            activeLiNav : "disposition",
+            controller  : "DispositionController"
         })
         .otherwise({ redirectTo: '/' });
+
+    $locationProvider.html5Mode(true);
 });

@@ -361,7 +361,7 @@ router.get('/manage-display/:page', function (req, res) {
 /**
  * Return number of photo for a template selected
  */
-router.get('/number-photo/:template', function (req, res) {
+router.get('/template-number-photo/:template', function (req, res) {
     var template = req.params.template;
 
     utilities.getFiles(templatesPath + template).then(function (files) {
