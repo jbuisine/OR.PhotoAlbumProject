@@ -361,12 +361,12 @@ router.get('/manage-display/:page', function (req, res) {
 /**
  * Return number of photo for a template selected
  */
-router.get('/template-number-photo/:template', function (req, res) {
-    var template = req.params.template;
+router.get('/template-number-photo/:name', function (req, res) {
+    var template = req.params.name;
 
     utilities.getFiles(templatesPath + template).then(function (files) {
        res.status(200);
-       res.header('application/json');
+       res.header('text/html');
        res.send(files.length);
     });
 });

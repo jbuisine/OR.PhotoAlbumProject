@@ -11,7 +11,7 @@ app.service('ManageServiceURL', ['serverURL', function(serverURL) {
         REMOVE_TEMPLATE_URL       : serverURL + "template-remove/",
         DISPLAY_URL               : serverURL + "template-images-info/",
         REMOVE_PHOTO_URL          : serverURL + "template-remove-image/",
-        GET_NUMBER_PHOTO_TEMPLATE : serverURL + "template-number-photo/"
+        GET_NUMBER_PHOTO          : serverURL + "template-number-photo/"
     }
 }]);
 
@@ -50,7 +50,7 @@ app.service('ManageTemplateService', ['ManageServiceURL' , '$http', function (ma
     };
 
     manageTemplate.getNbPhotoTemplate = function (name) {
-      return $http.get(manageURL.GET_NUMBER_PHOTO_TEMPLATE + name).then(function (res) {
+      return $http.get(manageURL.GET_NUMBER_PHOTO + name).then(function (res) {
           return res.data;
       })
     };
@@ -209,6 +209,13 @@ app.controller('UploadController', ['$scope', 'ManageTemplateInfo', function ($s
 }]);
 
 app.controller('DispositionController', ['$scope', 'ManageTemplateService', 'ManageTemplateInfo', function ($scope, manageService, manageTemplateInfo) {
+    var dispositionCtrl = this;
+
+    dispositionCtrl.nbPhoto = 0;
+
+    manageService.getNbPhotoTemplate(manageTemplateInfo.getSelectedTemplate()).then(function (data) {
+       dispositionCtrl.nbPhoto = data;
+    });
 
 }]);
 
@@ -222,7 +229,7 @@ app.config(function($routeProvider, $locationProvider) {
         .when("/upload", {
             templateUrl : "/manage-display/upload.html",
             activeLiNav : "upload",
-            controller: "UploadController"
+            controller: "UploadController as uploadCtrl"
         })
         .when("/display", {
             templateUrl : "/manage-display/display.html",
@@ -231,9 +238,12 @@ app.config(function($routeProvider, $locationProvider) {
         .when("/disposition", {
             templateUrl : "/manage-display/disposition.html",
             activeLiNav : "disposition",
-            controller  : "DispositionController"
+            controller  : "DispositionController as dispositionCtrl"
         })
         .otherwise({ redirectTo: '/' });
 
-    $locationProvider.html5Mode(true);
+    $locationProvider.html5Mode({
+        enabled: true,
+        requireBase: false
+    });
 });
