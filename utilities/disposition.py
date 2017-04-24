@@ -25,8 +25,8 @@ def generate_page(x, y, nb, file):
     file.write("\t\"pages\":[\n")
 
     for i in range(1, nb+1):
-        width = x*x_size + (x*margin-1) + x_start*2
-        height = y*y_size + (y*margin-1) + y_start*2
+        width = x*x_size + (x-1)*margin + x_start*2
+        height = y*y_size + (y-1)*margin + y_start*2
 
         #Starting writing page information
         file.write("\t\t{{ \n\t\t\t\"width\":{} , \"height\":{}, \"photos\":[\n".format(width, height))
@@ -74,9 +74,12 @@ if __name__ == '__main__':
         if ".json" not in filename:
             filename = filename + ".json"
 
+        if not os.path.exists(main_path + template):
+            os.makedirs(main_path + template)
+
         path_file = main_path + template + "/" + filename
 
-        with open(path_file, "w") as f:
+        with open(path_file, "w+") as f:
             f.write("{\n")
             generate_head(nb_page, x_elem*y_elem, f)
             generate_page(x_elem, y_elem, nb_page, f)

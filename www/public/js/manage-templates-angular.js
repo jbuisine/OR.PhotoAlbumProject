@@ -11,7 +11,8 @@ app.service('ManageServiceURL', ['serverURL', function(serverURL) {
         REMOVE_TEMPLATE_URL       : serverURL + "templates/remove/",
         DISPLAY_URL               : serverURL + "templates/images-info/",
         REMOVE_PHOTO_URL          : serverURL + "templates/remove-image/",
-        GET_NUMBER_PHOTO          : serverURL + "templates/number-photo/"
+        GET_NUMBER_PHOTO          : serverURL + "templates/number-photo/",
+        CREATE_DISPOSITION        : serverURL + "templates/create-disposition/"
     }
 }]);
 
@@ -53,6 +54,12 @@ app.factory('ManageTemplateService', ['ManageServiceURL' , '$http', function (ma
         return $http.get(manageURL.GET_NUMBER_PHOTO + name).then(function(res){
             return res.data;
         });
+    };
+
+    manageTemplate.createDisposition = function (data) {
+      return $http.post(manageURL.CREATE_DISPOSITION, data).then(function (res) {
+         return res.data;
+      });
     };
 
     return manageTemplate;
@@ -154,8 +161,8 @@ app.controller('MainController', ['$scope', '$timeout', '$route', '$location', '
                 }
 
                 new Notification(manageCtrl.selectedTemplate + " generation file", {
-                    body: "You template may be unavailable for a moment. You will be notify when it's finished.",
-                    icon: "/img/template-file-finished.png"
+                    body: "Your template may be unavailable for a moment. You will be notify when it's finished.",
+                    icon: "img/generation-finished.png"
                 });
             });
         }
@@ -211,13 +218,42 @@ app.controller('UploadController', ['$scope', 'ManageTemplateInfo', function ($s
 app.controller('DispositionController', ['$scope', 'ManageTemplateService', 'ManageTemplateInfo', function ($scope, manageService, manageTemplateInfo) {
     var dispositionCtrl = this;
 
-    dispositionCtrl.nbPhoto = 0;
+    dispositionCtrl.template    = manageTemplateInfo.getSelectedTemplate();
+    dispositionCtrl.nbPhoto     = 0;
+    dispositionCtrl.fileName    = "";
+    dispositionCtrl.xElem       = 0;
+    dispositionCtrl.yElem       = 0;
+    dispositionCtrl.nbPage      = 0;
 
-    manageService.getNbPhotoTemplate(manageTemplateInfo.getSelectedTemplate()).then(function (data) {
+
+    manageService.getNbPhotoTemplate(dispositionCtrl.template).then(function (data) {
        dispositionCtrl.nbPhoto = data;
        console.log(dispositionCtrl.nbPhoto);
     });
 
+    dispositionCtrl.createDispositionSubmit = function () {
+        var data = {
+            templateName: dispositionCtrl.template,
+            fileName    : dispositionCtrl.fileName,
+            xElem       : dispositionCtrl.xElem,
+            yElem       : dispositionCtrl.yElem,
+            nbPage      : dispositionCtrl.nbPage
+        };
+
+        manageService.createDisposition(data).then(function (data) {
+            if (Notification.permission !== 'granted') {
+                Notification.requestPermission();
+            }
+
+            new Notification(dispositionCtrl.template+ " disposition generated", {
+                body: "Your generation of new disposition is finished. You can now use it !",
+                icon: "img/template-file-finished.png"
+            });
+
+           if(data === "success")
+               document.location.href = "/templates/manage";
+        });
+    };
 }]);
 
 app.config(function($routeProvider, $locationProvider) {

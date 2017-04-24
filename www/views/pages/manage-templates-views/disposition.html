@@ -1,21 +1,21 @@
 <br />
 <!-- Need to set max item for all inputs with dynamic calculation based on number photo uploaded -->
-<form>
-    <div class="form-group">
+<form name="dispositionForm" ng-submit="dispositionCtrl.createDispositionSubmit()">
+    <div ng-class="!dispositionForm.fileName.$valid ? 'has-error' : 'has-success'" class="form-group">
         <label for="DispositionName">Disposition file name</label>
-        <input type="text" class="form-control" id="DispositionName" placeholder="File name">
+        <input ng-model="dispositionCtrl.fileName" name="fileName" type="text" class="form-control" id="DispositionName" placeholder="File name" required>
     </div>
-    <div class="form-group">
+    <div ng-class="!dispositionForm.xElem.$valid ? 'has-error' : 'has-success'"  class="form-group">
         <label for="X_axis_element">X axis element</label>
-        <input type="number" min="1" max="{{dispositionCtrl.nbPhoto}}" class="form-control" id="X_axis_element" placeholder="X elements">
+        <input ng-model="dispositionCtrl.xElem" name="xElem" type="number" min="1" max="{{dispositionCtrl.nbPhoto}}" class="form-control" id="X_axis_element" value="1" placeholder="X elements" required>
     </div>
-    <div class="form-group">
+    <div ng-class="!dispositionForm.yElem.$valid  ? 'has-error' : 'has-success'"  class="form-group">
         <label for="Y_axis_element">Y axis element</label>
-        <input type="number" min="1" max="{{dispositionCtrl.nbPhoto}}" class="form-control" id="Y_axis_element" placeholder="Y elements">
+        <input ng-model="dispositionCtrl.yElem" name="yElem" type="number" min="1" max="{{dispositionCtrl.nbPhoto}}" class="form-control" id="Y_axis_element" value="1" placeholder="Y elements" required>
     </div>
-    <div class="form-group">
+    <div ng-class="!dispositionForm.nbPage.$valid  ? 'has-error' : 'has-success'" class="form-group">
         <label for="page_number">Page number</label>
-        <input type="number" min="1" max="{{dispositionCtrl.nbPhoto}}" class="form-control" id="page_number" placeholder="Page number">
+        <input ng-model="dispositionCtrl.nbPage" name="nbPage" type="number" min="1" max="{{dispositionCtrl.nbPhoto}}" class="form-control" id="page_number" value="1" placeholder="Page number" required>
     </div>
-    <button type="submit" class="btn btn-default">Submit</button>
+    <button ng-disabled="!dispositionForm.$valid" type="submit" class="btn btn-primary">Submit</button>
 </form>

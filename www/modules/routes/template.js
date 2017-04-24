@@ -2,29 +2,30 @@
  * Created by jbuisine on 09/02/17.
  */
 
-var app = require('./../../app');
-var io = app.io;
+var app                             = require('./../../app');
+var io                              = app.io;
 
-var express = require('express');
-var router = express.Router();
-var utilities = require('./../utilities');
-const spawn = require('child_process').spawn;
-var path = require('path');
-var gm   = require('gm');
+var express                         = require('express');
+var router                          = express.Router();
+var utilities                       = require('./../utilities');
+const spawn                         = require('child_process').spawn;
+var path                            = require('path');
+var gm                              = require('gm');
 
-const readline = require('readline');
-const fs = require('fs-extra');
-const rmdir = require('rimraf');
-const multer  = require('multer');
+const readline                      = require('readline');
+const fs                            = require('fs-extra');
+const rmdir                         = require('rimraf');
+const multer                        = require('multer');
 
-const templatesPath = './views/templates/';
-const templatesManagePartialsPath = './views/pages/manage-templates-views/';
+const templatesPath                 = './views/templates/';
+const templatesManagePartialsPath   = './views/pages/manage-templates-views/';
 
-const solsPath = './../resources/solutions/';
-const albumsTypePath = './../resources/data/';
-const buildTemplateFile = './../utilities/buildAlbum.py';;
-const buildTagPath = './../utilities/tag-clarifai.py';;
-const buildInfoPath = './../utilities/extractInfo.py';
+const solsPath                      = './../resources/solutions/';
+const albumsTypePath                = './../resources/data/';
+const buildTemplateFile             = './../utilities/buildAlbum.py';;
+const buildTagPath                  = './../utilities/tag-clarifai.py';;
+const buildInfoPath                 = './../utilities/extractInfo.py';
+const buildDispositionPath          = './../utilities/disposition.py';
 
 router.get('/template/:name', function (req, res) {
 
@@ -38,8 +39,6 @@ router.get('/template/:name', function (req, res) {
 
             if(exists){
                 utilities.readFileContent(templatesPath + template + "/info.txt").then(function (dataFile) {
-
-                    console.log(dataFile);
 
                     var currentSol = "";
 
@@ -78,7 +77,6 @@ router.get('/template/:name', function (req, res) {
 
                 });
             }else{
-                console.log("go to generate");
                 generateInfoFiles(template, res);
             }
         });
@@ -199,7 +197,6 @@ router.get('/templates/manage', function(req, res){
 
 router.post('/templates/create', function (req, res) {
     var dir = templatesPath + req.body.templateName + "/img";
-    console.log("DIR ", dir);
     if (!fs.existsSync(dir)){
         fs.mkdirsSync(dir);
     }
@@ -369,6 +366,39 @@ router.get('/templates/number-photo/:template', function (req, res) {
     res.status(200);
     res.send(utilities.getFiles(path).length.toString());
 });
+
+router.post('/templates/create-disposition', function (req, res) {
+
+    var template = req.body.templateName;
+    var fileName = req.body.fileName;
+    var xElem    = req.body.xElem;
+    var yElem    = req.body.yElem;
+    var nbPage   = req.body.nbPage;
+
+
+    var buildDispositionFile = spawn('python', [buildDispositionPath, template, fileName, xElem, yElem, nbPage]);
+
+    buildDispositionFile.stdout.on('data', function (data) {
+        console.log('stdout: ' + data.toString());
+    });
+
+    buildDispositionFile.stderr.on('data', function (data) {
+        console.log('stderr: ' + data.toString());
+    });
+
+    buildDispositionFile.on('close', function() {
+
+        res.status(200);
+        res.send("success");
+    });
+});
+
+/**
+ * Methode used for get information about template
+ *
+ * @param template
+ * @param res
+ */
 
 function generateInfoFiles(template, res) {
 
