@@ -6,16 +6,16 @@ var app = angular.module('photoAlbum.manage', ['photoAlbum']);
 
 app.service('ManageServiceURL', ['serverURL', function(serverURL) {
     return {
-        CREATE_URL                : serverURL + "create-template/",
-        GENERATE_URL              : serverURL + "generate-template-file/",
-        REMOVE_TEMPLATE_URL       : serverURL + "template-remove/",
-        DISPLAY_URL               : serverURL + "template-images-info/",
-        REMOVE_PHOTO_URL          : serverURL + "template-remove-image/",
-        GET_NUMBER_PHOTO          : serverURL + "template-number-photo/"
+        CREATE_URL                : serverURL + "templates/create/",
+        GENERATE_URL              : serverURL + "templates/generate-file/",
+        REMOVE_TEMPLATE_URL       : serverURL + "templates/remove/",
+        DISPLAY_URL               : serverURL + "templates/images-info/",
+        REMOVE_PHOTO_URL          : serverURL + "templates/remove-image/",
+        GET_NUMBER_PHOTO          : serverURL + "templates/number-photo/"
     }
 }]);
 
-app.service('ManageTemplateService', ['ManageServiceURL' , '$http', function (manageURL, $http) {
+app.factory('ManageTemplateService', ['ManageServiceURL' , '$http', function (manageURL, $http) {
 
     var manageTemplate = this;
 
@@ -50,9 +50,9 @@ app.service('ManageTemplateService', ['ManageServiceURL' , '$http', function (ma
     };
 
     manageTemplate.getNbPhotoTemplate = function (name) {
-      return $http.get(manageURL.GET_NUMBER_PHOTO + name).then(function (res) {
-          return res.data;
-      })
+        return $http.get(manageURL.GET_NUMBER_PHOTO + name).then(function(res){
+            return res.data;
+        });
     };
 
     return manageTemplate;
@@ -186,7 +186,7 @@ app.controller('UploadController', ['$scope', 'ManageTemplateInfo', function ($s
             paramName: "photo",
             accept: function(file, done) {
 
-                if (uploadCtrl.selectedTemplate == "no") {
+                if (uploadCtrl.selectedTemplate === "no") {
                     done('No template name defined');
                 }else{
                     done();
@@ -215,6 +215,7 @@ app.controller('DispositionController', ['$scope', 'ManageTemplateService', 'Man
 
     manageService.getNbPhotoTemplate(manageTemplateInfo.getSelectedTemplate()).then(function (data) {
        dispositionCtrl.nbPhoto = data;
+       console.log(dispositionCtrl.nbPhoto);
     });
 
 }]);
@@ -223,20 +224,20 @@ app.config(function($routeProvider, $locationProvider) {
 
     $routeProvider
         .when("/", {
-            templateUrl : "/manage-display/home.html",
+            templateUrl : "/templates/display/home.html",
             activeLiNav : "home"
         })
         .when("/upload", {
-            templateUrl : "/manage-display/upload.html",
+            templateUrl : "/templates/display/upload.html",
             activeLiNav : "upload",
             controller: "UploadController as uploadCtrl"
         })
         .when("/display", {
-            templateUrl : "/manage-display/display.html",
+            templateUrl : "/templates/display/display.html",
             activeLiNav : "display"
         })
         .when("/disposition", {
-            templateUrl : "/manage-display/disposition.html",
+            templateUrl : "/templates/display/disposition.html",
             activeLiNav : "disposition",
             controller  : "DispositionController as dispositionCtrl"
         })

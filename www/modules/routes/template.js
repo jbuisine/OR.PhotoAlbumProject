@@ -26,7 +26,7 @@ const buildTemplateFile = './../utilities/buildAlbum.py';;
 const buildTagPath = './../utilities/tag-clarifai.py';;
 const buildInfoPath = './../utilities/extractInfo.py';
 
-router.get('/templates/:name', function (req, res) {
+router.get('/template/:name', function (req, res) {
 
     var template = req.params.name;
 
@@ -88,7 +88,7 @@ router.get('/templates/:name', function (req, res) {
 
 });
 
-router.get('/templates/:name/:id', function (req, res) {
+router.get('/template/:name/:id', function (req, res) {
 
     var templates = utilities.getDirectories(templatesPath);
     var template = req.params.name;
@@ -190,14 +190,14 @@ router.post('/load-solution-content', function (req, res) {
 });
 
 // Routes associated to the managing of templates
-router.get('/manage-templates', function(req, res){
+router.get('/templates/manage', function(req, res){
     res.render('index', {
         page: "manage-templates",
         templates: utilities.getDirectories(templatesPath)
     });
 });
 
-router.post('/create-template', function (req, res) {
+router.post('/templates/create', function (req, res) {
     var dir = templatesPath + req.body.templateName + "/img";
     console.log("DIR ", dir);
     if (!fs.existsSync(dir)){
@@ -208,7 +208,7 @@ router.post('/create-template', function (req, res) {
 });
 
 
-router.post('/template-save-image', function (req, res) {
+router.post('/templates/save-image', function (req, res) {
 
     var filename = "rIMG_1940.jpg";
     var pathFolder;
@@ -263,7 +263,7 @@ router.post('/template-save-image', function (req, res) {
     })
 });
 
-router.post('/generate-template-file', function (req, res) {
+router.post('/templates/generate-file', function (req, res) {
 
     var template = req.body.templateName;
 
@@ -301,7 +301,7 @@ router.post('/generate-template-file', function (req, res) {
     });
 });
 
-router.get('/template-images-info/:name', function (req, res) {
+router.get('/templates/images-info/:name', function (req, res) {
     var templateName = req.params.name;
     var pathTemplateImg = templatesPath + templateName + "/img";
 
@@ -320,7 +320,7 @@ router.get('/template-images-info/:name', function (req, res) {
 
 });
 
-router.delete('/template-remove-image/:name/:photo', function (req, res) {
+router.delete('/templates/remove-image/:name/:photo', function (req, res) {
     var templateName    = req.params.name;
     var photoName       = req.params.photo;
     var pathPhoto       = templatesPath + templateName + "/img/" + photoName;
@@ -333,7 +333,7 @@ router.delete('/template-remove-image/:name/:photo', function (req, res) {
     });
 });
 
-router.delete('/template-remove/:name', function (req, res) {
+router.delete('/templates/remove/:name', function (req, res) {
     
     var templateName = req.params.name;
 
@@ -348,7 +348,7 @@ router.delete('/template-remove/:name', function (req, res) {
     });
 });
 
-router.get('/manage-display/:page', function (req, res) {
+router.get('/templates/display/:page', function (req, res) {
 
     var page = req.params.page;
 
@@ -361,14 +361,13 @@ router.get('/manage-display/:page', function (req, res) {
 /**
  * Return number of photo for a template selected
  */
-router.get('/template-number-photo/:name', function (req, res) {
-    var template = req.params.name;
+router.get('/templates/number-photo/:template', function (req, res) {
 
-    utilities.getFiles(templatesPath + template).then(function (files) {
-       res.status(200);
-       res.header('text/html');
-       res.send(files.length);
-    });
+    var template = req.params.template;
+    var path = templatesPath + template + "/img";
+
+    res.status(200);
+    res.send(utilities.getFiles(path).length.toString());
 });
 
 function generateInfoFiles(template, res) {

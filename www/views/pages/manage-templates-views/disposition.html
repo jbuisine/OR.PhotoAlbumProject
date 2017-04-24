@@ -7,15 +7,15 @@
     </div>
     <div class="form-group">
         <label for="X_axis_element">X axis element</label>
-        <input type="number" min="1" max="dispositionCtrl.nbPhoto" class="form-control" id="X_axis_element" placeholder="X elements">
+        <input type="number" min="1" max="{{dispositionCtrl.nbPhoto}}" class="form-control" id="X_axis_element" placeholder="X elements">
     </div>
     <div class="form-group">
         <label for="Y_axis_element">Y axis element</label>
-        <input type="number" min="1" max="dispositionCtrl.nbPhoto" class="form-control" id="Y_axis_element" placeholder="Y elements">
+        <input type="number" min="1" max="{{dispositionCtrl.nbPhoto}}" class="form-control" id="Y_axis_element" placeholder="Y elements">
     </div>
     <div class="form-group">
         <label for="page_number">Page number</label>
-        <input type="number" min="1" class="form-control" id="page_number" placeholder="Page number">
+        <input type="number" min="1" max="{{dispositionCtrl.nbPhoto}}" class="form-control" id="page_number" placeholder="Page number">
     </div>
     <button type="submit" class="btn btn-default">Submit</button>
 </form>
