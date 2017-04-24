@@ -2,33 +2,85 @@
 
 import os, sys
 
-def tag_info(tagfilename):
-    with open(tagfilename, 'rb') as f:
-        l = pickle.load(f)
+def generate_head(nb, page_size, file):
+    file.write("\t\"page\": {0},\n".format(nb))
 
-    res = [ ]
-    for elem in l:
-        res.append({'id': elem['id'], 'classes': elem['results'][0]['result']['tag']['classes'], 'probs': elem['results'][0]['result']['tag']['probs']})
-    return res
+    file.write("\t\"pagesize\":[")
+    for i in range(1, page_size+1):
+        if i != page_size:
+            file.write("{},".format(page_size))
+        else:
+            file.write(str(page_size))
+    file.write("],\n")
+
+    file.write("\t\"basename\":\"page\",\n")
+
+def generate_page(x, y, nb, file):
+    x_size = 250
+    y_size = 187
+    x_start = 21
+    y_start = 6
+    margin = 12
+
+    file.write("\t\"pages\":[\n")
+
+    for i in range(1, nb+1):
+        width = x*x_size + (x*margin-1) + x_start*2
+        height = y*y_size + (y*margin-1) + y_start*2
+
+        #Starting writing page information
+        file.write("\t\t{{ \n\t\t\t\"width\":{} , \"height\":{}, \"photos\":[\n".format(width, height))
+
+        x_axys = x_start
+        y_axys = y_start
+
+        for j in range(1, y+1):
+            for k in range(1, x+1):
+
+                file.write("\t\t\t\t{{\"x\": {}, \"y\": {}, \"width\": {}, \"height\": {} }}".format(x_axys, y_axys, x_size, y_size))
+                if k*j != nb:
+                    file.write(",\n")
+                else:
+                    file.write("\n")
+
+                x_axys += x_size + margin
+
+            x_axys = margin
+            y_axys += y_size + margin
+
+        #Ending page information
+        if i != nb:
+            file.write("\t\t\t]\n\t\t },\n")
+        else:
+            file.write("\t\t\t]\n\t\t}\n")
+
+    file.write("\t]\n")
+
 
 #===================================================================
 if __name__ == '__main__':
 
+    main_path = "./../resources/data/"
+
+
     if len(sys.argv) > 3:
 
-        path = sys.argv[1] + "/img"
-        tagfile = sys.argv[1] + "/taglist.pkl"
-        scorefile = sys.argv[1] + "/score_photo.dat"
-        fileoutname = sys.argv[1] + "/info-photo.json"
+        template = sys.argv[1]
+        filename = sys.argv[2]
+        x_elem = int(sys.argv[3])
+        y_elem = int(sys.argv[4])
+        nb_page = int(sys.argv[5])
 
-        ids = index_list(path)
+        if ".json" not in filename:
+            filename = filename + ".json"
 
-        l = open_images(path, ids)
+        path_file = main_path + template + "/" + filename
 
-        jsoninfo = infos(l, tagfile, scorefile)
-
-        with open(fileoutname, "w") as f:
-            f.write(jsoninfo)
+        with open(path_file, "w") as f:
+            f.write("{\n")
+            generate_head(nb_page, x_elem*y_elem, f)
+            generate_page(x_elem, y_elem, nb_page, f)
+            f.write("}")
     else:
-        print("No path found")
+        print("No params found")
         sys.exit(0)
