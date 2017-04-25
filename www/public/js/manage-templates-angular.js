@@ -235,10 +235,7 @@ app.controller('DispositionController', ['$scope', 'ManageTemplateService', 'Man
     dispositionCtrl.checkValidation = function () {
         var sum = dispositionCtrl.xElem * dispositionCtrl.yElem * dispositionCtrl.nbPage;
 
-        if(sum > dispositionCtrl.nbPhoto)
-            dispositionCtrl.formError = true;
-        else
-            dispositionCtrl.formError = false;
+        dispositionCtrl.formError = sum > dispositionCtrl.nbPhoto;
     };
 
     dispositionCtrl.createDispositionSubmit = function () {

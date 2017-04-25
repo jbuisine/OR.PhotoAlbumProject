@@ -33,6 +33,7 @@ router.get('/template/:name', function (req, res) {
 
     var templates = utilities.getDirectories(templatesPath);
 
+    console.log(template);
     if (templates.indexOf(template) !== -1) {
 
         utilities.filePathExists(templatesPath + template + '/info.txt').then(function (exists) {
@@ -52,7 +53,7 @@ router.get('/template/:name', function (req, res) {
                     utilities.filePathExists(templatesPath + template + '/page_0.ejs').then(function (exists) {
 
                         if (exists) {
-                            res.redirect("/templates/" + template + "/0");
+                            res.redirect("/template/" + template + "/0");
                         }
                         else {
                             if(albumsType){
