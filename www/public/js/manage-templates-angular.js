@@ -221,15 +221,25 @@ app.controller('DispositionController', ['$scope', 'ManageTemplateService', 'Man
     dispositionCtrl.template    = manageTemplateInfo.getSelectedTemplate();
     dispositionCtrl.nbPhoto     = 0;
     dispositionCtrl.fileName    = "";
-    dispositionCtrl.xElem       = 0;
-    dispositionCtrl.yElem       = 0;
-    dispositionCtrl.nbPage      = 0;
+    dispositionCtrl.xElem       = 1;
+    dispositionCtrl.yElem       = 1;
+    dispositionCtrl.nbPage      = 1;
+    dispositionCtrl.formError   = false;
 
 
     manageService.getNbPhotoTemplate(dispositionCtrl.template).then(function (data) {
        dispositionCtrl.nbPhoto = data;
        console.log(dispositionCtrl.nbPhoto);
     });
+
+    dispositionCtrl.checkValidation = function () {
+        var sum = dispositionCtrl.xElem * dispositionCtrl.yElem * dispositionCtrl.nbPage;
+
+        if(sum > dispositionCtrl.nbPhoto)
+            dispositionCtrl.formError = true;
+        else
+            dispositionCtrl.formError = false;
+    };
 
     dispositionCtrl.createDispositionSubmit = function () {
         var data = {
@@ -256,7 +266,7 @@ app.controller('DispositionController', ['$scope', 'ManageTemplateService', 'Man
     };
 }]);
 
-app.config(function($routeProvider, $locationProvider) {
+app.config(function($routeProvider) {
 
     $routeProvider
         .when("/", {
@@ -279,8 +289,8 @@ app.config(function($routeProvider, $locationProvider) {
         })
         .otherwise({ redirectTo: '/' });
 
-    $locationProvider.html5Mode({
+    /*$locationProvider.html5Mode({
         enabled: true,
         requireBase: false
-    });
+    });*/
 });
