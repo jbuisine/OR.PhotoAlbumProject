@@ -1,2 +1,2 @@
-./../resources/solutions/FirstTemplate/album-6-2per3/MOEAD_test.sol [colors : 24240.31, commonTags
- : 1549.56] 
+./../resources/solutions/FirstTemplate/album-6-2per3/MOEAD_colors_commonTags_200_100_20_T.sol [colors : 19293.56, commonTags
+ : 1590.15] 

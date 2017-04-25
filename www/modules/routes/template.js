@@ -147,7 +147,7 @@ router.post('/generate-album', function (req, res) {
         });
 
         python.on('close', function() {
-            res.redirect('/templates/' + template);
+            res.redirect('/template/' + template);
         });
 
     } else {
