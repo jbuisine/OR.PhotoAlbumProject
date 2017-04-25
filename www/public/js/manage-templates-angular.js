@@ -18,51 +18,51 @@ app.service('ManageServiceURL', ['serverURL', function(serverURL) {
 
 app.factory('ManageTemplateService', ['ManageServiceURL' , '$http', function (manageURL, $http) {
 
-    var manageTemplate = this;
+    var manageService = this;
 
-    manageTemplate.createTemplate = function (name) {
+    manageService.createTemplate = function (name) {
         return $http.post(manageURL.CREATE_URL, {templateName: name}).then(function(res){
             return res.data;
         });
     };
 
-    manageTemplate.generateTemplate = function (name) {
+    manageService.generateTemplate = function (name) {
         return $http.post(manageURL.GENERATE_URL, {templateName: name}).then(function(res){
             return res.data;
         });
     };
 
-    manageTemplate.removeTemplate = function (name) {
+    manageService.removeTemplate = function (name) {
         return $http.delete(manageURL.REMOVE_TEMPLATE_URL + name).then(function(res){
             return res.data;
         });
     };
 
-    manageTemplate.displayTemplate = function (name) {
+    manageService.displayTemplate = function (name) {
         return $http.get(manageURL.DISPLAY_URL + name).then(function(res){
             return res.data;
         });
     };
 
-    manageTemplate.removePhotoTemplate = function (name, photo) {
+    manageService.removePhotoTemplate = function (name, photo) {
         return $http.delete(manageURL.REMOVE_PHOTO_URL + name + "/" + photo).then(function(res){
             return res.data;
         });
     };
 
-    manageTemplate.getNbPhotoTemplate = function (name) {
+    manageService.getNbPhotoTemplate = function (name) {
         return $http.get(manageURL.GET_NUMBER_PHOTO + name).then(function(res){
             return res.data;
         });
     };
 
-    manageTemplate.createDisposition = function (data) {
+    manageService.createDisposition = function (data) {
       return $http.post(manageURL.CREATE_DISPOSITION, data).then(function (res) {
          return res.data;
       });
     };
 
-    return manageTemplate;
+    return manageService;
 }]);
 
 /**
@@ -155,16 +155,16 @@ app.controller('MainController', ['$scope', '$timeout', '$route', '$location', '
 
         if(manageCtrl.selectedTemplate !== "no") {
             //Send request and notification if request was a success
-            manageService.buildTemplate(manageCtrl.selectedTemplate).then(function () {
-                if (Notification.permission !== 'granted') {
-                    Notification.requestPermission();
-                }
+            if (Notification.permission !== 'granted') {
+                Notification.requestPermission();
+            }
 
-                new Notification(manageCtrl.selectedTemplate + " generation file", {
-                    body: "Your template may be unavailable for a moment. You will be notify when it's finished.",
-                    icon: "img/generation-finished.png"
-                });
+            new Notification(manageCtrl.selectedTemplate + " generation file", {
+                body: "Your template may be unavailable for a moment. You will be notify when it's finished.",
+                icon: "img/generation-finished.png"
             });
+
+            manageService.generateTemplate(manageCtrl.selectedTemplate);
         }
     };
 
