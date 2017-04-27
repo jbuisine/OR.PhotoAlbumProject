@@ -1,0 +1,37 @@
+FROM hseeberger/scala-sbt
+MAINTAINER Jérôme Buisine
+
+#Settings
+
+###########################################
+######## Install all dependencies #########
+###########################################
+
+RUN apt-get update
+
+# Node JS and Bower install
+#RUN apt-get update -y && apt-get install --no-install-recommends -y -q curl python build-essential git ca-certificates
+#RUN mkdir /nodejs && curl http://nodejs.org/dist/v0.10.34/node-v0.10.34-linux-x64.tar.gz | tar xvzf - -C /nodejs --strip-components=1
+
+ENV PATH $PATH:/scala-2.12.1/bin
+
+RUN apt-get install -y nodejs-legacy npm && npm install -g bower
+
+# Python package manager and its dependencies
+RUN apt-get -y install lsof
+RUN apt-get install -y python python-dev python-setuptools
+RUN easy_install pip
+RUN pip install clarifai==2.0.21
+RUN pip install imagehash
+
+RUN git clone https://github.com/jbuisine/RO.PhotoAlbumProject.git AlbumProject
+
+RUN useradd -ms /bin/bash demoproject
+RUN chown demoproject -R AlbumProject
+USER demoproject
+
+WORKDIR AlbumProject
+
+RUN ./run.sh build
+
+EXPOSE 3000
