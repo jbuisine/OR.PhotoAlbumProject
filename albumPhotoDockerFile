@@ -2,21 +2,29 @@ FROM  openjdk:8
 
 MAINTAINER Jérôme Buisine
 
-ENV SCALA_VERSION 2.12.1
-ENV SBT_VERSION 0.13.15
+ENV SCALA_VERSION       2.12.1
+ENV SBT_VERSION         0.13.15
+ENV NODEJS_VERSION      7
+ENV PORT                3000
+ENV USERNAME            demoproject
+ENV GIT_REPO_URL        https://github.com/jbuisine/RO.PhotoAlbumProject.git
+#ENV CLARIFAI_APP_ID=<an_application_id_from_your_account>
+#ENV CLARIFAI_APP_SECRET=<an_application_secret_from_your_account>
 
-RUN mkdir /demoproject
-RUN useradd -ms /bin/bash demoproject
+RUN mkdir /$USERNAME
+RUN useradd -ms /bin/bash $USERNAME
 
 # Scala expects this file
 RUN touch /usr/lib/jvm/java-8-openjdk-amd64/release
 
+#RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
+
 # Install Scala
 ## Piping curl directly in tar
 RUN \
-  curl -fsL http://downloads.typesafe.com/scala/$SCALA_VERSION/scala-$SCALA_VERSION.tgz | tar xfz - -C /root/ && \
+  curl -fsL http://downloads.typesafe.com/scala/$SCALA_VERSION/scala-$SCALA_VERSION.tgz | tar xfz - -C /usr/bin/ && \
   echo >> /root/.bashrc && \
-  echo 'export PATH=~/scala-$SCALA_VERSION/bin:$PATH' >> /root/.bashrc
+  echo 'export PATH=/usr/bin/scala-$SCALA_VERSION/bin:$PATH' >> /root/.bashrc
 
 # Install sbt
 RUN \
@@ -27,34 +35,38 @@ RUN \
   apt-get install sbt && \
   sbt sbtVersion
 
+RUN chmod -R g+swX /usr/bin/scala-$SCALA_VERSION
+ENV PATH $PATH:/usr/bin/scala-$SCALA_VERSION/bin
+
 ###################################################
 ######## Install all project dependencies #########
 ###################################################
 
-RUN apt-get update
-
 # Node JS and Bower install
 
-ENV PATH $PATH:/root/scala-2.12.1/bin
+RUN apt-get update
 
-RUN apt-get install -y nodejs npm && npm install -g bower
+RUN curl -sL https://deb.nodesource.com/setup_$NODEJS_VERSION.x | bash -
+RUN apt-get install -y nodejs && npm install -g bower
 
 # Python package manager and its dependencies
 RUN apt-get -y install lsof
 RUN apt-get install -y python python-dev python-setuptools
+RUN apt-get install -y gcc
 RUN easy_install pip
 RUN pip install clarifai==2.0.21
 RUN pip install imagehash
-RUN git clone https://github.com/jbuisine/RO.PhotoAlbumProject.git /demoproject/AlbumProject
+RUN git clone $GIT_REPO_UL /$USERNAME/AlbumProject
 
-RUN chown demoproject -R /demoproject/AlbumProject
-RUN chgrp -R demoproject /demoproject/AlbumProject
-RUN chmod -R g+swX /demoproject/AlbumProject
+RUN chown $USERNAME -R /$USERNAME/AlbumProject
+RUN chgrp -R $USERNAME /$USERNAME/AlbumProject
+RUN chmod -R g+swX /$USERNAME/AlbumProject
 
-#USER demoproject
+USER $USERNAME
 
-WORKDIR /demoproject/AlbumProject
+WORKDIR /$USERNAME/AlbumProject
 
-RUN ./run.sh build --allow-root
+EXPOSE $PORT
 
-EXPOSE 3000
+CMD [ "./run.sh", "build"]
+

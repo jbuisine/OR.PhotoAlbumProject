@@ -99,6 +99,31 @@ If you want to install application into a server, add a cron task (sudo crontab 
 @reboot cd /home/{user}/{directory}/{to}/{project} && ./run.sh build &
 ```
 
+## Using Docker (Recommended)
+
+Build your docker image from albumPhotoDockerFile 
+```
+docker build -t <image-name> -f albumPhotoDockerFile .
+```
+
+Run container from image created
+```
+docker run --name <container-name> -p 127.0.0.1:3000:3000 -it <image-name>
+```
+
+Execute bash access from running container
+```
+docker exec -it <container-name> /bin/bash
+```
+
+Set your Clarifai API tokens access from DockerFile at the beginning or using bash access :
+```
+export CLARIFAI_APP_ID=<an_application_id_from_your_account>
+export CLARIFAI_APP_SECRET=<an_application_secret_from_your_account>
+```
+
+Synchronize your folder if you want to edit project !
+
 ## Contributors
 
 * [geoffreyp](https://github.com/geoffreyp)
