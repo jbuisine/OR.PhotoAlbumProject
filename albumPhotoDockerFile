@@ -45,6 +45,9 @@ ENV PATH $PATH:/usr/bin/scala-$SCALA_VERSION/bin
 
 RUN apt-get update
 
+#Add text editor
+RUN apt-get install nano
+
 RUN curl -sL https://deb.nodesource.com/setup_$NODEJS_VERSION.x | bash -
 RUN apt-get install -y nodejs && npm install -g bower
 
@@ -57,9 +60,9 @@ RUN pip install clarifai==2.0.21
 RUN pip install imagehash
 RUN git clone $GIT_REPO_URL /home/$USERNAME/AlbumProject
 
-RUN chown $USERNAME -R /$USERNAME/AlbumProject
-RUN chgrp -R $USERNAME /$USERNAME/AlbumProject
-RUN chmod -R g+swX /$USERNAME/AlbumProject
+RUN chown $USERNAME -R /home/$USERNAME/AlbumProject
+RUN chgrp -R $USERNAME /home/$USERNAME/AlbumProject
+RUN chmod -R g+swX /home/$USERNAME/AlbumProject
 
 USER $USERNAME
 
