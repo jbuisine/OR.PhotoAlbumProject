@@ -1,9 +1,7 @@
 /**
  * Created by jbuisine on 08/02/17.
  */
-var socket_local = io.connect('http://localhost:3000');
-//var socket_intern = io.connect('http://192.168.1.199:3000');
-//var socket_extern = io.connect('http://mypiputer.ddns.net:3000');
+var socket_local = io.connect("http://"+window.location.host);
 
 $(document).ready(function () {
 
@@ -21,24 +19,14 @@ $(document).ready(function () {
 
 /* Listen on generationFinished canal to get information of finished generation */
 socket_local.on('generationFinished', genrationFinished);
-//socket_intern.on('generationFinished', genrationFinished);
-//socket_extern.on('generationFinished', genrationFinished);
 
 /* Listen on generationProgress canal to get progress of generation and update information into DOM elements */
 socket_local.on('generationProgress', generationProgress);
-//socket_intern.on('generationProgress', generationProgress);
-//socket_extern.on('generationProgress', generationProgress);
 
 /* Listen on generationFile canal to get information about generation finished for a template */
 socket_local.on('templateGeneration', function (templateName) {
     generateNotification("Template generation file finished, you can now use this template !", templateName);
 });
-//socket_intern.on('templateGeneration', function (templateName) {
-//    generateNotification("Template generation finished", templateName);
-//});
-//socket_extern.on('templateGeneration', function (templateName) {
-//    generateNotification("Template generation finished", templateName);
-//});
 
 
 $('button[id^="link_"]').on("click", function () {

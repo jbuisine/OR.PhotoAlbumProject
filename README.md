@@ -101,7 +101,7 @@ If you want to install application into a server, add a cron task (sudo crontab 
 
 ## Using Docker (Recommended)
 
-Build your docker image from albumPhotoDockerFile 
+Use [docker pull](https://hub.docker.com/r/jbuisine/ro.photoalbumproject/) command or build your docker image from albumPhotoDockerFile available on GitHub project 
 ```
 docker build -t <image-name> -f albumPhotoDockerFile .
 ```

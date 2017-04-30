@@ -201,7 +201,7 @@ app.controller('UploadController', ['$scope', 'ManageTemplateInfo', function ($s
             },
             init: function() {
                 this.on("success", function(file) {
-                    buttonBuild.css('visibility', 'visible');
+                    $('.build-template').css('visibility', 'visible');
                 });
                 this.on("sending", function(file, xhr, data) {
                     data.append("templateName", uploadCtrl.selectedTemplate);

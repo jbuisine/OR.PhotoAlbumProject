@@ -3,4 +3,4 @@
  */
 var app = angular.module('photoAlbum', ['ngRoute']);
 
-app.constant('serverURL', 'http://localhost:3000/');
+app.constant('serverURL', "http://"+window.location.host + "/");
