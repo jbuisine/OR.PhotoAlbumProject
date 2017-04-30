@@ -56,7 +56,8 @@ RUN apt-get install -y python python-dev python-setuptools
 RUN apt-get install -y gcc graphicsmagick
 RUN easy_install pip
 RUN pip install clarifai==2.0.21
-RUN pip install imagehash
+RUN apt-get install -y libjpeg-dev zlib1g-dev libpng12-dev
+RUN pip install -I imagehash pillow
 RUN git clone $GIT_REPO_URL /home/$USERNAME/AlbumProject
 
 RUN chown $USERNAME -R /home/$USERNAME/AlbumProject
