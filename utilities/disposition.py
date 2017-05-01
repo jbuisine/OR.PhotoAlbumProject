@@ -34,11 +34,12 @@ def generate_page(x, y, nb, file):
         x_axys = x_start
         y_axys = y_start
 
+        nb_photo_per_page = y*x
         for j in range(1, y+1):
             for k in range(1, x+1):
 
                 file.write("\t\t\t\t{{\"x\": {}, \"y\": {}, \"width\": {}, \"height\": {} }}".format(x_axys, y_axys, x_size, y_size))
-                if k*j != nb:
+                if j*k != nb_photo_per_page:
                     file.write(",\n")
                 else:
                     file.write("\n")
