@@ -68,17 +68,17 @@ class Album:
         f.write("<ul class=\"pagination\">\n")
 
         if numPage > 0:
-            f.write("<li><a href=\"/templates/<%%= templateName %%>/%d\" aria-label=\"Previous\"><span aria-hidden=\"true\">&laquo;</span></a></li>\n" % (numPage -1))
+            f.write("<li><a href=\"/template/<%%= templateName %%>/%d\" aria-label=\"Previous\"><span aria-hidden=\"true\">&laquo;</span></a></li>\n" % (numPage -1))
 
         for i in xrange(0, self.album["page"]):
             if(i == numPage):
                 f.write("<li class=\"active\">")
             else:
                 f.write("<li>")
-            f.write("<a href=\"/templates/<%%= templateName %%>/%d\">%d</a></li>\n" % (i, i+1))
+            f.write("<a href=\"/template/<%%= templateName %%>/%d\">%d</a></li>\n" % (i, i+1))
 
         if numPage < self.album["page"] - 1:
-            f.write("<li><a href=\"/templates/<%%= templateName %%>/%d\" aria-label=\"Next\"><span aria-hidden=\"true\">&raquo;</span></a></li>\n" % (numPage + 1))
+            f.write("<li><a href=\"/template/<%%= templateName %%>/%d\" aria-label=\"Next\"><span aria-hidden=\"true\">&raquo;</span></a></li>\n" % (numPage + 1))
 
         f.write("</ul>\n")
         f.write("</nav>\n")

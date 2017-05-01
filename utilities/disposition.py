@@ -6,8 +6,8 @@ def generate_head(nb, page_size, file):
     file.write("\t\"page\": {0},\n".format(nb))
 
     file.write("\t\"pagesize\":[")
-    for i in range(1, page_size+1):
-        if i != page_size:
+    for i in range(1, nb+1):
+        if i != nb:
             file.write("{},".format(page_size))
         else:
             file.write(str(page_size))
