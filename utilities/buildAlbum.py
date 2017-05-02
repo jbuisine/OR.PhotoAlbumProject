@@ -70,7 +70,7 @@ class Album:
         if numPage > 0:
             f.write("<li><a href=\"/template/<%%= templateName %%>/%d\" aria-label=\"Previous\"><span aria-hidden=\"true\">&laquo;</span></a></li>\n" % (numPage -1))
 
-        for i in xrange(0, self.album["page"]):
+        for i in range(0, self.album["page"]):
             if(i == numPage):
                 f.write("<li class=\"active\">")
             else:
