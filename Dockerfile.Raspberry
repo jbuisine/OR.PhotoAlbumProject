@@ -1,4 +1,4 @@
-FROM dexhux/rpi-scala
+FROM kscape/docker-rpi-opencv3-scala
 
 MAINTAINER Jérôme Buisine
 
@@ -16,12 +16,10 @@ RUN useradd -ms /bin/bash $USERNAME
 ######## Install all project dependencies #########
 ###################################################
 
-# Node JS and Bower install
-
-RUN apt-get update
-
 #Add text editor
 RUN apt-get install nano
+
+# Node JS and Bower install
 
 RUN curl -sL https://deb.nodesource.com/setup_$NODEJS_VERSION.x | bash -
 RUN apt-get install -y nodejs && npm install -g bower
