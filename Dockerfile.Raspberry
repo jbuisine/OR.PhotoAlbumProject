@@ -1,4 +1,4 @@
-FROM kscape/docker-rpi-opencv3-scala
+FROM jsurf/rpi-java
 
 MAINTAINER Jérôme Buisine
 
@@ -26,7 +26,7 @@ RUN apt-get install -y nodejs && npm install -g bower
 
 # Python package manager and its dependencies
 RUN apt-get -y install lsof
-RUN apt-get install -y python python-dev python-setuptools
+RUN apt-get install -y python python-dev python-setuptools python-numpy
 RUN apt-get install -y gcc graphicsmagick
 RUN easy_install pip
 RUN pip install clarifai==2.0.21
