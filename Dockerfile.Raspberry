@@ -3,6 +3,7 @@ FROM jsurf/rpi-java
 MAINTAINER Jérôme Buisine
 
 ENV NODEJS_VERSION      7
+ENV SCALA_VERSION       2.12.2
 ENV PORT                3000
 ENV USERNAME            demoproject
 ENV GIT_REPO_URL        https://github.com/jbuisine/RO.PhotoAlbumProject.git
@@ -16,8 +17,21 @@ RUN useradd -ms /bin/bash $USERNAME
 ######## Install all project dependencies #########
 ###################################################
 
-#Add text editor
-RUN apt-get install nano
+#Add text editor && utilities
+
+RUN apt-get update
+RUN apt-get install nano vim git wget curl
+
+# Install Scala
+
+RUN wget https://downloads.lightbend.com/scala/$SCALA_VERSION/scala-$SCALA_VERSION.tgz
+RUN tar zxf scala-$SCALA_VERSION.tgz
+RUN mv scala-$SCALA_VERSION /usr/share/scala
+
+# Set SCALA PATH
+
+RUN export SCALA_HOME=/usr/share/scala
+RUN export PATH=$PATH:$SCALA_HOME/bin
 
 # Node JS and Bower install
 
