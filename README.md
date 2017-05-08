@@ -47,7 +47,39 @@ A node.js web application is developed to let the application more attractive an
 -------------------
 
 
-## Prerequisites
+## Installation
+
+### Using Docker (Recommended)
+
+Use [docker pull](https://hub.docker.com/r/jbuisine/ro.photoalbumproject/) command or build your docker image from Dockerfile available on GitHub project 
+
+An ARM version is also available for raspberry pi computer with rpi Tag.
+
+```
+docker build -t <image-name> -f Dockerfile .
+```
+
+Run container from image created
+```
+docker run --name <container-name> -p 127.0.0.1:3000:3000 -it <image-name>
+```
+
+Execute bash access from running container
+```
+docker exec -it <container-name> /bin/bash
+```
+
+Set your Clarifai API tokens access from DockerFile at the beginning or using bash access :
+```
+export CLARIFAI_APP_ID=<an_application_id_from_your_account>
+export CLARIFAI_APP_SECRET=<an_application_secret_from_your_account>
+```
+
+Synchronize your folder if you want to edit project !
+
+### Without Docker
+
+#### Prerequisites
 
 First of all, to compile et run scala, you need the java JDK 1.8 and [download](https://www.scala-lang.org/download/install.html) scala library.
 
@@ -79,7 +111,7 @@ You also need the GraphicsMagick package (Here with yum) :
 yum install GraphicsMagick
 ```
 
-## Installation & run
+#### Run application
 
 Build and run application :
 
@@ -98,31 +130,6 @@ If you want to install application into a server, add a cron task (sudo crontab 
 ```
 @reboot cd /home/{user}/{directory}/{to}/{project} && ./run.sh build &
 ```
-
-## Using Docker (Recommended)
-
-Use [docker pull](https://hub.docker.com/r/jbuisine/ro.photoalbumproject/) command or build your docker image from Dockerfile available on GitHub project 
-```
-docker build -t <image-name> -f Dockerfile .
-```
-
-Run container from image created
-```
-docker run --name <container-name> -p 127.0.0.1:3000:3000 -it <image-name>
-```
-
-Execute bash access from running container
-```
-docker exec -it <container-name> /bin/bash
-```
-
-Set your Clarifai API tokens access from DockerFile at the beginning or using bash access :
-```
-export CLARIFAI_APP_ID=<an_application_id_from_your_account>
-export CLARIFAI_APP_SECRET=<an_application_secret_from_your_account>
-```
-
-Synchronize your folder if you want to edit project !
 
 ## Contributors
 
