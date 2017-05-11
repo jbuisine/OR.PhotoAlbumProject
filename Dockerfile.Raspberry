@@ -7,6 +7,7 @@ ENV SCALA_VERSION       2.12.2
 ENV PORT                3000
 ENV USERNAME            demoproject
 ENV GIT_REPO_URL        https://github.com/jbuisine/RO.PhotoAlbumProject.git
+ENV SCALA_HOME          /usr/share/scala
 
 #ENV CLARIFAI_APP_ID=<an_application_id_from_your_account>
 #ENV CLARIFAI_APP_SECRET=<an_application_secret_from_your_account>
@@ -29,9 +30,7 @@ RUN tar zxf scala-$SCALA_VERSION.tgz
 RUN mv scala-$SCALA_VERSION /usr/share/scala
 
 # Set SCALA PATH
-
-RUN export SCALA_HOME=/usr/share/scala
-RUN export PATH=$PATH:$SCALA_HOME/bin
+ENV PATH    $PATH:$SCALA_HOME/bin
 
 # Node JS and Bower install
 
