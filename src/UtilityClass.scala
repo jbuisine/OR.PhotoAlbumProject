@@ -223,4 +223,25 @@ object UtilityClass {
 
     solutions
   }
+
+  /**
+    * Method used for normalized all values of criteria matrice
+    *
+    * @param arr matrice values from criteria
+    * @return arr values normalized
+    */
+  def normalizeData(arr: Array[Array[Double]]) : Array[Array[Double]] = {
+
+    var arrOut = arr;
+    var maxValue = (for(x <- arr) yield x.max).max
+    var minValue = (for(x <- arr) yield x.min).min
+
+    (0 until arr.length).foreach(x => {
+      (0 until arr(x).length).foreach(y =>{
+        arr(x)(y) = (arr(x)(y) - minValue) / (maxValue - minValue)
+      })
+    })
+
+    arr
+  }
 }

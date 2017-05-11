@@ -47,6 +47,15 @@ object Modelisation {
     computePhotoTags(pathPhoto)
     computePhotoColors(pathPhoto)
     computePhotoGreyAVG(pathPhoto)
+
+    photoDistAhash = UtilityClass.normalizeData(photoDistAhash)
+    photoDistPhash = UtilityClass.normalizeData(photoDistPhash)
+    photoDistDhash = UtilityClass.normalizeData(photoDistDhash)
+    photoDistancesCommonsTags = UtilityClass.normalizeData(photoDistancesCommonsTags)
+    photoDistancesUncommonTags = UtilityClass.normalizeData(photoDistancesUncommonTags)
+    photoDistancesUncommonNbTags = UtilityClass.normalizeData(photoDistancesUncommonNbTags)
+    photoDistancesColors = UtilityClass.normalizeData(photoDistancesColors)
+    photoDistancesGreyAVG = UtilityClass.normalizeData(photoDistancesGreyAVG)
   }
 
   /**
@@ -116,6 +125,7 @@ object Modelisation {
           photoDistAhash(i)(j) = d.get(j).toString().toDouble
         }
       }
+
     } catch {
       case pe: ParseException => {
         println("position: " + pe.getPosition)
