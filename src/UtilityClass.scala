@@ -135,6 +135,33 @@ object UtilityClass {
   }
 
   /**
+    * Function which sets header of tracks file
+    *
+    * @param filename
+    */
+  def writeHeaderTracking(filename: String): Unit ={
+    val file = new FileClass("../resources/solutions/"+filename+".tracking")
+    val line = "I,D,ND,HVL,HV,HVDiff"
+    if(!file.fileExist())
+      file.writeLine(line, false)
+  }
+
+  /**
+    * Function which writes number evaluation and result
+    *
+    * @param filename
+    * @param nbEval
+    * @param result
+    * @param solution
+    */
+  def writeTrackingLine(filename: String, iteration: Int, D: Double, ND: Double, HVL: Double, HV: Double, HVDiff: Double) {
+
+    val file = new FileClass("../resources/solutions/"+filename+".tracking")
+    var line = f"$iteration, $D, $ND, $HVL, $HV, $HVDiff"
+    file.writeLine(line, true)
+  }
+
+  /**
     * Function which sets header of solutions file
     *
     * @param filename
@@ -145,6 +172,7 @@ object UtilityClass {
     println(line)
     file.writeLine(line, false)
   }
+
 
   /**
    * Function which writes number evaluation and result
@@ -243,5 +271,84 @@ object UtilityClass {
     })
 
     arr
+  }
+
+
+  /**
+    *
+    * Method used for make track about algorithm performance
+    *
+    * @param arr solutions of the space search
+    * @param solutionsKept population of non dominated solutions
+    */
+  def algorithmEvaluationTrack(filename: String, iteration: Int, currentSolution: Array[Int], arr: ListBuffer[Array[Int]], evals : Array[(Array[Int]) => Double]) {
+
+    //Erase the current solution which is already present
+    var nbDominated = 0
+    var nbNonDominated = 0
+
+    var solutionsCoords = Array.ofDim[Double](arr.length, evals.length)
+    var currentSolScore = Array.ofDim[Double](evals.length)
+
+    var hyperVolumeLocal = 1.0
+    var hyperVolumeCurrentSol = 1.0
+    var hyperVolumeDiff = 0.0
+
+    //Use to compute only once the solutions scores
+    (0 until evals.length).foreach(func_index => {
+      currentSolScore(func_index) = evals(func_index)(currentSolution)
+      hyperVolumeCurrentSol *= currentSolScore(func_index)
+    })
+
+    (0 until arr.length).foreach(sol_index => {
+
+      var nbFuncDominated = 0
+
+      (0 until evals.length).foreach(func_index => {
+
+        //Add score to compute hypervolume
+        solutionsCoords(sol_index)(func_index) = evals(func_index)(arr(sol_index))
+
+        if(solutionsCoords(sol_index)(func_index) > currentSolScore(func_index))
+          nbFuncDominated += 1
+      })
+
+      if(nbFuncDominated == evals.length)
+        nbDominated += 1
+      else
+        nbNonDominated += 1
+    })
+
+    //Order solutions scores by first criteria (x axys) to compute hypervolume more easily
+    solutionsCoords = solutionsCoords.sortBy(_(1)).reverse
+
+    //Variable used to keep in memory the total volume of previous solutions
+    var previousFirstCoord = 0.0
+
+    (0 until solutionsCoords.length).foreach(i => {
+       var volumeCurrentSol = 1.0
+       var volumePreviousSols = 1.0
+
+      (0 until solutionsCoords(i).length).foreach(axys_index => {
+        volumeCurrentSol *= solutionsCoords(i)(axys_index)
+
+        if(axys_index != 0){
+          volumePreviousSols *= solutionsCoords(i)(axys_index)
+        }
+        else{
+          volumePreviousSols *= previousFirstCoord
+          previousFirstCoord = solutionsCoords(i)(axys_index)
+        }
+      })
+
+      hyperVolumeLocal += volumeCurrentSol - volumePreviousSols
+    })
+
+    //Gettting hypervolume difference
+    hyperVolumeDiff = hyperVolumeLocal - hyperVolumeCurrentSol
+
+    val nbDominatedPercent = nbDominated * 100.0 / solutionsCoords.length;
+    val nbNonDominatedPercent = nbNonDominated * 100.0 / solutionsCoords.length;
+    writeTrackingLine(filename, iteration, nbDominatedPercent, nbNonDominatedPercent, hyperVolumeLocal, hyperVolumeCurrentSol, hyperVolumeDiff)
   }
 }

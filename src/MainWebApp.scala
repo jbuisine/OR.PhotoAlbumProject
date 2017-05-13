@@ -31,6 +31,7 @@ object MainWebApp {
   var functionsList: Array[(Array[Int]) => Double] = null
 
   var hashChoice: Int = 0
+  var filePath = ""
 
   //Sanner utility object
   val breaker = new Breaks
@@ -64,6 +65,9 @@ object MainWebApp {
     pathAlbum += data.get("albumType").toString
 
     val pathPhotoTemplate = pathPhoto.replace("{template}", templateName)
+
+
+    filePath = templateName + "/" + directory + "/" + solutionFile
 
     //Initialization of context
     Modelisation.init(pathPhotoTemplate, pathAlbum)
@@ -107,7 +111,7 @@ object MainWebApp {
 
           //PLS
           case 3 => {
-            solutions = Algorithms.ParetoLocalSearch(templateSize, algorithmIteration, null, functions)
+            solutions = Algorithms.ParetoLocalSearch(filePath, templateSize, algorithmIteration, null, functions)
           }
 
           //MOEA/D
@@ -116,7 +120,7 @@ object MainWebApp {
             val numberVectors = data.get("numberVectors").toString.toInt
             val closestVectors = data.get("closestVectors").toString.toInt
             val computedChoice = data.get("computedChoice").toString.toInt
-            solutions = Algorithms.MOEAD_Algorithm(templateSize, algorithmIteration, numberVectors, closestVectors, functions, computedChoice)
+            solutions = Algorithms.MOEAD_Algorithm(filePath, templateSize, algorithmIteration, numberVectors, closestVectors, functions, computedChoice)
           }
 
           case 5 => {
@@ -125,19 +129,18 @@ object MainWebApp {
             val closestVectors = data.get("closestVectors").toString.toInt
             val computedChoice = data.get("computedChoice").toString.toInt
 
-            solutions = Algorithms.TPLS_Algorithm(templateSize, algorithmIteration, numberVectors, closestVectors, functions, computedChoice)
+            solutions = Algorithms.TPLS_Algorithm(filePath, templateSize, algorithmIteration, numberVectors, closestVectors, functions, computedChoice)
           }
         }
       }
 
       //Three criteria
       case 3 => {
-        solutions = Algorithms.ParetoLocalSearch(templateSize, algorithmIteration, null, functions)
+        solutions = Algorithms.ParetoLocalSearch(filePath, templateSize, algorithmIteration, null, functions)
       }
     }
 
     //Writing solutions file
-    val filePath = templateName + "/" + directory + "/" + solutionFile
     var headerLine = ""
 
     criteriaIndexes.foreach( criteria => headerLine += criteriaChoices(criteria) + ",")
