@@ -198,7 +198,7 @@ object Algorithms {
     * @param arr
     * @return best solution
     */
-  def ParetoLocalSearch(numberElements: Int, nbEval: Int, arr: ListBuffer[Array[Int]], evals: Array[(Array[Int]) => Double]): ListBuffer[Array[Int]] = {
+  def ParetoLocalSearch(filename: String, numberElements: Int, nbEval: Int, arr: ListBuffer[Array[Int]], evals: Array[(Array[Int]) => Double]): ListBuffer[Array[Int]] = {
 
     var rand = new Random
     var percentEvolution = ""
@@ -211,14 +211,17 @@ object Algorithms {
 
     val random = Random
 
+    //Set header of tracking file
+    UtilityClass.writeHeaderTracking(filename)
+
     if (solutions == null) {
       solutions = new ListBuffer[Array[Int]]()
       solutions += UtilityClass.generateRandomSolution(numberElements)
 
       maxEval = (numberElements * (numberElements-1))
+      nbEvaluation = 0
     }else{
       maxEval = (numberElements * (numberElements-1)) - solutions.length
-
       //Update solutions passed
       solutionsPassed ++ solutions
     }
@@ -264,6 +267,9 @@ object Algorithms {
       //Flag solution as visited
       solutionsPassed += current_sol
 
+      //Add tracking to check algorithm performance
+      UtilityClass.algorithmEvaluationTrack(filename, nbEvaluation, current_sol, solutions, evals)
+
       //Take only non dominated solutions
       solutions = UtilityClass.getNonDominatedSolutions(solutions, evals)
 
@@ -285,13 +291,16 @@ object Algorithms {
     * @param choice
     * @return
     */
-  def MOEAD_Algorithm(numberElements: Int, nbEval: Int, N: Int, T: Int, evals: Array[(Array[Int]) => Double], choice: Int): ListBuffer[Array[Int]] = {
+  def MOEAD_Algorithm(filename: String, numberElements: Int, nbEval: Int, N: Int, T: Int, evals: Array[(Array[Int]) => Double], choice: Int): ListBuffer[Array[Int]] = {
 
     /**
       * All utilities local variables
       */
     var random = new Random
     var percentEvolution = ""
+
+    //Set header of tracking file
+    UtilityClass.writeHeaderTracking(filename)
 
     /**
       * 1. Initialize of the context
@@ -314,6 +323,7 @@ object Algorithms {
     var z = MOEADInit.getRefPoint(values, evals.length)
 
     var evaluation = 0
+    nbEvaluation = 0
 
     /**
       * 2. Update
@@ -396,10 +406,14 @@ object Algorithms {
 
         val oldLength = nonDominatedSolutions.length
 
+        //Add tracking to check algorithm performance
+        UtilityClass.algorithmEvaluationTrack(filename, nbEvaluation, newSol, nonDominatedSolutions, evals)
+
         //Get new EP without dominated solutions (if they exist)
         nonDominatedSolutions = UtilityClass.getNonDominatedSolutions(nonDominatedSolutions, evals)
 
         //Increment number of evaluation
+        nbEvaluation += 1
         evaluation += 1
       })
 
@@ -423,10 +437,13 @@ object Algorithms {
     * @param choice
     * @return
     */
-  def TPLS_Algorithm(numberElements: Int, nbEval: Int, N: Int, T: Int, evals: Array[(Array[Int]) => Double], choice: Int): ListBuffer[Array[Int]] = {
+  def TPLS_Algorithm(filename: String, numberElements: Int, nbEval: Int, N: Int, T: Int, evals: Array[(Array[Int]) => Double], choice: Int): ListBuffer[Array[Int]] = {
 
-    var solutions = MOEAD_Algorithm(numberElements, nbEval, N, T, evals, choice)
+    //Set header of tracking file
+    UtilityClass.writeHeaderTracking(filename)
 
-    ParetoLocalSearch(numberElements, 0, solutions, evals)
+    var solutions = MOEAD_Algorithm(filename, numberElements, nbEval, N, T, evals, choice)
+
+    ParetoLocalSearch(filename, numberElements, 0, solutions, evals)
   }
 }
