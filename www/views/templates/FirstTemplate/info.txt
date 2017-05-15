@@ -1,2 +1,2 @@
-./../resources/solutions/FirstTemplate/album-6-2per3/MOEAD_colors_commonTags_200_100_20_T.sol [colors : 19293.56, commonTags
- : 1590.15] 
+./../resources/solutions/FirstTemplate/album-6-2per3/ILS_commonTags_10000.sol [commonTags
+ : 4.14] 
