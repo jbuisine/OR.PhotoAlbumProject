@@ -139,9 +139,12 @@ object UtilityClass {
     *
     * @param filename
     */
-  def writeHeaderTracking(filename: String): Unit ={
+  def writeHeaderTracking(filename: String, nbEvalsFunction: Int): Unit ={
     val file = new FileClass("../resources/solutions/"+filename+".tracking")
-    val line = "I,D,ND,HVL,HV,HVDiff"
+    var line = "I,D,ND,HVL,HV,HVDiff"
+    (0 until nbEvalsFunction).foreach(i => {
+      line += ",x" + i + "_avg,x" + i + "_median"
+    })
     if(!file.fileExist())
       file.writeLine(line, false)
   }
@@ -154,10 +157,14 @@ object UtilityClass {
     * @param result
     * @param solution
     */
-  def writeTrackingLine(filename: String, iteration: Int, D: Double, ND: Double, HVL: Double, HV: Double, HVDiff: Double) {
+  def writeTrackingLine(filename: String, iteration: Int, D: Double, ND: Double, HVL: Double, HV: Double, HVDiff: Double, avgValues: Array[Double], medianeValues: Array[Double]) {
 
     val file = new FileClass("../resources/solutions/"+filename+".tracking")
     var line = f"$iteration, $D, $ND, $HVL, $HV, $HVDiff"
+
+    (0 until avgValues.length).foreach(i => {
+      line += "," + avgValues(i) + "," + medianeValues(i)
+    })
     file.writeLine(line, true)
   }
 
@@ -293,6 +300,8 @@ object UtilityClass {
     var hyperVolumeLocal = 1.0
     var hyperVolumeCurrentSol = 1.0
     var hyperVolumeDiff = 0.0
+    var averageValues = Array.ofDim[Double](evals.length)
+    var medianeValues = Array.ofDim[Double](evals.length)
 
     //Use to compute only once the solutions scores
     (0 until evals.length).foreach(func_index => {
@@ -322,6 +331,15 @@ object UtilityClass {
     //Order solutions scores by first criteria (x axys) to compute hypervolume more easily
     solutionsCoords = solutionsCoords.sortBy(_(1)).reverse
 
+    //Compute average values and mediane values
+    (0 until evals.length).foreach(i => {
+
+      val column = solutionsCoords.map(_(i))
+
+      averageValues(i) = column.sum / solutionsCoords.length
+      medianeValues(i) = column(solutionsCoords.length/2)
+    })
+
     //Variable used to keep in memory the total volume of previous solutions
     var previousFirstCoord = 0.0
 
@@ -349,6 +367,6 @@ object UtilityClass {
 
     val nbDominatedPercent = nbDominated * 100.0 / solutionsCoords.length;
     val nbNonDominatedPercent = nbNonDominated * 100.0 / solutionsCoords.length;
-    writeTrackingLine(filename, iteration, nbDominatedPercent, nbNonDominatedPercent, hyperVolumeLocal, hyperVolumeCurrentSol, hyperVolumeDiff)
+    writeTrackingLine(filename, iteration, nbDominatedPercent, nbNonDominatedPercent, hyperVolumeLocal, hyperVolumeCurrentSol, hyperVolumeDiff, averageValues, medianeValues)
   }
 }
