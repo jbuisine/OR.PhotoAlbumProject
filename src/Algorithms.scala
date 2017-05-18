@@ -212,7 +212,7 @@ object Algorithms {
     val random = Random
 
     //Set header of tracking file
-    UtilityClass.writeHeaderTracking(filename)
+    UtilityClass.writeHeaderTracking(filename, evals.length)
 
     if (solutions == null) {
       solutions = new ListBuffer[Array[Int]]()
@@ -300,7 +300,7 @@ object Algorithms {
     var percentEvolution = ""
 
     //Set header of tracking file
-    UtilityClass.writeHeaderTracking(filename)
+    UtilityClass.writeHeaderTracking(filename, evals.length)
 
     /**
       * 1. Initialize of the context
@@ -440,7 +440,7 @@ object Algorithms {
   def TPLS_Algorithm(filename: String, numberElements: Int, nbEval: Int, N: Int, T: Int, evals: Array[(Array[Int]) => Double], choice: Int): ListBuffer[Array[Int]] = {
 
     //Set header of tracking file
-    UtilityClass.writeHeaderTracking(filename)
+    UtilityClass.writeHeaderTracking(filename, evals.length)
 
     var solutions = MOEAD_Algorithm(filename, numberElements, nbEval, N, T, evals, choice)
 

@@ -178,13 +178,25 @@ router.post('/load-solution-content', function (req, res) {
     });
 
     var contentFile = [];
+    var contentFileTracking = [];
 
     lineReader.on('line', function (line) {
 
         contentFile.push(line.split(','));
 
     }).on('close', function(){
-        res.send(contentFile);
+
+        var lineReaderTracking = readline.createInterface({
+            input: fs.createReadStream(solutionPath + ".tracking")
+        });
+
+        lineReaderTracking.on('line', function (line) {
+
+            contentFileTracking.push(line.split(','));
+
+        }).on('close', function(){
+            res.send({solution:contentFile, tracking: contentFileTracking});
+        });
     });
 });
 

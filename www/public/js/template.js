@@ -89,8 +89,11 @@ function loadContentSol(data) {
 
     $('#graphic-representation').empty();
 
-    var head = data[0];
-    data.splice(0, 1);
+    //Write graphic solution representation
+    var head = data.solution[0];
+    data.solution.splice(0, 1);
+
+    console.log(data.solution);
 
     switch (head.length){
 
@@ -102,11 +105,11 @@ function loadContentSol(data) {
             break;
 
         case 2 :
-            generate2DPlot(data, head);
+            generate2DPlot(data.solution, head, 'graphic-representation', $('#solutionFile').val());
             break;
 
         case 3 :
-            generate3DPlot(data, head);
+            generate3DPlot(data.solution, head, 'graphic-representation', $('#solutionFile').val());
             break;
     }
 
@@ -114,24 +117,52 @@ function loadContentSol(data) {
 
     dataSolutionFile = data;
 
-    data.forEach(function (element, index) {
+    //Write solutions file select options
+    data.solution.forEach(function (element, index) {
 
-       var dataElement = '<option value="' + (index+1) + '">[' + (index+1) + "] ";
+        var dataElement = '<option value="' + (index+1) + '">[' + (index+1) + "] ";
 
-       head.forEach(function (h, i) {
-           dataElement += h + " : " + parseFloat(element[i+1]).toFixed(2);
+        head.forEach(function (h, i) {
+            dataElement += h + " : " + parseFloat(element[i+1]).toFixed(2);
 
-           if(i+1 !== head.length){
-               dataElement += " - ";
-           }
-       });
-       dataElement += '</option>';
+            if(i+1 !== head.length){
+                dataElement += " - ";
+            }
+        });
+        dataElement += '</option>';
 
         $('#selectSolutionsGenerate').append(dataElement);
     });
 
     $('#selectSolutionsGenerate').show('500');
     $('#generate-solution-btn').show('500');
+
+    //Write all tracking graphic
+    headTracking = data.tracking[0];
+    data.tracking.splice(0, 1);
+
+    var iteration = data.tracking.map(x => x[0]);
+
+    headTracking.forEach(function (elem, index) {
+
+        if(index !== 0) {
+            var columnValues = data.tracking.map(x => x[index]);
+            var currentHeadTracking = [headTracking[index], "Iteration"];
+
+            var currentDataTracking = [];
+
+            for(var i = 0; i < columnValues.length; i++)
+                currentDataTracking[i] = [i, columnValues[i], iteration[i]]
+
+            var currentDivId = 'graphic-tracking' + index;
+
+            $('#carousel-graphic-items').append('<div class="item"><div style="padding: 0% 10%;" id="'+currentDivId+'"></div></div>');
+            $('#carousel-example-generic ol').append('<li data-target="#carousel-example-generic" data-slide-to="'+index+'"></li>')
+
+            //Generate current graph
+            generate2DPlot(currentDataTracking, currentHeadTracking, currentDivId, headTracking[index] + " / Iteration");
+        }
+    });
 }
 
 /**
@@ -140,7 +171,7 @@ function loadContentSol(data) {
  * @param data
  * @param head
  */
-function generate2DPlot(data, head){
+function generate2DPlot(data, head, id, title){
 
     var xAxis = [];
     var yAxis = [];
@@ -158,7 +189,7 @@ function generate2DPlot(data, head){
     };
 
     var layout = {
-        title: $('#solutionFile').val(),
+        title: title,
         xaxis: {
             title: head[0],
             type: 'log',
@@ -181,7 +212,7 @@ function generate2DPlot(data, head){
         }
     };
 
-    Plotly.newPlot('graphic-representation', [line], layout);
+    Plotly.newPlot(id, [line], layout);
 }
 
 /**
@@ -190,7 +221,7 @@ function generate2DPlot(data, head){
  * @param data
  * @param head
  */
-function generate3DPlot(data, head){
+function generate3DPlot(data, head, id, title){
 
     var xAxis = [];
     var yAxis = [];
@@ -250,8 +281,8 @@ function generate3DPlot(data, head){
         },
         height: 550,
         autosize: true,
-        title: $('#solutionFile').val()
+        title: title
     };
 
-    Plotly.newPlot('graphic-representation', [line1], layout);
+    Plotly.newPlot(id, [line1], layout);
 }
