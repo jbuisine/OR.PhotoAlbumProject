@@ -75,8 +75,9 @@
 
                   <% solutions.forEach(function(sol){ %>
 
+                    <% if(sol.indexOf(".tracking") === -1){%>
                       <option value="<%= sol %>"> <%= sol %></option>
-
+                    <% } %>
                   <% }); %>
 
                 </select>
