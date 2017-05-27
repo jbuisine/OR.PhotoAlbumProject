@@ -42,6 +42,9 @@ function loadSelectSol(solutions) {
 
     $( "#solutionFile" ).empty();
 
+    //Reset default modal
+    initGraphicModal();
+
     if(solutions.length > 0){
         $("#solutionFile").attr('disabled', false);
         $.each(solutions, function( key, sol ) {
@@ -62,7 +65,6 @@ $("#solutionFile").change(loadSolutions);
 
 $("#solution-information").click(function(){
 
-    console.log('show solution');
     $('#generation-info-modal').modal();
 });
 
@@ -154,7 +156,7 @@ function loadContentSol(data) {
             var currentDivId = 'graphic-tracking' + index;
 
             $('#carousel-graphic-items').append('<div class="item"><div style="padding: 0% 10%;" id="'+currentDivId+'"></div></div>');
-            $('#carousel-example-generic ol').append('<li data-target="#carousel-example-generic" data-slide-to="'+index+'"></li>')
+            $('#carousel-example-generic ol').append('<li data-target="#carousel-example-generic" data-slide-to="'+index+'"></li>');
 
             //Generate current graph
             generate2DPlot(currentDataTracking, currentHeadTracking, currentDivId, headTracking[index] + " / Iteration");
@@ -189,8 +191,8 @@ function generate2DPlot(data, head, id, title){
         title: title,
         xaxis: {
             title: head[0],
-            type: 'log',
-            autorange: true,
+            mode: 'markers',
+            type: 'scatter',
             titlefont: {
                 family: 'Courier New, monospace',
                 size: 18,
@@ -199,8 +201,8 @@ function generate2DPlot(data, head, id, title){
         },
         yaxis: {
             title: head[1],
-            type: 'log',
-            autorange: true,
+            mode: 'markers',
+            type: 'scatter',
             titlefont: {
                 family: 'Courier New, monospace',
                 size: 18,
@@ -282,4 +284,17 @@ function generate3DPlot(data, head, id, title){
     };
 
     Plotly.newPlot(id, [line1], layout);
+}
+
+/***
+ * Function used for initialize modal
+ */
+function initGraphicModal(){
+
+    //Clear all previous solutions
+    $('#carousel-example-generic ol').empty();
+    $('#carousel-graphic-items').empty();
+
+    $('#carousel-example-generic ol').append('<li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>');
+    $('#carousel-graphic-items').append('<div class="item active"><div id="graphic-representation"></div></div>');
 }
