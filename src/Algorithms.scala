@@ -446,4 +446,57 @@ object Algorithms {
 
     ParetoLocalSearch(filename, numberElements, 0, solutions, evals)
   }
+
+  /**
+    *
+    * Random wal algorithm mainly used for evaluating feature
+    *
+    * @param filename
+    * @param numberElements
+    * @param nbEval
+    * @param evals
+    * @return
+    */
+  def RandowWalkAlgorithm(filename: String, numberElements: Int, nbEval: Int, evals: Array[(Array[Int]) => Double]): Array[Int] = {
+
+    /**
+      * All utilities local variables
+      */
+    var random = new Random
+    var percentEvolution = ""
+    var evaluation = 0
+
+    var spaceSearchSolutions = new ListBuffer[Array[Int]]()
+    var bestSolution = new Array[Int](numberElements)
+
+
+    //Set header of tracking file
+    UtilityClass.writeHeaderTracking(filename, evals.length)
+
+    // Getting all solution in space search
+    // Improve these method later into Utility class
+
+    do {
+      var solution = UtilityClass.generateRandomSolution(numberElements)
+
+      var counter = 0
+      (0 until evals.length).foreach(index => {
+          if(evals(index)(solution) < evals(index)(bestSolution))
+            counter += 1
+      })
+
+      // New solution can only be best only if all criteria are better
+      if(counter == evals.length)
+        bestSolution = solution
+
+      // Add tracking to check algorithm performance
+      UtilityClass.algorithmEvaluationTrack(filename, nbEval, bestSolution, spaceSearchSolutions, evals)
+
+      val lengthText = percentEvolution.length()
+      percentEvolution = "Random walk -> " + df.format(evaluation * 100.0 / nbEval) + "% "
+      UtilityClass.showEvolution(lengthText, percentEvolution)
+    }  while(evaluation < nbEval)
+
+    bestSolution
+  }
 }
