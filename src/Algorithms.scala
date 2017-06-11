@@ -469,6 +469,12 @@ object Algorithms {
     var spaceSearchSolutions = new ListBuffer[Array[Int]]()
     var bestSolution = new Array[Int](numberElements)
 
+    // Adding all solutions to spaceSearch
+    UtilityClass.generateRandomSolution(numberElements).permutations.foreach( x => {
+      spaceSearchSolutions += x
+    })
+
+    println("Number solutions length => ", spaceSearchSolutions.length)
 
     //Set header of tracking file
     UtilityClass.writeHeaderTracking(filename, evals.length)
@@ -477,7 +483,7 @@ object Algorithms {
     // Improve these method later into Utility class
 
     do {
-      var solution = UtilityClass.generateRandomSolution(numberElements)
+      val solution = UtilityClass.generateRandomSolution(numberElements)
 
       var counter = 0
       (0 until evals.length).foreach(index => {

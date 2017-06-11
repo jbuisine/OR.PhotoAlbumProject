@@ -153,9 +153,14 @@ object UtilityClass {
     * Function which writes number evaluation and result
     *
     * @param filename
-    * @param nbEval
-    * @param result
-    * @param solution
+    * @param iteration
+    * @param D
+    * @param ND
+    * @param HVL
+    * @param HV
+    * @param HVDiff
+    * @param avgValues
+    * @param medianeValues
     */
   def writeTrackingLine(filename: String, iteration: Int, D: Double, ND: Double, HVL: Double, HV: Double, HVDiff: Double, avgValues: Array[Double], medianeValues: Array[Double]) {
 
@@ -285,8 +290,11 @@ object UtilityClass {
     *
     * Method used for make track about algorithm performance
     *
+    * @param filename
+    * @param iteration
+    * @param currentSolution
     * @param arr solutions of the space search
-    * @param solutionsKept population of non dominated solutions
+    * @param evals
     */
   def algorithmEvaluationTrack(filename: String, iteration: Int, currentSolution: Array[Int], arr: ListBuffer[Array[Int]], evals : Array[(Array[Int]) => Double]) {
 
