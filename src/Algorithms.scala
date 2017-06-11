@@ -470,9 +470,9 @@ object Algorithms {
     var bestSolution = new Array[Int](numberElements)
 
     // Adding all solutions to spaceSearch
-    UtilityClass.generateRandomSolution(numberElements).permutations.foreach( x => {
+    /*UtilityClass.generateRandomSolution(numberElements).permutations.foreach( x => {
       spaceSearchSolutions += x
-    })
+    })*/
 
     println("Number solutions length => ", spaceSearchSolutions.length)
 

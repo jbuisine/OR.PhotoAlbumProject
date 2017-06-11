@@ -25,6 +25,11 @@ $('#HC').change(function () {
     updateContent();
 });
 
+$('#Random').change(function () {
+
+    updateContent();
+});
+
 $('#EA').change(function () {
 
     updateContent();
@@ -134,6 +139,7 @@ function showOrHideCriteria(nbElem) {
         $('#PLS').attr('disabled',false);
         $('#MOEAD').attr('disabled',false);
         $('#TPLS').attr('disabled',false);
+        $('#Random').attr('disabled', false);
 
     }else if(nbElem > 2 && nbElem <= 3){
         //Hidden option
@@ -145,6 +151,7 @@ function showOrHideCriteria(nbElem) {
 
         //Three objectives
         $('#PLS').attr('disabled',false);
+        $('#Random').attr('disabled', false);
 
         $('#criteriaChoice input:not(:checked)').attr('disabled', true);
     }
@@ -153,6 +160,7 @@ function showOrHideCriteria(nbElem) {
         $('#HC').attr('disabled',false);
         $('#ILS').attr('disabled',false);
         $('#EA').attr('disabled',false);
+        $('#Random').attr('disabled', false);
 
         //Multiple objectives hidden
         $('#PLS').attr('disabled',true);

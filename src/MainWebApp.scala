@@ -101,6 +101,11 @@ object MainWebApp {
             val lambdaElement = data.get("lambdaElement").toString.toInt
             solutions += Algorithms.GeneticEvolutionnaryAlgorithm(templateSize, muElement, lambdaElement, algorithmIteration, iterationHC, HCGenitor, numberPermutation, functions(0))
           }
+
+          // Random walk
+          case 6 => {
+            solutions += Algorithms.RandowWalkAlgorithm(filePath, templateSize, algorithmIteration, functions)
+          }
         }
       }
 
@@ -131,12 +136,28 @@ object MainWebApp {
 
             solutions = Algorithms.TPLS_Algorithm(filePath, templateSize, algorithmIteration, numberVectors, closestVectors, functions, computedChoice)
           }
+
+          // Random walk
+          case 6 => {
+            solutions += Algorithms.RandowWalkAlgorithm(filePath, templateSize, algorithmIteration, functions)
+          }
         }
       }
 
       //Three criteria
       case 3 => {
-        solutions = Algorithms.ParetoLocalSearch(filePath, templateSize, algorithmIteration, null, functions)
+        algorithmChoice match {
+
+          //PLS
+          case 3 => {
+            solutions = Algorithms.ParetoLocalSearch(filePath, templateSize, algorithmIteration, null, functions)
+          }
+
+          // Random walk
+          case 6 => {
+            solutions += Algorithms.RandowWalkAlgorithm(filePath, templateSize, algorithmIteration, functions)
+          }
+        }
       }
     }
 
