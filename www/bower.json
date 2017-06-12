@@ -30,6 +30,7 @@
     "dropzone": "^4.3.0",
     "gridly": "^1.2.9",
     "angular": "^1.6.4",
-    "angular-route": "^1.6.4"
+    "angular-route": "^1.6.4",
+    "jquery-ui": "^1.12.1"
   }
 }
