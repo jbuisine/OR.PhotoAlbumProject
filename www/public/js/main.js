@@ -5,6 +5,17 @@ var socket_local = io.connect("http://"+window.location.host);
 
 $(document).ready(function () {
 
+    setTimeout(function() {
+        $('.loader-snake').fadeOut(800);
+        $('body').animate({
+            'background-color': '#ffffff'
+        }, 1200);
+        setTimeout(function () {
+            $('.container-fluid').css('visibility', 'visible').hide().fadeIn(600);
+            $('.navbar').css('visibility', 'visible').hide().fadeIn(600);
+        }, 1300);
+    }, 1200);
+
     //Change modal visibility to let possible add elements to it
     $('#process-running-modal').show().css('visibility', 'hidden');
 

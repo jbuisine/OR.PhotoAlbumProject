@@ -3,6 +3,11 @@
     margin-bottom: 70px;
     margin-left: 3%;
     margin-right: 3%;
+    visibility: hidden;
+}
+
+.navbar{
+    visibility: hidden;
 }
 
 .footer{

@@ -7,6 +7,26 @@
 
     <body cz-shortcut-listen="true">
 
+        <!-- Animation block -->
+        <svg class="svg-snake" xmlns="http://www.w3.org/2000/svg" version="1.1">
+            <defs>
+                <filter id="goo">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+                    <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 35 -10" result="goo" />
+                    <feBlend in="SourceGraphic" in2="goo" operator="atop" />
+                </filter>
+            </defs>
+        </svg>
+        <div class="loader-snake">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+        <!-- End Animation block -->
+
+        <!-- Nav bar -->
         <% include partials/nav %>
 
         <!-- Page content -->
@@ -24,6 +44,7 @@
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
         <script src="/bower_components/jquery/dist/jquery.min.js"></script>
+        <script src="/bower_components/jquery-ui/jquery-ui.js"></script>
         <script src="/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
         <script src="/bower_components/jquery-serialize-object/dist/jquery.serialize-object.min.js"></script>
         <script src="/bower_components/notify/notification.js"></script>
@@ -47,6 +68,7 @@
         <% if(locals.page == "manage-templates"){ %>
             <script src="/js/manage-templates-angular.js"></script>
         <% } %>
+
 
     </body>
 
