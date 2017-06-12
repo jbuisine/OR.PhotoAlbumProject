@@ -5,10 +5,14 @@
 
 var dataSolutionFile;
 
+$('.container-fluid').hide();
+
 $(document).ready(function(){
 
-    checkSolFiles();
-    $("#selectSolutionsGenerate").hide();
+    setTimeout(function () {
+        checkSolFiles();
+        $("#selectSolutionsGenerate").hide();
+    }, 3000);
 });
 
 
@@ -88,7 +92,7 @@ function loadSolutions(){
 
 function loadContentSol(data) {
 
-    $('#graphic-representation').empty();
+    initGraphicModal();
 
     //Write graphic solution representation
     var head = data.solution[0];
@@ -141,6 +145,7 @@ function loadContentSol(data) {
     data.tracking.splice(0, 1);
 
     var iteration = data.tracking.map(x => x[0]);
+    $('#carousel-example-generic ol').empty();
 
     headTracking.forEach(function (elem, index) {
 
@@ -292,8 +297,8 @@ function generate3DPlot(data, head, id, title){
 function initGraphicModal(){
 
     //Clear all previous solutions
-    $('#carousel-example-generic ol').empty();
     $('#carousel-graphic-items').empty();
+    $('#carousel-example-generic ol').empty();
 
     $('#carousel-example-generic ol').append('<li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>');
     $('#carousel-graphic-items').append('<div class="item active"><div id="graphic-representation"></div></div>');

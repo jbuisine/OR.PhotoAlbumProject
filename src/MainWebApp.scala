@@ -104,7 +104,7 @@ object MainWebApp {
 
           // Random walk
           case 6 => {
-            solutions += Algorithms.RandowWalkAlgorithm(filePath, templateSize, algorithmIteration, functions)
+            solutions = Algorithms.RandowWalkAlgorithm(filePath, templateSize, algorithmIteration, functions)
           }
         }
       }
@@ -139,7 +139,7 @@ object MainWebApp {
 
           // Random walk
           case 6 => {
-            solutions += Algorithms.RandowWalkAlgorithm(filePath, templateSize, algorithmIteration, functions)
+            solutions = Algorithms.RandowWalkAlgorithm(filePath, templateSize, algorithmIteration, functions)
           }
         }
       }
@@ -155,7 +155,7 @@ object MainWebApp {
 
           // Random walk
           case 6 => {
-            solutions += Algorithms.RandowWalkAlgorithm(filePath, templateSize, algorithmIteration, functions)
+            solutions = Algorithms.RandowWalkAlgorithm(filePath, templateSize, algorithmIteration, functions)
           }
         }
       }

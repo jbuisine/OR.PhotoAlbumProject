@@ -457,7 +457,7 @@ object Algorithms {
     * @param evals
     * @return
     */
-  def RandowWalkAlgorithm(filename: String, numberElements: Int, nbEval: Int, evals: Array[(Array[Int]) => Double]): Array[Int] = {
+  def RandowWalkAlgorithm(filename: String, numberElements: Int, nbEval: Int, evals: Array[(Array[Int]) => Double]): ListBuffer[Array[Int]] = {
 
     /**
       * All utilities local variables
@@ -467,42 +467,30 @@ object Algorithms {
     var evaluation = 0
 
     var spaceSearchSolutions = new ListBuffer[Array[Int]]()
-    var bestSolution = new Array[Int](numberElements)
 
     // Adding all solutions to spaceSearch
     /*UtilityClass.generateRandomSolution(numberElements).permutations.foreach( x => {
       spaceSearchSolutions += x
     })*/
 
-    println("Number solutions length => ", spaceSearchSolutions.length)
-
     //Set header of tracking file
     UtilityClass.writeHeaderTracking(filename, evals.length)
-
-    // Getting all solution in space search
-    // Improve these method later into Utility class
 
     do {
       val solution = UtilityClass.generateRandomSolution(numberElements)
 
-      var counter = 0
-      (0 until evals.length).foreach(index => {
-          if(evals(index)(solution) < evals(index)(bestSolution))
-            counter += 1
-      })
-
-      // New solution can only be best only if all criteria are better
-      if(counter == evals.length)
-        bestSolution = solution
+      spaceSearchSolutions += solution
 
       // Add tracking to check algorithm performance
-      UtilityClass.algorithmEvaluationTrack(filename, nbEval, bestSolution, spaceSearchSolutions, evals)
+      UtilityClass.algorithmEvaluationTrack(filename, evaluation, solution, spaceSearchSolutions, evals)
+
+      evaluation += 1
 
       val lengthText = percentEvolution.length()
       percentEvolution = "Random walk -> " + df.format(evaluation * 100.0 / nbEval) + "% "
       UtilityClass.showEvolution(lengthText, percentEvolution)
     }  while(evaluation < nbEval)
 
-    bestSolution
+    spaceSearchSolutions
   }
 }
