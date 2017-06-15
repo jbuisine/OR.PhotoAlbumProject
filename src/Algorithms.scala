@@ -56,17 +56,13 @@ object Algorithms {
           nbEvaluation += 1
 
           if (result < bestResult) {
-
+            bestResult = result
             inner.break
           }
 
           solution(secondRandomValue) = solution(firstRandomValue)
           solution(firstRandomValue) = temporyValue
         }
-      }
-
-      if (result < bestResult) {
-        bestResult = result
       }
     }
     solution
@@ -268,7 +264,7 @@ object Algorithms {
       solutionsPassed += current_sol
 
       //Add tracking to check algorithm performance
-      UtilityClass.algorithmEvaluationTrack(filename, nbEvaluation, current_sol, solutions, evals)
+      UtilityClass.algorithmEvaluationTrack(filename, nbEvaluation, current_sol, numberElements, evals)
 
       //Take only non dominated solutions
       solutions = UtilityClass.getNonDominatedSolutions(solutions, evals)
@@ -407,7 +403,7 @@ object Algorithms {
         val oldLength = nonDominatedSolutions.length
 
         //Add tracking to check algorithm performance
-        UtilityClass.algorithmEvaluationTrack(filename, nbEvaluation, newSol, nonDominatedSolutions, evals)
+        UtilityClass.algorithmEvaluationTrack(filename, nbEvaluation, newSol, numberElements, evals)
 
         //Get new EP without dominated solutions (if they exist)
         nonDominatedSolutions = UtilityClass.getNonDominatedSolutions(nonDominatedSolutions, evals)
@@ -482,7 +478,7 @@ object Algorithms {
       spaceSearchSolutions += solution
 
       // Add tracking to check algorithm performance
-      UtilityClass.algorithmEvaluationTrack(filename, evaluation, solution, spaceSearchSolutions, evals)
+      UtilityClass.algorithmEvaluationTrack(filename, evaluation, solution, numberElements, evals)
 
       evaluation += 1
 

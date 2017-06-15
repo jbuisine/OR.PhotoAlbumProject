@@ -1,6 +1,8 @@
-import java.util.Random
+import java.util
+import java.util.{Arrays, List, Random}
 
 import scala.collection.mutable.ListBuffer
+import scala.util.control.Breaks
 import scala.util.{Failure, Success, Try}
 
 /**
@@ -182,68 +184,69 @@ object UtilityClass {
   def writeHeader(filename: String, line: String): Unit ={
     val file = new FileClass("../resources/solutions/"+filename)
     println(line)
-    file.writeLine(line, false)
+    file.writeLine(line, b = false)
   }
 
 
   /**
    * Function which writes number evaluation and result
    *
-   * @param filename
-   * @param nbEval
-   * @param result
-   * @param solution
+   * @param filename : filename to store data
+   * @param nbEval : number of evaluation
+   * @param result : result retrieved
+   * @param solution : current solution
    */
   def writeEvaluation(filename: String, nbEval: Int, result: Double, solution: Array[Int]) {
 
     val file = new FileClass("../resources/scores/" + filename)
     var line = nbEval + "," + result + ","
 
-    for (i <- 0 until solution.length) {
+    for (i <- solution.indices) {
       line += solution(i) + " "
     }
 
-    file.writeLine(line, true)
+    file.writeLine(line, b = true)
     println("Evaluation saved into scores " + filename)
   }
 
   /**
     * Function which writes number evaluation and result
     *
-    * @param filename
-    * @param solution
+    * @param filename : filename to store current solution scores
+    * @param evals : evaluation functions
+    * @param solution : current solution
     */
   def writePLSScores(filename: String, evals : Array[(Array[Int]) => Double], solution: Array[Int]) {
 
     val file = new FileClass("../resources/scores/" + filename)
 
     var line = ""
-    (0 until evals.length).foreach( index => {
+    evals.indices.foreach(index => {
       line += evals(index)(solution) + ","
     })
 
-    for (i <- 0 until solution.length) {
+    for (i <- solution.indices) {
       line += solution(i) + " "
     }
 
-    file.writeLine(line, true)
+    file.writeLine(line, b = true)
   }
 
   /**
     * Function used to check if solutions can be removed because it is a non dominated solution
-    * @param arr
-    * @param evals
+    * @param arr : current solution
+    * @param evals : evalution functions
     * @return non dominated solutions
     */
   def getNonDominatedSolutions(arr: ListBuffer[Array[Int]], evals : Array[(Array[Int]) => Double]) : ListBuffer[Array[Int]] = {
     var solutions = arr
     var elements = new ListBuffer[Int]
 
-    (0 until arr.length).foreach( sol_index => {
+    arr.indices.foreach(sol_index => {
 
-      (0 until arr.length).foreach( current_sol_index => {
+      arr.indices.foreach(current_sol_index => {
         var numberDominatedFunction = 0
-        (0 until evals.length).foreach( index => {
+        evals.indices.foreach(index => {
           if(evals(index)(arr(sol_index)) > evals(index)(arr(current_sol_index)))
             numberDominatedFunction += 1
         })
@@ -267,8 +270,8 @@ object UtilityClass {
   /**
     * Method used for normalized all values of criteria matrice
     *
-    * @param arr matrice values from criteria
-    * @return arr values normalized
+    * @param arr : matrice values from criteria
+    * @return arr : values normalized
     */
   def normalizeData(arr: Array[Array[Double]]) : Array[Array[Double]] = {
 
@@ -276,8 +279,8 @@ object UtilityClass {
     var maxValue = (for(x <- arr) yield x.max).max
     var minValue = (for(x <- arr) yield x.min).min
 
-    (0 until arr.length).foreach(x => {
-      (0 until arr(x).length).foreach(y =>{
+    arr.indices.foreach(x => {
+      arr(x).indices.foreach(y =>{
         arr(x)(y) = (arr(x)(y) - minValue) / (maxValue - minValue)
       })
     })
@@ -290,19 +293,19 @@ object UtilityClass {
     *
     * Method used for make track about algorithm performance
     *
-    * @param filename
-    * @param iteration
-    * @param currentSolution
-    * @param arr solutions of the space search
-    * @param evals
+    * @param filename : filename to store tracking line
+    * @param iteration : number of iteration retrieved
+    * @param currentSolution : the current solution
+    * @param evals : evaluation functions
     */
-  def algorithmEvaluationTrack(filename: String, iteration: Int, currentSolution: Array[Int], arr: ListBuffer[Array[Int]], evals : Array[(Array[Int]) => Double]) {
+  def algorithmEvaluationTrack(filename: String, iteration: Int, currentSolution: Array[Int], numberElement: Int, evals : Array[(Array[Int]) => Double]) {
 
     //Erase the current solution which is already present
     var nbDominated = 0
     var nbNonDominated = 0
 
-    var solutionsCoords = Array.ofDim[Double](arr.length, evals.length)
+    var neighbors = getNeighbors(arr = currentSolution)
+    var solutionsCoords = Array.ofDim[Double](neighbors.length, evals.length)
     var currentSolScore = Array.ofDim[Double](evals.length)
 
     var hyperVolumeLocal = 1.0
@@ -312,19 +315,19 @@ object UtilityClass {
     var medianeValues = Array.ofDim[Double](evals.length)
 
     //Use to compute only once the solutions scores
-    (0 until evals.length).foreach(func_index => {
+    evals.indices.foreach(func_index => {
       currentSolScore(func_index) = evals(func_index)(currentSolution)
       hyperVolumeCurrentSol *= currentSolScore(func_index)
     })
 
-    (0 until arr.length).foreach(sol_index => {
+    (0 until numberElement).foreach(sol_index => {
 
       var nbFuncDominated = 0
 
-      (0 until evals.length).foreach(func_index => {
+      evals.indices.foreach(func_index => {
 
-        //Add score to compute hypervolume
-        solutionsCoords(sol_index)(func_index) = evals(func_index)(arr(sol_index))
+        //Add score to compute hyper volume
+        solutionsCoords(sol_index)(func_index) = evals(func_index)(neighbors(sol_index))
 
         if(solutionsCoords(sol_index)(func_index) > currentSolScore(func_index))
           nbFuncDominated += 1
@@ -340,22 +343,23 @@ object UtilityClass {
     solutionsCoords = solutionsCoords.sortBy(_(1)).reverse
 
     //Compute average values and mediane values
-    (0 until evals.length).foreach(i => {
+    evals.indices.foreach(i => {
 
       val column = solutionsCoords.map(_(i))
 
       averageValues(i) = column.sum / solutionsCoords.length
+      println("Length " + solutionsCoords.length/2,  column(solutionsCoords.length/2))
       medianeValues(i) = column(solutionsCoords.length/2)
     })
 
     //Variable used to keep in memory the total volume of previous solutions
     var previousFirstCoord = 0.0
 
-    (0 until solutionsCoords.length).foreach(i => {
+    solutionsCoords.indices.foreach(i => {
        var volumeCurrentSol = 1.0
        var volumePreviousSols = 1.0
 
-      (0 until solutionsCoords(i).length).foreach(axys_index => {
+      solutionsCoords(i).indices.foreach(axys_index => {
         volumeCurrentSol *= solutionsCoords(i)(axys_index)
 
         if(axys_index != 0){
@@ -370,11 +374,62 @@ object UtilityClass {
       hyperVolumeLocal += volumeCurrentSol - volumePreviousSols
     })
 
-    //Gettting hypervolume difference
+    //Getting hyper volume difference
     hyperVolumeDiff = hyperVolumeLocal - hyperVolumeCurrentSol
 
-    val nbDominatedPercent = nbDominated * 100.0 / solutionsCoords.length;
-    val nbNonDominatedPercent = nbNonDominated * 100.0 / solutionsCoords.length;
+    val nbDominatedPercent = nbDominated * 100.0 / solutionsCoords.length
+    val nbNonDominatedPercent = nbNonDominated * 100.0 / solutionsCoords.length
     writeTrackingLine(filename, iteration, nbDominatedPercent, nbNonDominatedPercent, hyperVolumeLocal, hyperVolumeCurrentSol, hyperVolumeDiff, averageValues, medianeValues)
+  }
+
+  /**
+    * Method which is used for retrieve all neighbors of solution
+    * @param arr : current solution
+    * @return
+    */
+  def getNeighbors(arr: Array[Int]): ListBuffer[Array[Int]] = {
+
+    var neighbors = new ListBuffer[Array[Int]]()
+
+    // Adding current solution to escape same values array to be added
+    neighbors += arr
+
+    arr.indices.foreach( i => {
+      arr.indices.foreach(j => {
+        var newest = arr.clone()
+
+        val oldValue = newest(i)
+        newest(i) = newest(j)
+        newest(j) = oldValue
+
+        if (!checkExists(neighbors, newest)) neighbors += newest
+      })
+    })
+
+    // Deleting current solution
+    neighbors -= arr
+
+    neighbors
+  }
+
+  /**
+    * Method created to check if array is already added into neighbors list
+    * @param neighbors : all neighbors solutions of current solution
+    * @param arr : current solution
+    * @return
+    */
+  private def checkExists(neighbors: ListBuffer[Array[Int]], arr: Array[Int]): Boolean = {
+    var check: Boolean = false
+    val inner = new Breaks
+
+    inner.breakable {
+      for (a <- neighbors) {
+        if (util.Arrays.equals(a, arr)) {
+          check = true
+          inner.break
+        }
+      }
+    }
+    check
   }
 }
