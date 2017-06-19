@@ -1,5 +1,5 @@
 import java.util
-import java.util.{Arrays, List, Random}
+import java.util.Random
 
 import scala.collection.mutable.ListBuffer
 import scala.util.control.Breaks
@@ -15,38 +15,38 @@ object UtilityClass {
   
    /**
    * Function which gets integer value until is not correct
-   * @param q
+     *
+   * @param q : question which will be displayed to user
    * @param failure type
    * @param min : criteria of minimum value asked (included)
    * @param max : criteria of maximum value asked (excluded)
    * @return
    */
   def getScannerValue(q: String, failure: String, min: Int, max: Int): Int = {
-    var output = "";
-    var choice = false;
+    var output = ""
+    var choice = false
     do {
 
-      println(q);
-      output = scanner.nextLine();
+      println(q)
+      output = scanner.nextLine()
       Try(output.toInt) match {
-        case Success(num) => {
+        case Success(num) =>
           if (num <= min || num > max)
             println("Number written is not excepted.")
           else
-            choice = true;
-        }
-        case Failure(f) => {
+            choice = true
+        case Failure(_) =>
           println("Error, please select another " + failure + ".")
-        }
       }
     } while (!choice)
     output.toInt
   }
 
   /**
-   * Function which show evolution percentage of algorithm
-   * @param previousText
-   * @param text
+   * Function which show evolution percentage of algorithm on console
+    *
+   * @param previousText : previous input text value
+   * @param text : text displayed
    */
   def showEvolution(previousText: Int, text: String): Unit = {
     var lengthContent = previousText
@@ -54,7 +54,7 @@ object UtilityClass {
       lengthContent += text.length() - previousText
 
     }
-    for (i <- 0 until lengthContent) {
+    for (_ <- 0 until lengthContent) {
       print("\b")
     }
     
@@ -72,9 +72,9 @@ object UtilityClass {
     }
     for (i <- 0 until number) {
       val randomValue = random.nextInt(number)
-      val temporyValue = randomArray(i)
+      val tmpValue = randomArray(i)
       randomArray(i) = randomArray(randomValue)
-      randomArray(randomValue) = temporyValue
+      randomArray(randomValue) = tmpValue
     }
     randomArray
   }
@@ -82,13 +82,13 @@ object UtilityClass {
   /**
    * Function which permutes photos of a solution
    *
-   * @param solution
-   * @param number
-   * @param r
+   * @param solution : current solution
+   * @param number : number of mutations (user choice)
+   * @param r : random object
    */
   def perturbationIterated(solution: Array[Int], number: Int, r: scala.util.Random) {
     val nbMutations = r.nextInt(number) + 1
-    for (i <- 0 until nbMutations) {
+    for (_ <- 0 until nbMutations) {
       var oldValue = 0
       val firstBoxElement = r.nextInt(solution.length)
       val secondBoxElement = r.nextInt(solution.length)
@@ -101,45 +101,45 @@ object UtilityClass {
   /**
    * Function which writes best solution into the solution file
    *
-   * @param filename
-   * @param bestSolution
+   * @param filename : file name based on user choice
+   * @param bestSolution : best solution found at the end
    */
   def writeSolution(filename: String, bestSolution: Array[Int]) {
     val file = new FileClass("../resources/solutions/"+filename)
-    var line = "";
-    for (i <- 0 until bestSolution.length) {
+    var line = ""
+    for (i <- bestSolution.indices) {
       line += bestSolution(i) + " "
     }
-    file.writeLine(line, true)
+    file.writeLine(line, b = true)
   }
 
   /**
     * Function which writes best solution into the solution file
     *
-    * @param filename
-    * @param solution
-    * @param evals
+    * @param filename : file name where is stored information data
+    * @param solution : current solution treated
+    * @param evals : Array of criteria function to optimize
     */
   def writeSolutionAndScores(filename: String, solution: Array[Int],  evals : Array[(Array[Int]) => Double]) {
     val file = new FileClass("../resources/solutions/"+filename)
     var line = ""
 
-    for (i <- 0 until solution.length) {
+    for (i <- solution.indices) {
       line += solution(i) + " "
     }
 
-    (0 until evals.length).foreach( i => {
+    evals.indices.foreach(i => {
       line += ","
       line += evals(i)(solution)
     })
 
-    file.writeLine(line, true)
+    file.writeLine(line, b = true)
   }
 
   /**
-    * Function which sets header of tracks file
+    * Function which sets header of tracking file
     *
-    * @param filename
+    * @param filename : file name of tricking data file when header will be added
     */
   def writeHeaderTracking(filename: String, nbEvalsFunction: Int): Unit ={
     val file = new FileClass("../resources/solutions/"+filename+".tracking")
@@ -148,38 +148,38 @@ object UtilityClass {
       line += ",x" + i + "_avg,x" + i + "_median"
     })
     if(!file.fileExist())
-      file.writeLine(line, false)
+      file.writeLine(line, b = false)
   }
 
   /**
     * Function which writes number evaluation and result
     *
-    * @param filename
-    * @param iteration
-    * @param D
-    * @param ND
-    * @param HVL
-    * @param HV
-    * @param HVDiff
-    * @param avgValues
-    * @param medianeValues
+    * @param filename : file name where the data will be stored
+    * @param iteration : the current iteration indication
+    * @param D : number of dominated solutions (siblings solutions)
+    * @param ND : number of non dominated solutions (siblings solutions)
+    * @param HVL : hyper volume local (all siblings solutions)
+    * @param HV : hyper volume of the current solution
+    * @param HVDiff : Hyper volume difference
+    * @param avgValues : all average values for a specific criteria
+    * @param medianValues : all median values for a specific criteria
     */
-  def writeTrackingLine(filename: String, iteration: Int, D: Double, ND: Double, HVL: Double, HV: Double, HVDiff: Double, avgValues: Array[Double], medianeValues: Array[Double]) {
+  def writeTrackingLine(filename: String, iteration: Int, D: Double, ND: Double, HVL: Double, HV: Double, HVDiff: Double, avgValues: Array[Double], medianValues: Array[Double]) {
 
     val file = new FileClass("../resources/solutions/"+filename+".tracking")
     var line = f"$iteration, $D, $ND, $HVL, $HV, $HVDiff"
 
-    (0 until avgValues.length).foreach(i => {
-      line += "," + avgValues(i) + "," + medianeValues(i)
+    avgValues.indices.foreach(i => {
+      line += "," + avgValues(i) + "," + medianValues(i)
     })
-    file.writeLine(line, true)
+    file.writeLine(line, b= true)
   }
 
   /**
     * Function which sets header of solutions file
     *
-    * @param filename
-    * @param line
+    * @param filename : name of file
+    * @param line : line to add into file
     */
   def writeHeader(filename: String, line: String): Unit ={
     val file = new FileClass("../resources/solutions/"+filename)
@@ -239,7 +239,7 @@ object UtilityClass {
     * @return non dominated solutions
     */
   def getNonDominatedSolutions(arr: ListBuffer[Array[Int]], evals : Array[(Array[Int]) => Double]) : ListBuffer[Array[Int]] = {
-    var solutions = arr
+    val solutions = arr
     var elements = new ListBuffer[Int]
 
     arr.indices.foreach(sol_index => {
@@ -275,9 +275,8 @@ object UtilityClass {
     */
   def normalizeData(arr: Array[Array[Double]]) : Array[Array[Double]] = {
 
-    var arrOut = arr;
-    var maxValue = (for(x <- arr) yield x.max).max
-    var minValue = (for(x <- arr) yield x.min).min
+    val maxValue = (for(x <- arr) yield x.max).max
+    val minValue = (for (x <- arr) yield x.min).min
 
     arr.indices.foreach(x => {
       arr(x).indices.foreach(y =>{
@@ -304,15 +303,15 @@ object UtilityClass {
     var nbDominated = 0
     var nbNonDominated = 0
 
-    var neighbors = getNeighbors(arr = currentSolution)
+    val neighbors = getNeighbors(arr = currentSolution)
     var solutionsCoords = Array.ofDim[Double](neighbors.length, evals.length)
-    var currentSolScore = Array.ofDim[Double](evals.length)
+    val currentSolScore = Array.ofDim[Double](evals.length)
 
     var hyperVolumeLocal = 1.0
     var hyperVolumeCurrentSol = 1.0
     var hyperVolumeDiff = 0.0
-    var averageValues = Array.ofDim[Double](evals.length)
-    var medianeValues = Array.ofDim[Double](evals.length)
+    val averageValues = Array.ofDim[Double](evals.length)
+    val medianValues = Array.ofDim[Double](evals.length)
 
     //Use to compute only once the solutions scores
     evals.indices.foreach(func_index => {
@@ -342,14 +341,14 @@ object UtilityClass {
     //Order solutions scores by first criteria (x axys) to compute hypervolume more easily
     solutionsCoords = solutionsCoords.sortBy(_(1)).reverse
 
-    //Compute average values and mediane values
+    //Compute average values and median values
     evals.indices.foreach(i => {
 
       val column = solutionsCoords.map(_(i))
 
       averageValues(i) = column.sum / solutionsCoords.length
       println("Length " + solutionsCoords.length/2,  column(solutionsCoords.length/2))
-      medianeValues(i) = column(solutionsCoords.length/2)
+      medianValues(i) = column(solutionsCoords.length/2)
     })
 
     //Variable used to keep in memory the total volume of previous solutions
@@ -379,7 +378,7 @@ object UtilityClass {
 
     val nbDominatedPercent = nbDominated * 100.0 / solutionsCoords.length
     val nbNonDominatedPercent = nbNonDominated * 100.0 / solutionsCoords.length
-    writeTrackingLine(filename, iteration, nbDominatedPercent, nbNonDominatedPercent, hyperVolumeLocal, hyperVolumeCurrentSol, hyperVolumeDiff, averageValues, medianeValues)
+    writeTrackingLine(filename, iteration, nbDominatedPercent, nbNonDominatedPercent, hyperVolumeLocal, hyperVolumeCurrentSol, hyperVolumeDiff, averageValues, medianValues)
   }
 
   /**
