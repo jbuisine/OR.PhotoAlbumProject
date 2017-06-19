@@ -1,6 +1,4 @@
-
 import java.io.{FileNotFoundException, FileReader, IOException}
-import java.text.DecimalFormat
 
 import org.json.simple.{JSONArray, JSONObject}
 import org.json.simple.parser.{JSONParser, ParseException}
@@ -30,13 +28,11 @@ object Modelisation {
   // Grey AVG values distances calculates between photos
   private var photoDistancesGreyAVG: Array[Array[Double]] = _
 
-  private var df: DecimalFormat = new java.text.DecimalFormat("0.##")
-
 
   /**
    * Function used for init hash objective functions
-   * @param pathPhoto
-   * @param pathAlbum
+   * @param pathPhoto : path to photo of album
+   * @param pathAlbum : path to album
    */
   def init(pathPhoto: String, pathAlbum: String) {
     computeAlbumDistances(pathAlbum)
@@ -60,7 +56,7 @@ object Modelisation {
 
   /**
    * Function which load and compute distances
-   * @param fileName
+   * @param fileName : file name where data of photos are stored
    */
   private def computeAlbumDistances(fileName: String) {
     try {
@@ -68,29 +64,30 @@ object Modelisation {
       val parser = new JSONParser()
       val obj = parser.parse(reader)
       val album = obj.asInstanceOf[JSONObject]
-      val nPage = album.get("page")
+      //val nPage = album.get("page")
       val pageSize = album.get("pagesize").asInstanceOf[JSONArray]
-      val size = pageSize.get(0).toString().toInt
+      val size = pageSize.get(0).toString.toInt
       var nbPhoto = 0
-      for (i <- 0 until pageSize.size) nbPhoto += pageSize.get(i).toString().toInt
+      for (i <- 0 until pageSize.size) nbPhoto += pageSize.get(i).toString.toInt
       albumInvDist = Array.ofDim[Double](nbPhoto, nbPhoto)
       for (i <- 0 until nbPhoto; j <- 0 until nbPhoto)
         albumInvDist(i)(j) = inverseDistance(size, i, j)
     } catch {
-      case pe: ParseException => {
+      case pe: ParseException =>
         println("position: " + pe.getPosition)
         println(pe)
-      }
+
       case ex: FileNotFoundException => ex.printStackTrace()
       case ex: IOException => ex.printStackTrace()
     }
   }
 
   /**
-   * Method used for inverse distance of photo
-   * @param size
-   * @param i
-   * @param j
+   * Method used for inverse distance of photo of a specific page of album
+    *
+   * @param size : number of photo on the page
+   * @param i : x coordinate of the current page photo
+   * @param j : y coordinate of the current page photo
    * @return
    */
   private def inverseDistance(size: Int, i: Int, j: Int): Double = {
@@ -109,7 +106,7 @@ object Modelisation {
 
   /**
    * Method which loads the ahash values between photos
-   * @param fileName
+   * @param fileName : file name where data of photos are stored
    */
   private def computePhotoAhash(fileName: String) {
     try {
@@ -122,15 +119,15 @@ object Modelisation {
         val image = array.get(i).asInstanceOf[JSONObject]
         val d = image.get("ahashdist").asInstanceOf[JSONArray]
         for (j <- 0 until d.size) {
-          photoDistAhash(i)(j) = d.get(j).toString().toDouble
+          photoDistAhash(i)(j) = d.get(j).toString.toDouble
         }
       }
 
     } catch {
-      case pe: ParseException => {
+      case pe: ParseException =>
         println("position: " + pe.getPosition)
         println(pe)
-      }
+
       case ex: FileNotFoundException => ex.printStackTrace()
       case ex: IOException => ex.printStackTrace()
     }
@@ -138,7 +135,7 @@ object Modelisation {
 
   /**
     * Method which loads the phash values between photos
-    * @param fileName
+    * @param fileName : file name where data of photos are stored
     */
   private def computePhotoPhash(fileName: String) {
     try {
@@ -151,14 +148,14 @@ object Modelisation {
         val image = array.get(i).asInstanceOf[JSONObject]
         val d = image.get("phashdist").asInstanceOf[JSONArray]
         for (j <- 0 until d.size) {
-          photoDistPhash(i)(j) = d.get(j).toString().toDouble
+          photoDistPhash(i)(j) = d.get(j).toString.toDouble
         }
       }
     } catch {
-      case pe: ParseException => {
+      case pe: ParseException =>
         println("position: " + pe.getPosition)
         println(pe)
-      }
+
       case ex: FileNotFoundException => ex.printStackTrace()
       case ex: IOException => ex.printStackTrace()
     }
@@ -166,7 +163,7 @@ object Modelisation {
 
   /**
     * Method which loads the dhash values between photos
-    * @param fileName
+    * @param fileName : file name where data of photos are stored
     */
   private def computePhotoDhash(fileName: String) {
     try {
@@ -179,14 +176,14 @@ object Modelisation {
         val image = array.get(i).asInstanceOf[JSONObject]
         val d = image.get("dhashdist").asInstanceOf[JSONArray]
         for (j <- 0 until d.size) {
-          photoDistDhash(i)(j) = d.get(j).toString().toDouble
+          photoDistDhash(i)(j) = d.get(j).toString.toDouble
         }
       }
     } catch {
-      case pe: ParseException => {
+      case pe: ParseException =>
         println("position: " + pe.getPosition)
         println(pe)
-      }
+
       case ex: FileNotFoundException => ex.printStackTrace()
       case ex: IOException => ex.printStackTrace()
     }
@@ -194,7 +191,7 @@ object Modelisation {
 
   /**
    * Method which loads tags values
-   * @param fileName
+   * @param fileName : file name where data of photos are stored
    */
   private def computePhotoTags(fileName: String) {
     try {
@@ -203,8 +200,8 @@ object Modelisation {
       val obj = parser.parse(reader)
       val array = obj.asInstanceOf[JSONArray]
       val nbTags: Int = array.get(0).asInstanceOf[JSONObject].get("tags").asInstanceOf[JSONObject].get("classes").asInstanceOf[JSONArray].size
-      var photoTagsValue = Array.ofDim[Double](array.size(), nbTags)
-      var photoTagsName = Array.ofDim[String](array.size(), nbTags)
+      val photoTagsValue = Array.ofDim[Double](array.size(), nbTags)
+      val photoTagsName = Array.ofDim[String](array.size(), nbTags)
       photoDistancesCommonsTags = Array.ofDim[Double](array.size(), array.size())
       photoDistancesUncommonTags = Array.ofDim[Double](array.size(), array.size())
       photoDistancesUncommonNbTags = Array.ofDim[Double](array.size(), array.size())
@@ -212,18 +209,18 @@ object Modelisation {
       //Get information of tags
       for (i <- 0 until array.size) {
         val tags = array.get(i).asInstanceOf[JSONObject].get("tags").asInstanceOf[JSONObject].get("classes").asInstanceOf[JSONArray]
-        val probs = array.get(i).asInstanceOf[JSONObject].get("tags").asInstanceOf[JSONObject].get("probs").asInstanceOf[JSONArray]
+        val prob = array.get(i).asInstanceOf[JSONObject].get("tags").asInstanceOf[JSONObject].get("probs").asInstanceOf[JSONArray]
         for (j <- 0 until nbTags) {
 
-          photoTagsName(i)(j) = tags.get(j).toString()
-          photoTagsValue(i)(j) = probs.get(j).toString().toDouble
+          photoTagsName(i)(j) = tags.get(j).toString
+          photoTagsValue(i)(j) = prob.get(j).toString.toDouble
         }
       }
 
       for (i <- 0 until array.size) {
 
-        //Get sum of all sames or differents tags
-        //Make two differents array 
+        //Get sum of all sames or different tags
+        //Make two different array
         // - One to minimize commons value
         // - The other will be used fo minimize difference between each photos
         for (j <- 0 until array.size) {
@@ -236,7 +233,7 @@ object Modelisation {
             if (photoTagsName(i)(l) != photoTagsName(j)(k)){
               uncommonSum += math.abs(photoTagsValue(i)(l) - photoTagsValue(j)(k))
 
-              //Penality result cause of different tag
+              // Penalty result cause of different tag
               commonSum += 0.3
             }
             else {
@@ -257,10 +254,10 @@ object Modelisation {
         }
       }
     } catch {
-      case pe: ParseException => {
+      case pe: ParseException =>
         println("position: " + pe.getPosition)
         println(pe)
-      }
+
       case ex: FileNotFoundException => ex.printStackTrace()
       case ex: IOException => ex.printStackTrace()
     }
@@ -268,7 +265,7 @@ object Modelisation {
 
   /**
    * Method which loads colors values of photos
-   * @param fileName
+   * @param fileName : file name where data of photos are stored
    */
   private def computePhotoColors(fileName: String) {
     try {
@@ -276,18 +273,18 @@ object Modelisation {
       val parser = new JSONParser()
       val obj = parser.parse(reader)
       val array = obj.asInstanceOf[JSONArray]
-      var photoColor1 = Array.ofDim[Int](array.size, 3)
-      var photoColor2 = Array.ofDim[Int](array.size, 3)
+      val photoColor1 = Array.ofDim[Int](array.size, 3)
+      val photoColor2 = Array.ofDim[Int](array.size, 3)
       photoDistancesColors = Array.ofDim[Double](array.size, array.size)
       for (i <- 0 until array.size) {
         val image = array.get(i).asInstanceOf[JSONObject]
-        photoColor1(i)(0) = image.get("color1").asInstanceOf[JSONObject].get("r").toString().toInt
-        photoColor1(i)(1) = image.get("color1").asInstanceOf[JSONObject].get("b").toString().toInt
-        photoColor1(i)(2) = image.get("color1").asInstanceOf[JSONObject].get("g").toString().toInt
+        photoColor1(i)(0) = image.get("color1").asInstanceOf[JSONObject].get("r").toString.toInt
+        photoColor1(i)(1) = image.get("color1").asInstanceOf[JSONObject].get("b").toString.toInt
+        photoColor1(i)(2) = image.get("color1").asInstanceOf[JSONObject].get("g").toString.toInt
 
-        photoColor2(i)(0) = image.get("color2").asInstanceOf[JSONObject].get("r").toString().toInt
-        photoColor2(i)(1) = image.get("color2").asInstanceOf[JSONObject].get("b").toString().toInt
-        photoColor2(i)(2) = image.get("color2").asInstanceOf[JSONObject].get("g").toString().toInt
+        photoColor2(i)(0) = image.get("color2").asInstanceOf[JSONObject].get("r").toString.toInt
+        photoColor2(i)(1) = image.get("color2").asInstanceOf[JSONObject].get("b").toString.toInt
+        photoColor2(i)(2) = image.get("color2").asInstanceOf[JSONObject].get("g").toString.toInt
       }
 
       for (i <- 0 until array.size) {
@@ -299,15 +296,15 @@ object Modelisation {
             val d2 = math.sqrt((photoColor2(i)(0) - photoColor2(j)(0)) * (photoColor2(i)(0) - photoColor2(j)(0))
               + (photoColor2(i)(1) - photoColor2(j)(1)) * (photoColor2(i)(1) - photoColor2(j)(1))
               + (photoColor2(i)(2) - photoColor2(j)(2)) * (photoColor2(i)(2) - photoColor2(j)(2))) 
-             photoDistancesColors(i)(j) = d1+d2;
+             photoDistancesColors(i)(j) = d1+d2
         }
       }
       
     } catch {
-      case pe: ParseException => {
+      case pe: ParseException =>
         println("position: " + pe.getPosition)
         println(pe)
-      }
+
       case ex: FileNotFoundException => ex.printStackTrace()
       case ex: IOException => ex.printStackTrace()
     }
@@ -315,7 +312,7 @@ object Modelisation {
 
   /**
    * Method which loads Grey AVG values
-   * @param fileName
+   * @param fileName : file name where data of photos are stored
    */
   private def computePhotoGreyAVG(fileName: String) {
     try {
@@ -323,12 +320,12 @@ object Modelisation {
       val parser = new JSONParser()
       val obj = parser.parse(reader)
       val array = obj.asInstanceOf[JSONArray]
-      var photoGreyAVG = Array.ofDim[Int](array.size)
+      val photoGreyAVG = Array.ofDim[Int](array.size)
       photoDistancesGreyAVG = Array.ofDim[Double](array.size, array.size)
       
       for (i <- 0 until array.size) {
         val image = array.get(i).asInstanceOf[JSONObject]
-        photoGreyAVG(i) = image.get("greyavg").toString().toInt
+        photoGreyAVG(i) = image.get("greyavg").toString.toInt
       }
       
       for(i <- 0 until array.size)
@@ -336,10 +333,10 @@ object Modelisation {
           photoDistancesGreyAVG(i)(j) = math.abs(photoGreyAVG(i) - photoGreyAVG(j))
       
     } catch {
-      case pe: ParseException => {
+      case pe: ParseException =>
         println("position: " + pe.getPosition)
         println(pe)
-      }
+
       case ex: FileNotFoundException => ex.printStackTrace()
       case ex: IOException => ex.printStackTrace()
     }
@@ -351,13 +348,13 @@ object Modelisation {
    * - Photo ahash distances
    * - The inverse of the spatial distances on the album
    *
-   * @param solution
+   * @param solution : solution evaluated
    * @return
    */
   def ahashEval(solution: Array[Int]): Double = {
     var sum: Double = 0
 
-    for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length)
+    for (i <- albumInvDist.indices; j <- i + 1 until albumInvDist.length)
       sum += photoDistAhash(solution(i))(solution(j)) * albumInvDist(i)(j)
 
     sum
@@ -368,13 +365,13 @@ object Modelisation {
     * - Photo phash distances
     * - The inverse of the spatial distances on the album
     *
-    * @param solution
+    * @param solution : solution evaluated
     * @return
     */
   def phashEval(solution: Array[Int]): Double = {
     var sum: Double = 0
 
-    for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length)
+    for (i <- albumInvDist.indices; j <- i + 1 until albumInvDist.length)
       sum += photoDistPhash(solution(i))(solution(j)) * albumInvDist(i)(j)
 
     sum
@@ -385,13 +382,13 @@ object Modelisation {
     * - Photo dhash distances
     * - The inverse of the spatial distances on the album
     *
-    * @param solution
+    * @param solution : solution evaluated
     * @return
     */
   def dhashEval(solution: Array[Int]): Double = {
     var sum: Double = 0
 
-    for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length)
+    for (i <- albumInvDist.indices; j <- i + 1 until albumInvDist.length)
       sum += photoDistDhash(solution(i))(solution(j)) * albumInvDist(i)(j)
 
     sum
@@ -403,13 +400,13 @@ object Modelisation {
    * Objective function which uses distance defined by common tags value
 	 * weighted by the inverse of the spatial distances on the album 
    *
-   * @param solution
+   * @param solution : solution evaluated
    * @return score
    */
   def commonTagEval(solution: Array[Int]): Double = {
     var sum: Double = 0
 
-    for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length)
+    for (i <- albumInvDist.indices; j <- i + 1 until albumInvDist.length)
       sum += photoDistancesCommonsTags(solution(i))(solution(j)) * albumInvDist(i)(j)
 
     sum
@@ -421,13 +418,13 @@ object Modelisation {
    * Objective function which uses distance defined by uncommon tags value 
 	 * weighted by the inverse of the spatial distances on the album 
 	 * 
-   * @param solution
+   * @param solution : solution evaluated
    * @return
    */
   def uncommonTagEval(solution: Array[Int]): Double = {
     var sum: Double = 0
 
-    for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length)
+    for (i <- albumInvDist.indices; j <- i + 1 until albumInvDist.length)
       sum += photoDistancesUncommonTags(solution(i))(solution(j)) * albumInvDist(i)(j)
 
     sum
@@ -439,13 +436,13 @@ object Modelisation {
    * Objective function which uses distance defined by number of uncommon tags 
 	 * weighted by the inverse of the spatial distances on the album 
 	 * 
-   * @param solution
+   * @param solution : solution evaluated
    * @return
    */
   def nbUncommonTagEval(solution: Array[Int]): Double = {
     var sum: Double = 0
 
-    for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length)
+    for (i <- albumInvDist.indices; j <- i + 1 until albumInvDist.length)
       sum += photoDistancesUncommonNbTags(solution(i))(solution(j)) * albumInvDist(i)(j)
 
     sum
@@ -457,13 +454,13 @@ object Modelisation {
    * Objective function which uses distance defined by distance between colors (color 1 & color2)
 	 * weighted by the inverse of the spatial distances on the album 
    *
-   * @param solution
+   * @param solution : solution evaluated
    * @return score
    */
   def colorsEval(solution: Array[Int]): Double = {
     var sum: Double = 0
 
-    for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length)
+    for (i <- albumInvDist.indices; j <- i + 1 until albumInvDist.length)
       sum += photoDistancesColors(solution(i))(solution(j)) * albumInvDist(i)(j)
 
     sum
@@ -475,13 +472,13 @@ object Modelisation {
     * Objective function which uses distance defined by grey AVG value
     * weighted by the inverse of the spatial distances on the album
     *
-    * @param solution
+    * @param solution : solution evaluated
     * @return score
     */
   def greyAVGEval(solution: Array[Int]): Double = {
     var sum: Double = 0
 
-    for (i <- 0 until albumInvDist.length; j <- i + 1 until albumInvDist.length)
+    for (i <- albumInvDist.indices; j <- i + 1 until albumInvDist.length)
       sum += photoDistancesGreyAVG(solution(i))(solution(j)) * albumInvDist(i)(j)
 
     sum

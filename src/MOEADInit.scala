@@ -42,11 +42,11 @@ object MOEADInit {
     val distances = new Array[ListMap[Int, Double]](N)
 
     //Init list map of each item
-    (0 until distances.length).foreach(index => distances(index) = new ListMap[Int, Double])
+    distances.indices.foreach(index => distances(index) = new ListMap[Int, Double])
 
     //Initialize matrix distances with Euclidean distances method for each vector
-    (0 until distances.length).foreach( i => {
-      (0 until distances.length).foreach( j => {
+    distances.indices.foreach( i => {
+      distances.indices.foreach( j => {
         val distance = math.sqrt(math.pow(vectors(i)(0) - vectors(j)(0), 2) + math.pow(vectors(i)(1) - vectors(j)(1), 2))
         distances(i) += j -> distance
         distances(j) += j -> distance
@@ -54,18 +54,18 @@ object MOEADInit {
     })
 
     //Return variable which just return the closest vectors for each vectors
-    val closests = new Array[Array[Int]](N)
+    val closest = new Array[Array[Int]](N)
 
 
-    (0 until closests.length).foreach( index => {
+    closest.indices.foreach( index => {
       //Get the T closest of current lambda vector
       val beginIndex = math.max(0, math.min(N-T, index-(T/2)))
       val endIndex = math.min(N, math.max(T,index+(T/2)))
 
-      closests(index) = distances(index).toSeq.sortBy(_._2).unzip._1.slice(beginIndex, endIndex).toArray
+      closest(index) = distances(index).toSeq.sortBy(_._2).unzip._1.slice(beginIndex, endIndex).toArray
     })
 
-    closests
+    closest
   }
 
 
@@ -96,9 +96,9 @@ object MOEADInit {
     val values = new Array[Array[Double]](population.length)
 
     //Compute for each solution of population its scores obtained with each function
-    (0 until population.length).foreach( i => {
+    population.indices.foreach( i => {
       values(i) = new Array[Double](f.length)
-      (0 until f.length).foreach( j => values(i)(j) = f(j)(population(i)))
+      f.indices.foreach( j => values(i)(j) = f(j)(population(i)))
     })
 
     values
@@ -115,7 +115,7 @@ object MOEADInit {
     val point = new Array[Double](nbAxes)
 
     //Compute point with each max values of each axes (each function)
-    (0 until point.length).foreach( i => {
+    point.indices.foreach( i => {
        point(i) = v(i).min
     })
 
@@ -134,7 +134,7 @@ object MOEADInit {
     */
   def computeCombinedValues(y: Array[Int], z: Array[Double], vector: Array[Double], f : Array[(Array[Int]) => Double], choice: Int): Double = {
     val values = new Array[Double](f.length)
-    (0 until f.length).foreach( i => {
+    f.indices.foreach( i => {
       if(choice == 0)
         values(i) = vector(i) * math.abs(f(i)(y) - z(i))
       else

@@ -1,7 +1,3 @@
-
-
-
-
 import java.io._
 
 /**
@@ -10,48 +6,48 @@ import java.io._
  */
 class FileClass(nom: String) {
 
-  private var fichier: File = new File(nom)
+  private val file: File = new File(nom)
 
-  var fichierReader: BufferedReader = _
+  var fileReader: BufferedReader = _
 
   this.open()
 
   try {
-    fichierReader = new BufferedReader(new FileReader(fichier))
+    fileReader = new BufferedReader(new FileReader(file))
   } catch {
-    case e: FileNotFoundException => println("File does not exist... Creation of the file...")
-    fichier.getParentFile().mkdirs();
-    //val writer = new FileWriter(fichier);
+    case _: FileNotFoundException => println("File does not exist... Creation of the file...")
+    file.getParentFile.mkdirs();
+    //val writer = new FileWriter(file);
   }
 
   private def open() {
-    fichier.setExecutable(true)
-    fichier.setReadable(true)
-    fichier.setWritable(true)
+    file.setExecutable(true)
+    file.setReadable(true)
+    file.setWritable(true)
   }
 
   def nextLine(): String = {
     var value = ""
     try {
-      value = fichierReader.readLine()
+      value = fileReader.readLine()
     } catch {
-      case e: IOException => value = null
+      case _: IOException => value = null
     }
     value
   }
 
   def close() {
-    fichier.setExecutable(false)
-    fichier.setReadable(false)
-    fichier.setWritable(false)
+    file.setExecutable(false)
+    file.setReadable(false)
+    file.setWritable(false)
   }
 
   def writeLine(pVal: String, b: Boolean) {
     try {
-      val fichierWriter = new BufferedWriter(new FileWriter(fichier, b))
-      fichierWriter.write(pVal)
-      fichierWriter.newLine()
-      fichierWriter.close()
+      val fileWriter = new BufferedWriter(new FileWriter(file, b))
+      fileWriter.write(pVal)
+      fileWriter.newLine()
+      fileWriter.close()
     } catch {
       case e: IOException => e.printStackTrace()
     }
@@ -60,16 +56,16 @@ class FileClass(nom: String) {
   def findLine(pVal: String): Boolean = {
     var check = false
     try {
-      val fichierReader = new BufferedReader(new FileReader(fichier))
-      while ((fichierReader.readLine()) != null && fichierReader.ready()) {
-        if (pVal == fichierReader.readLine().toString) check = true
+      val fileReader = new BufferedReader(new FileReader(file))
+      while (fileReader.readLine() != null && fileReader.ready()) {
+        if (pVal == fileReader.readLine()) check = true
       }
-      fichierReader.close()
+      fileReader.close()
     } catch {
       case e: IOException => e.printStackTrace()
     }
     check
   }
   
-  def fileExist(): Boolean = fichier.exists()
+  def fileExist(): Boolean = file.exists()
 }

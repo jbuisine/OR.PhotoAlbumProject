@@ -1,6 +1,7 @@
 
+import scala.collection.mutable
 import scala.util.control.Breaks
-import scala.collection.mutable.{ListBuffer, MutableList}
+import scala.collection.mutable.ListBuffer
 import scala.util.Random
 
 /**
@@ -19,14 +20,13 @@ object Algorithms {
   /**
     * HillClimber First improvement method used to get best local solution
     *
-    * @param numberElements
-    * @param nbEval
-    * @param arr
+    * @param numberElements : size of excepted solution (TODO check if it's unnecessary)
+    * @param nbEval : number of evaluation asked for the HC Algorithm
+    * @param arr : current solution passed
     * @return best solution
     */
   def HillClimberFirstImprovement(numberElements: Int, nbEval: Int, arr: Array[Int], eval: (Array[Int]) => Double): Array[Int] = {
     var solution = arr
-    var index = 0
     var i = 0
 
     val random = Random
@@ -42,14 +42,14 @@ object Algorithms {
       var result = 0.0
 
       inner.breakable {
-        for (j <- 0 to numberElements) {
+        for (_ <- 0 to numberElements) {
 
           val firstRandomValue = random.nextInt(solution.length)
           val secondRandomValue = random.nextInt(solution.length)
 
-          val temporyValue = solution(firstRandomValue)
+          val tmpValue = solution(firstRandomValue)
           solution(firstRandomValue) = solution(secondRandomValue)
-          solution(secondRandomValue) = temporyValue
+          solution(secondRandomValue) = tmpValue
 
           result = eval(solution)
           i += 1
@@ -61,7 +61,7 @@ object Algorithms {
           }
 
           solution(secondRandomValue) = solution(firstRandomValue)
-          solution(firstRandomValue) = temporyValue
+          solution(firstRandomValue) = tmpValue
         }
       }
     }
@@ -71,18 +71,19 @@ object Algorithms {
   /**
     * Method which used the iterated local search algorithm to find a better solution
     *
-    * @param iteration
-    * @param nbEvaluationHillClimber
-    * @param perturbation
-    * @return the best solution
+    * @param numberElements : size of excepted solution (TODO check if it's unnecessary)
+    * @param iteration : number of iteration of Iterated Local Search
+    * @param nbEvaluationHillClimber : number of iteration for HC Algorithm
+    * @param perturbation : number of permuted cells of solution at each iteration
+    * @return the best solution found
     */
   def IteratedLocalSearch(numberElements: Int, iteration: Int, nbEvaluationHillClimber: Int, perturbation: Int, eval: (Array[Int]) => Double): Array[Int] = {
-    var random = Random
+    val random = Random
 
     var solution = HillClimberFirstImprovement(numberElements, nbEvaluationHillClimber, UtilityClass.generateRandomSolution(numberElements), eval)
 
     var bestResult = eval(solution)
-    var bestSolution = solution.clone()
+    var bestSolution: Array[Int] = solution.clone()
     var i = 0
     var percentEvolution = ""
 
@@ -106,39 +107,37 @@ object Algorithms {
       UtilityClass.showEvolution(lengthText, percentEvolution)
     } while (i < iteration)
 
-    return bestSolution
+    bestSolution
   }
 
   /**
     * Method which implements the genetic evolutionary algorithm
     *
-    * @param mu
-    * @param lambda
-    * @param iteration
-    * @param nbEvaluationHillClimber
-    * @param numberOfPermutations
+    * @param mu : number of mu solution
+    * @param lambda : number of lambda solution
+    * @param iteration : number of main iteration
+    * @param nbEvaluationHillClimber : number of evaluation of HC Algorithm at each iteration
+    * @param numberOfPermutations : number of permutations excepted to have new solution
     * @return best solution object found
     */
   def GeneticEvolutionnaryAlgorithm(numberElements: Int, mu: Int, lambda: Int, iteration: Int, nbEvaluationHillClimber: Int, numberOfHc: Int, numberOfPermutations: Int, eval: (Array[Int]) => Double): Array[Int] = {
 
-    var rand = Random
+    val rand = Random
     var percentEvolution = ""
 
     // Generate all parents solutions to start the algorithm
-    var parentsSolutions = MutableList[Array[Int]]()
+    var parentsSolutions = mutable.MutableList[Array[Int]]()
 
-    for (i <- 0 to mu - 1) {
-      parentsSolutions += UtilityClass.generateRandomSolution(numberElements)
-    }
+    (0 until mu).foreach(_ => parentsSolutions += UtilityClass.generateRandomSolution(numberElements))
     //println(parentsSolutions.length)
 
     // Loop which defined the stop search (Iteration number)
-    for (i <- 0 to iteration - 1) {
-      var genitorsSolutions = MutableList[Array[Int]]()
+    for (i <- 0 until iteration) {
+      var genitorsSolutions = mutable.MutableList[Array[Int]]()
 
-      for (j <- 0 to lambda - 1) {
-        var firstSelectedIndex = rand.nextInt(parentsSolutions.length - 1)
-        var secondSelectedIndex = rand.nextInt(parentsSolutions.length - 1)
+      for (_ <- 0 until lambda) {
+        val firstSelectedIndex = rand.nextInt(parentsSolutions.length - 1)
+        val secondSelectedIndex = rand.nextInt(parentsSolutions.length - 1)
 
         if (eval(parentsSolutions(firstSelectedIndex)) >= eval(parentsSolutions(secondSelectedIndex))) {
           genitorsSolutions += parentsSolutions(firstSelectedIndex)
@@ -147,16 +146,16 @@ object Algorithms {
         }
       }
 
-      // Do variations on Genitors like mutation & HC
+      // Do variations on "genitors" like mutation & HC
       // Mutation needs make probability
-      for (j <- 0 to genitorsSolutions.length - 1) {
+      for (j <- genitorsSolutions.indices) {
 
         // Do permutation
         UtilityClass.perturbationIterated(genitorsSolutions(j), numberOfPermutations, rand)
 
         // Make hill climber on the current solution to improve the genitor solution
-        for (k <- 0 to numberOfHc - 1) {
-          var currentSolution = HillClimberFirstImprovement(genitorsSolutions(j).length, nbEvaluationHillClimber,
+        for (_ <- 0 until numberOfHc) {
+          val currentSolution = HillClimberFirstImprovement(genitorsSolutions(j).length, nbEvaluationHillClimber,
             genitorsSolutions(j).clone(), eval)
 
           if (eval(currentSolution) < eval(genitorsSolutions(j))) {
@@ -168,7 +167,7 @@ object Algorithms {
       // Get the best between old parents & Children to get Survivors
 
       // First of all we need to add all children
-      for (j <- 0 to lambda - 1) {
+      for (j <- 0 until lambda) {
         parentsSolutions += genitorsSolutions(j)
       }
 
@@ -184,25 +183,26 @@ object Algorithms {
 
     }
 
-    return parentsSolutions(0)
+    // Return the first element of the list
+    parentsSolutions.head
   }
 
   /**
     * Method which used method implement pareto local search and find non determinist solution
     *
-    * @param nbEval
-    * @param arr
+    * @param filename : file name which information will be stored
+    * @param nbEval : number of evaluation
+    * @param arr : array of solution passed as parameter if necessary
     * @return best solution
     */
   def ParetoLocalSearch(filename: String, numberElements: Int, nbEval: Int, arr: ListBuffer[Array[Int]], evals: Array[(Array[Int]) => Double]): ListBuffer[Array[Int]] = {
 
-    var rand = new Random
+    val rand = new Random
     var percentEvolution = ""
     var numberEval = nbEval
     var maxEval = 0
     var solutions = arr
     var solutionsPassed = new ListBuffer[Array[Int]]
-    var index = 0
     var i = 0
 
     val random = Random
@@ -214,7 +214,7 @@ object Algorithms {
       solutions = new ListBuffer[Array[Int]]()
       solutions += UtilityClass.generateRandomSolution(numberElements)
 
-      maxEval = (numberElements * (numberElements-1))
+      maxEval = numberElements * (numberElements - 1)
       nbEvaluation = 0
     }else{
       maxEval = (numberElements * (numberElements-1)) - solutions.length
@@ -242,19 +242,19 @@ object Algorithms {
 
       } while (solutionsPassed.contains(current_sol))
 
-      //Flypping each bit of the current solution
+      //Flipping each bit of the current solution
       (0 until numberElements).foreach(index => {
         val randomValue = random.nextInt(numberElements)
 
-        val temporyValue = current_sol(index)
+        val tmpValue: Int = current_sol(index)
         current_sol(index) = current_sol(randomValue)
-        current_sol(randomValue) = temporyValue
+        current_sol(randomValue) = tmpValue
 
         //Add this new solutions with all old solutions
         solutions += current_sol.clone()
 
         current_sol(randomValue) = current_sol(index)
-        current_sol(index) = temporyValue
+        current_sol(index) = tmpValue
       })
 
       i += 1
@@ -278,13 +278,14 @@ object Algorithms {
 
   /**
     *
-    * MOEAD Algorithm implementation
+    * MOEAD Algorithm implementation (PLS decomposed on sub problems)
     *
-    * @param nbEval
-    * @param N
-    * @param T
-    * @param evals
-    * @param choice
+    * @param filename : file name which information will be stored
+    * @param nbEval : number of evaluation for the MOEAD Algorithm excepted
+    * @param N : Number of sub problems considered
+    * @param T : the number of the weight vectors in the neighborhood of each weight vector.
+    * @param evals : Criteria functions
+    * @param choice : 0 => Tchebycheff approach || 1 => Weighted sum approach
     * @return
     */
   def MOEAD_Algorithm(filename: String, numberElements: Int, nbEval: Int, N: Int, T: Int, evals: Array[(Array[Int]) => Double], choice: Int): ListBuffer[Array[Int]] = {
@@ -292,7 +293,7 @@ object Algorithms {
     /**
       * All utilities local variables
       */
-    var random = new Random
+    val random = new Random
     var percentEvolution = ""
 
     //Set header of tracking file
@@ -303,20 +304,20 @@ object Algorithms {
       */
 
     //Step 1.0 : Initialization of each scalar sub problems
-    var vectors = MOEADInit.generateVectors(N)
+    val vectors = MOEADInit.generateVectors(N)
 
     //Step 1.1 : Initialization of EP (set to empty)
     var nonDominatedSolutions = new ListBuffer[Array[Int]]()
 
     //Step 1.2 : Compute distances between T closest weight vector to each weight vector
-    var B = MOEADInit.getNeightborsVectors(vectors, T)
+    val B = MOEADInit.getNeightborsVectors(vectors, T)
 
     //Step 1.3 : Initialize population (solution for each sub problems)
-    var population = MOEADInit.generateRandomPopulation(numberElements, N)
-    var values = MOEADInit.computeFunctionValues(population, evals)
+    val population = MOEADInit.generateRandomPopulation(numberElements, N)
+    val values = MOEADInit.computeFunctionValues(population, evals)
 
     //Step 1.4 : Initialize reference point
-    var z = MOEADInit.getRefPoint(values, evals.length)
+    val z = MOEADInit.getRefPoint(values, evals.length)
 
     var evaluation = 0
     nbEvaluation = 0
@@ -336,9 +337,9 @@ object Algorithms {
 
         //2.1.1 : Getting random index of closest vectors and retrieve solution associated
         val firstIndex = B(i)(random.nextInt(B(i).length))
-        val secondIndex = B(i)(random.nextInt(B(i).length))
+        //val secondIndex = B(i)(random.nextInt(B(i).length))
 
-        var firstSol = population(firstIndex).clone()
+        val firstSol = population(firstIndex).clone()
         //var secondSol = population(secondIndex).clone()
 
         //2.1.1. Create new solution with the selected solutions
@@ -367,7 +368,7 @@ object Algorithms {
           * 2.3 Update z : reference point
           */
         //Setting new reference point if exists
-        (0 until evals.length).foreach(index => {
+        evals.indices.foreach(index => {
           z(index) = math.min(z(index), evals(index)(newSol))
         })
 
@@ -376,17 +377,17 @@ object Algorithms {
           */
 
         //For each solution into the population check if new solution is better
-        (0 until B(i).length).foreach(index => {
+        B(i).indices.foreach(index => {
           val neighborIndex = B(i)(index)
 
-          //Getting Tchebivech function result for the new solution and current solution
+          //Getting Tchebycheff function result for the new solution and current solution
           val gNeighbor = MOEADInit.computeCombinedValues(population(neighborIndex), z, vectors(neighborIndex), evals, choice)
           val gY = MOEADInit.computeCombinedValues(newSol, z, vectors(neighborIndex), evals, choice)
 
           //If better update population and values
           if (gY < gNeighbor) {
             population(neighborIndex) = newSol
-            (0 until evals.length).foreach(current => {
+            evals.indices.foreach(current => {
               values(neighborIndex)(current) = evals(current)(population(neighborIndex))
             })
           }
@@ -399,8 +400,6 @@ object Algorithms {
 
         //Add new solution to EP
         nonDominatedSolutions += newSol
-
-        val oldLength = nonDominatedSolutions.length
 
         //Add tracking to check algorithm performance
         UtilityClass.algorithmEvaluationTrack(filename, nbEvaluation, newSol, numberElements, evals)
@@ -425,12 +424,16 @@ object Algorithms {
   /**
     *
     * TP-LS Algorithm implementation
+    * Another multi-objective approach which consist to execute MOEA/D algorithm and then PLS algorithm
     *
-    * @param nbEval
-    * @param N
-    * @param T
-    * @param evals
-    * @param choice
+    * The aim of the algorithm is to obtained PLS optimal front quickly
+    *
+    * @param filename : file name which information will be stored
+    * @param nbEval : number of evaluation of MOEA/D algorithm
+    * @param N : Number of sub problems considered
+    * @param T : the number of the weight vectors in the neighborhood of each weight vector.
+    * @param evals : Criteria functions
+    * @param choice : 0 => Tchebycheff approach || 1 => Weighted sum approach
     * @return
     */
   def TPLS_Algorithm(filename: String, numberElements: Int, nbEval: Int, N: Int, T: Int, evals: Array[(Array[Int]) => Double], choice: Int): ListBuffer[Array[Int]] = {
@@ -438,7 +441,7 @@ object Algorithms {
     //Set header of tracking file
     UtilityClass.writeHeaderTracking(filename, evals.length)
 
-    var solutions = MOEAD_Algorithm(filename, numberElements, nbEval, N, T, evals, choice)
+    val solutions = MOEAD_Algorithm(filename, numberElements, nbEval, N, T, evals, choice)
 
     ParetoLocalSearch(filename, numberElements, 0, solutions, evals)
   }
@@ -447,18 +450,17 @@ object Algorithms {
     *
     * Random wal algorithm mainly used for evaluating feature
     *
-    * @param filename
-    * @param numberElements
-    * @param nbEval
-    * @param evals
+    * @param filename : file name which information at each iteration will be stored
+    * @param numberElements : size of solution excepted
+    * @param nbEval : number of evalution of the algorithm
+    * @param evals : criteria functions to optimize
     * @return
     */
-  def RandowWalkAlgorithm(filename: String, numberElements: Int, nbEval: Int, evals: Array[(Array[Int]) => Double]): ListBuffer[Array[Int]] = {
+  def RandomWalkAlgorithm(filename: String, numberElements: Int, nbEval: Int, evals: Array[(Array[Int]) => Double]): ListBuffer[Array[Int]] = {
 
     /**
       * All utilities local variables
       */
-    var random = new Random
     var percentEvolution = ""
     var evaluation = 0
 
