@@ -132,3 +132,15 @@
     border: 1px solid lightgrey;
     border-top-right-radius: 3px;
 }
+
+/*
+    Other CSS
+ */
+
+.form-control{
+    margin: 0 15px 0 15px;
+}
+
+.modal-content{
+    border-radius: 7px;
+}

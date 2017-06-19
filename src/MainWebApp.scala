@@ -118,7 +118,6 @@ object MainWebApp {
             val closestVectors = data.get("closestVectors").toString.toInt
             val computedChoice = data.get("computedChoice").toString.toInt
             solutions = Algorithms.MOEAD_Algorithm(filePath, templateSize, algorithmIteration, numberVectors, closestVectors, functions, computedChoice)
-          }
 
           case 5 =>
             //MOEA/D values
@@ -131,7 +130,7 @@ object MainWebApp {
           // Random walk
           case 6 =>
             solutions = Algorithms.RandomWalkAlgorithm(filePath, templateSize, algorithmIteration, functions)
-
+        }
       //Three criteria
       case 3 =>
         algorithmChoice match {

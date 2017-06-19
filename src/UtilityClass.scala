@@ -338,7 +338,7 @@ object UtilityClass {
         nbNonDominated += 1
     })
 
-    //Order solutions scores by first criteria (x axys) to compute hypervolume more easily
+    //Order solutions scores by first criteria (x axys) to compute hyper volume more easily
     solutionsCoords = solutionsCoords.sortBy(_(1)).reverse
 
     //Compute average values and median values
@@ -347,8 +347,9 @@ object UtilityClass {
       val column = solutionsCoords.map(_(i))
 
       averageValues(i) = column.sum / solutionsCoords.length
-      println("Length " + solutionsCoords.length/2,  column(solutionsCoords.length/2))
-      medianValues(i) = column(solutionsCoords.length/2)
+      println("Length " + neighbors.length/2,  column(neighbors.length/2))
+
+      medianValues(i) = column(neighbors.length/2)
     })
 
     //Variable used to keep in memory the total volume of previous solutions
@@ -376,9 +377,7 @@ object UtilityClass {
     //Getting hyper volume difference
     hyperVolumeDiff = hyperVolumeLocal - hyperVolumeCurrentSol
 
-    val nbDominatedPercent = nbDominated * 100.0 / solutionsCoords.length
-    val nbNonDominatedPercent = nbNonDominated * 100.0 / solutionsCoords.length
-    writeTrackingLine(filename, iteration, nbDominatedPercent, nbNonDominatedPercent, hyperVolumeLocal, hyperVolumeCurrentSol, hyperVolumeDiff, averageValues, medianValues)
+    writeTrackingLine(filename, iteration, nbDominated, nbNonDominated, hyperVolumeLocal, hyperVolumeCurrentSol, hyperVolumeDiff, averageValues, medianValues)
   }
 
   /**

@@ -160,7 +160,7 @@ function loadContentSol(data) {
 
             var currentDivId = 'graphic-tracking' + index;
 
-            $('#carousel-graphic-items').append('<div class="item"><div style="padding: 0% 10%;" id="'+currentDivId+'"></div></div>');
+            $('#carousel-graphic-items').append('<div class="item"><div style="padding:0% 10%;" id="'+currentDivId+'"></div></div>');
             $('#carousel-example-generic ol').append('<li data-target="#carousel-example-generic" data-slide-to="'+index+'"></li>');
 
             //Generate current graph
@@ -181,8 +181,8 @@ function generate2DPlot(data, head, id, title){
     var yAxis = [];
 
     data.forEach(function (elem) {
-        xAxis.push(elem[1]);
-        yAxis.push(elem[2]);
+        xAxis.push(elem[2]);
+        yAxis.push(elem[1]);
     });
 
     var line = {
@@ -195,7 +195,7 @@ function generate2DPlot(data, head, id, title){
     var layout = {
         title: title,
         xaxis: {
-            title: head[0],
+            title: head[1],
             mode: 'markers',
             type: 'scatter',
             titlefont: {
@@ -205,7 +205,7 @@ function generate2DPlot(data, head, id, title){
             }
         },
         yaxis: {
-            title: head[1],
+            title: head[0],
             mode: 'markers',
             type: 'scatter',
             titlefont: {
