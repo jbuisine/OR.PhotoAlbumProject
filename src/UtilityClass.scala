@@ -319,7 +319,7 @@ object UtilityClass {
       hyperVolumeCurrentSol *= currentSolScore(func_index)
     })
 
-    (0 until numberElement).foreach(sol_index => {
+    neighbors.indices.foreach(sol_index => {
 
       var nbFuncDominated = 0
 
@@ -347,7 +347,12 @@ object UtilityClass {
       val column = solutionsCoords.map(_(i))
 
       averageValues(i) = column.sum / solutionsCoords.length
-      println("Length " + neighbors.length/2,  column(neighbors.length/2))
+
+      //println("_________________________________________________")
+      //column.foreach(x => if(x != 0.0) println("Val : ", x))
+      //println("_________________________________________________")
+      //println("Length " + neighbors.length/2,  column(neighbors.length/2))
+      //println("Sum " + column.sum)*/
 
       medianValues(i) = column(neighbors.length/2)
     })
