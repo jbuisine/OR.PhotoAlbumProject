@@ -153,9 +153,20 @@
             </div>
 
             <div id="content">
+
+                <div id="TPLSAlgorithmIteration" class="form-group">
+                    <div class="col-sm-4 control-label">
+                        <label for="MOEADIterationAlgorithm">Number of MOEAD algorithm iteration</label>
+                    </div>
+                    <div class="col-sm-4">
+                        <input type="number" min="0" max="100000" value="100" name="MOEADIterationAlgorithm" id="MOEADIterationAlgorithm" class="form-control">
+                    </div>
+                </div>
+
+
                 <div class="form-group">
                     <div class="col-sm-4 control-label">
-                        <label for="iterationAlgorithm">Number of algorithm iteration <span id="iteration-more-info">(0 will search for each solutions)</span></label>
+                        <label for="iterationAlgorithm"><span class="iteration-more-info">PLS </span>Number of algorithm iteration <span class="iteration-more-info">(0 will search for each solutions)</span></label>
                     </div>
                     <div class="col-sm-4">
                         <input type="number" min="0" max="100000" value="100" name="iterationAlgorithm" id="iterationAlgorithm" class="form-control">
@@ -203,6 +214,7 @@
                 </div>
 
                 <div id="MOEADAlgorithm">
+
                     <div class="form-group">
                         <div class="col-sm-4 control-label">
                             <label for="numberVectors">Number of vectors</label>
@@ -241,7 +253,6 @@
                         </div>
                     </div>
                 </div>
-
 
                 <div id="numberPermutation">
                     <div class="form-group">
