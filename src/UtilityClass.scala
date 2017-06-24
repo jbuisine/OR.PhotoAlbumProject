@@ -348,12 +348,6 @@ object UtilityClass {
 
       averageValues(i) = column.sum / solutionsCoords.length
 
-      //println("_________________________________________________")
-      //column.foreach(x => if(x != 0.0) println("Val : ", x))
-      //println("_________________________________________________")
-      //println("Length " + neighbors.length/2,  column(neighbors.length/2))
-      //println("Sum " + column.sum)*/
-
       medianValues(i) = column(neighbors.length/2)
     })
 
@@ -397,6 +391,8 @@ object UtilityClass {
     // Adding current solution to escape same values array to be added
     neighbors += arr
 
+    println("Array size  ", arr.length)
+
     arr.indices.foreach( i => {
       arr.indices.foreach(j => {
         var newest = arr.clone()
@@ -409,24 +405,25 @@ object UtilityClass {
       })
     })
 
+    println("Before number of neighbors ", neighbors.length)
+
     // Deleting current solution
     neighbors -= arr
-
     neighbors
   }
 
   /**
     * Method created to check if array is already added into neighbors list
-    * @param neighbors : all neighbors solutions of current solution
+    * @param solutions : all solutions
     * @param arr : current solution
     * @return
     */
-  private def checkExists(neighbors: ListBuffer[Array[Int]], arr: Array[Int]): Boolean = {
+  def checkExists(solutions: ListBuffer[Array[Int]], arr: Array[Int]): Boolean = {
     var check: Boolean = false
     val inner = new Breaks
 
     inner.breakable {
-      for (a <- neighbors) {
+      for (a <- solutions) {
         if (util.Arrays.equals(a, arr)) {
           check = true
           inner.break
@@ -434,5 +431,18 @@ object UtilityClass {
       }
     }
     check
+  }
+
+  /**
+    * Method which return the factorial of number
+    *
+    * @param n : number
+    * @return
+    */
+  def factorial(n: BigInt): BigInt = {
+    if(n == 0)
+       1
+    else
+      n * factorial(n-1)
   }
 }

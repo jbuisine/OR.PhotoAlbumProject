@@ -144,6 +144,7 @@ function loadContentSol(data) {
     headTracking = data.tracking[0];
     data.tracking.splice(0, 1);
 
+
     var iteration = data.tracking.map(x => x[0]);
     $('#carousel-example-generic ol').empty();
 

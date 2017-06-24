@@ -16,6 +16,7 @@ object Algorithms {
     */
   val df = new java.text.DecimalFormat("0.##")
   var nbEvaluation: Int = 0
+  var solutionsPassed = new ListBuffer[Array[Int]]
 
   /**
     * HillClimber First improvement method used to get best local solution
@@ -199,79 +200,83 @@ object Algorithms {
 
     val rand = new Random
     var percentEvolution = ""
-    var numberEval = nbEval
-    var maxEval = 0
+    var numberEval: BigInt = nbEval
+    var maxEval: BigInt = 0
     var solutions = arr
-    var solutionsPassed = new ListBuffer[Array[Int]]
     var i = 0
+    val inner = new Breaks
 
     val random = Random
 
-    //Set header of tracking file
-    UtilityClass.writeHeaderTracking(filename, evals.length)
-
+    println("THERE !")
     if (solutions == null) {
+
+      //Set header of tracking file
+      UtilityClass.writeHeaderTracking(filename, evals.length)
+
       solutions = new ListBuffer[Array[Int]]()
       solutions += UtilityClass.generateRandomSolution(numberElements)
 
-      maxEval = numberElements * (numberElements - 1)
-      nbEvaluation = 0
+      maxEval = UtilityClass.factorial(55)
+
     }else{
-      maxEval = (numberElements * (numberElements-1)) - solutions.length
-      //Update solutions passed
-      solutionsPassed ++ solutions
+      maxEval = UtilityClass.factorial(55) - solutionsPassed.length
     }
+
+    println(UtilityClass.factorial(55))
+    println("Max number of evaluation", maxEval)
 
 
     //If user want to explore all solutions
     if (numberEval == 0)
       numberEval = maxEval
-
     //If numberEval if higher that all number of solutions to explore
-    if (numberEval > maxEval)
+    else if (numberEval > maxEval)
       numberEval = maxEval
 
+    println("Number of evaluation ", numberEval, nbEval)
 
-    while (i < numberEval) {
-      //Select a non visited solution of solutions
-      var current_sol = new Array[Int](numberElements)
-      do {
 
-        val randIndex = rand.nextInt(solutions.length)
-        current_sol = solutions(randIndex)
+    inner.breakable {
+      while (i < numberEval) {
+        //Select a non visited solution of solutions
+        var current_sol = new Array[Int](numberElements)
+        do {
+          val randIndex = rand.nextInt(solutions.length)
+          current_sol = solutions(randIndex).clone()
+          UtilityClass.perturbationIterated(current_sol, 1, rand)
 
-      } while (solutionsPassed.contains(current_sol))
+        } while (!UtilityClass.checkExists(solutionsPassed, current_sol))
 
-      //Flipping each bit of the current solution
-      (0 until numberElements).foreach(index => {
-        val randomValue = random.nextInt(numberElements)
+        // Flipping each bit of the current solution to get neighbors
+        val neighbors = UtilityClass.getNeighbors(current_sol)
 
-        val tmpValue: Int = current_sol(index)
-        current_sol(index) = current_sol(randomValue)
-        current_sol(randomValue) = tmpValue
+        neighbors.foreach(x => {
+          //Add this new solutions with all old solutions
+          if (!UtilityClass.checkExists(solutionsPassed, x)) {
+            var sol = x.clone()
+            solutionsPassed += sol
+            solutions += sol
 
-        //Add this new solutions with all old solutions
-        solutions += current_sol.clone()
+            i += 1
+            nbEvaluation += 1
 
-        current_sol(randomValue) = current_sol(index)
-        current_sol(index) = tmpValue
-      })
+            //Add tracking to check algorithm performance
+            UtilityClass.algorithmEvaluationTrack(filename, nbEvaluation, sol, numberElements, evals)
 
-      i += 1
-      nbEvaluation += 1
+            //Take only non dominated solutions
+            solutions = UtilityClass.getNonDominatedSolutions(solutions, evals)
 
-      //Flag solution as visited
-      solutionsPassed += current_sol
+            val lengthText = percentEvolution.length()
+            percentEvolution = "PLS -> " + df.format(i * 100.0 / numberEval.toInt) + "% "
+            UtilityClass.showEvolution(lengthText, percentEvolution)
 
-      //Add tracking to check algorithm performance
-      UtilityClass.algorithmEvaluationTrack(filename, nbEvaluation, current_sol, numberElements, evals)
-
-      //Take only non dominated solutions
-      solutions = UtilityClass.getNonDominatedSolutions(solutions, evals)
-
-      val lengthText = percentEvolution.length()
-      percentEvolution = "PLS -> " + df.format(i * 100.0 / numberEval) + "% "
-      UtilityClass.showEvolution(lengthText, percentEvolution)
+            // Break if necessary
+            if(i >= numberEval)
+              inner.break
+          }
+        })
+      }
     }
     solutions
   }
@@ -347,17 +352,10 @@ object Algorithms {
         UtilityClass.perturbationIterated(firstSol, 10, random)
         //UtilityClass.pertubationIterated(secondSol, 10, random)
 
-        var newSol = new Array[Int](numberElements)
+        var newSol = firstSol
 
-        //Review this mutation method later
-        /*(0 until numberElements).foreach( index => {
-          if(random.nextInt(1) == 0)
-            newSol(firstSol.indexOf(index)) = index
-          else
-            newSol(secondSol.indexOf(index)) = index
-        })*/
-
-        newSol = firstSol
+        // Solution added as shown if do not already exists
+        if(!UtilityClass.checkExists(solutionsPassed, newSol)) solutionsPassed += newSol
 
         /**
           * 2.2 Improvement : Not developed at this time (Perhaps later)
@@ -376,15 +374,15 @@ object Algorithms {
           * 2.4 Update of Neighboring Solutions
           */
 
-        //For each solution into the population check if new solution is better
+        // For each solution into the population check if new solution is better
         B(i).indices.foreach(index => {
           val neighborIndex = B(i)(index)
 
-          //Getting Tchebycheff function result for the new solution and current solution
+          // Getting Tchebycheff function result for the new solution and current solution
           val gNeighbor = MOEADInit.computeCombinedValues(population(neighborIndex), z, vectors(neighborIndex), evals, choice)
           val gY = MOEADInit.computeCombinedValues(newSol, z, vectors(neighborIndex), evals, choice)
 
-          //If better update population and values
+          // If better update population and values
           if (gY < gNeighbor) {
             population(neighborIndex) = newSol
             evals.indices.foreach(current => {
@@ -410,11 +408,11 @@ object Algorithms {
         //Increment number of evaluation
         nbEvaluation += 1
         evaluation += 1
-      })
 
-      val lengthText = percentEvolution.length()
-      percentEvolution = "MOEA/D -> " + df.format(evaluation * 100.0 / nbEval) + "% "
-      UtilityClass.showEvolution(lengthText, percentEvolution)
+        val lengthText = percentEvolution.length()
+        percentEvolution = "MOEA/D -> " + df.format(evaluation * 100.0 / nbEval) + "% "
+        UtilityClass.showEvolution(lengthText, percentEvolution)
+      })
 
     } while (evaluation < nbEval)
 
@@ -429,21 +427,26 @@ object Algorithms {
     * The aim of the algorithm is to obtained PLS optimal front quickly
     *
     * @param filename : file name which information will be stored
-    * @param nbEval : number of evaluation of MOEA/D algorithm
+    * @param nbEvalMOEAD : number of evaluation of MOEA/D algorithm
+    * @param nbEvalPLS : number of iteration excepted of PLS (if 0 PLS will show all feasible solutions)
     * @param N : Number of sub problems considered
     * @param T : the number of the weight vectors in the neighborhood of each weight vector.
     * @param evals : Criteria functions
     * @param choice : 0 => Tchebycheff approach || 1 => Weighted sum approach
     * @return
     */
-  def TPLS_Algorithm(filename: String, numberElements: Int, nbEval: Int, N: Int, T: Int, evals: Array[(Array[Int]) => Double], choice: Int): ListBuffer[Array[Int]] = {
+  def TPLS_Algorithm(filename: String, numberElements: Int, nbEvalMOEAD: Int, nbEvalPLS: Int, N: Int, T: Int, evals: Array[(Array[Int]) => Double], choice: Int): ListBuffer[Array[Int]] = {
 
     //Set header of tracking file
     UtilityClass.writeHeaderTracking(filename, evals.length)
+    println(nbEvalMOEAD, " && ", nbEvalPLS)
 
-    val solutions = MOEAD_Algorithm(filename, numberElements, nbEval, N, T, evals, choice)
+    var solutions = MOEAD_Algorithm(filename, numberElements, nbEvalMOEAD, N, T, evals, choice)
 
-    ParetoLocalSearch(filename, numberElements, 0, solutions, evals)
+    println("NUMBER SOLUTION", solutions.length)
+    solutions = ParetoLocalSearch(filename, numberElements, nbEvalPLS, solutions, evals)
+
+    solutions
   }
 
   /**

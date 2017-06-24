@@ -50,7 +50,7 @@ $('#ILS').change(function () {
 $('#PLS').change(function () {
 
     updateContent();
-    $('#iteration-more-info').show();
+    $('.iteration-more-info').show();
 });
 
 $('#MOEAD').change(function () {
@@ -64,8 +64,10 @@ $('#MOEAD').change(function () {
 $('#TPLS').change(function () {
 
     updateContent();
-    $('#iteration-more-info').show();
+    $('.iteration-more-info').show();
     $('#MOEADAlgorithm').show('200');
+    $('#TPLSAlgorithm').show();
+    $('#TPLSAlgorithmIteration').show('200');
     $('#numberPermutation').show('200');
 });
 
@@ -186,7 +188,8 @@ function updateContent() {
     $('#EAAlgorithm').hide();
     $('#MOEADAlgorithm').hide();
     $('#numberPermutation').hide();
-    $('#iteration-more-info').hide();
+    $('.iteration-more-info').hide();
+    $('#TPLSAlgorithmIteration').hide();
     $('button[id^="createSolution"]').attr('disabled', false);
     $('#content').show('200');
     $('#createSolution').show('200');

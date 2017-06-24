@@ -124,8 +124,9 @@ object MainWebApp {
             val numberVectors = data.get("numberVectors").toString.toInt
             val closestVectors = data.get("closestVectors").toString.toInt
             val computedChoice = data.get("computedChoice").toString.toInt
+            val iterationMOEAD = data.get("MOEADIterationAlgorithm").toString.toInt
 
-            solutions = Algorithms.TPLS_Algorithm(filePath, templateSize, algorithmIteration, numberVectors, closestVectors, functions, computedChoice)
+            solutions = Algorithms.TPLS_Algorithm(filePath, templateSize, iterationMOEAD, algorithmIteration, numberVectors, closestVectors, functions, computedChoice)
 
           // Random walk
           case 6 =>
