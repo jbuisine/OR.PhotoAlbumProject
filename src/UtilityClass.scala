@@ -374,7 +374,7 @@ object UtilityClass {
     })
 
     //Getting hyper volume difference
-    hyperVolumeDiff = hyperVolumeLocal - hyperVolumeCurrentSol
+    hyperVolumeDiff = hyperVolumeCurrentSol - hyperVolumeLocal
 
     writeTrackingLine(filename, iteration, nbDominated, nbNonDominated, hyperVolumeLocal, hyperVolumeCurrentSol, hyperVolumeDiff, averageValues, medianValues)
   }
