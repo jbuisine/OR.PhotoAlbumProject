@@ -216,6 +216,7 @@ object Algorithms {
 
       solutions = new ListBuffer[Array[Int]]()
       solutions += UtilityClass.generateRandomSolution(numberElements)
+      solutionsPassed += solutions(0)
 
       maxEval = UtilityClass.factorial(numberElements)
 
@@ -484,6 +485,8 @@ object Algorithms {
 
       // Add tracking to check algorithm performance
       UtilityClass.algorithmEvaluationTrack(filename, evaluation, solution, numberElements, evals)
+
+      spaceSearchSolutions = UtilityClass.getNonDominatedSolutions(spaceSearchSolutions, evals)
 
       evaluation += 1
 
