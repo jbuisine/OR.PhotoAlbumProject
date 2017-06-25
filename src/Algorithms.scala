@@ -217,13 +217,13 @@ object Algorithms {
       solutions = new ListBuffer[Array[Int]]()
       solutions += UtilityClass.generateRandomSolution(numberElements)
 
-      maxEval = UtilityClass.factorial(55)
+      maxEval = UtilityClass.factorial(numberElements)
 
     }else{
-      maxEval = UtilityClass.factorial(55) - solutionsPassed.length
+      maxEval = UtilityClass.factorial(numberElements) - solutionsPassed.length
     }
 
-    println(UtilityClass.factorial(55))
+    println(UtilityClass.factorial(numberElements))
     println("Max number of evaluation", maxEval)
 
 
