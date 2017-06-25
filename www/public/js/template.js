@@ -141,7 +141,7 @@ function loadContentSol(data) {
     $('#generate-solution-btn').show('500');
 
     //Write all tracking graphic
-    headTracking = data.tracking[0];
+    /*headTracking = data.tracking[0];
     data.tracking.splice(0, 1);
 
 
@@ -167,7 +167,7 @@ function loadContentSol(data) {
             //Generate current graph
             generate2DPlot(currentDataTracking, currentHeadTracking, currentDivId, headTracking[index] + " / Iteration");
         }
-    });
+    });*/
 }
 
 /**
