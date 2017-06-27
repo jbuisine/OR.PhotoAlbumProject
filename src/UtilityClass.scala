@@ -391,8 +391,6 @@ object UtilityClass {
     // Adding current solution to escape same values array to be added
     neighbors += arr
 
-    println("Array size  ", arr.length)
-
     arr.indices.foreach( i => {
       arr.indices.foreach(j => {
         var newest = arr.clone()
